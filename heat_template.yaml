@@ -22,21 +22,28 @@ parameters:
 resources:
   # Volume to use for the service instance
   # Larger than default size is primarily for Prometheus
-  lasair-svc-vol:
+  svc-vol:
     type: OS::Cinder::Volume
     properties:
       size: 50
       image: { get_param: image_id }
   # Service instance runs vaious services (e.g. Watchlist, Area, TNS)
   # and also monitoring (Prometheus and Grafana)
-  lasair-svc:
+  svc:
     type: OS::Nova::Server
     properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "svc"] ] }
       key_name: { get_param: key_name }
       flavor: { get_param: flavor_small  }
       block_device_mapping_v2:
         - device_name: vda
-          volume_id: { get_resource: lasair-svc-vol }
+          volume_id: { get_resource: svc-vol }
           delete_on_termination: true
       networks:
         - network: { get_param: net }
+
+outputs:
+  svc:
+    description: Private IP
+    value: { get_attr: [svc, first_address] }
+

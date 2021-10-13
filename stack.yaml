@@ -14,11 +14,20 @@
   tasks:
 
     - name: create stack
+      register: stack_create
       openstack.cloud.stack:
         name: "{{ os.stack_name }}"
-        #state: present
-        state: absent
+        state: present
         template: "{{ template }}"
         parameters:
           key_name: "{{ os.keypair_name }}"
+
+    - name: update /etc/hosts
+      become: true
+      lineinfile:
+        path: /etc/hosts
+        regexp: '\s{{ item.output_key }}$'
+        line: "{{ item.output_value }} {{ item.output_key }}"
+      loop: "{{ stack_create.stack.outputs }}"
+      when: item.description == "Private IP"
 
