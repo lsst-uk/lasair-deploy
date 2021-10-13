@@ -30,13 +30,19 @@ who need to can log into this instance by adding their public
 ssh keys to the authorized_keys file.
 
 3. Install Ansible. Assuming that we are using an Ubuntu image:
-    # apt-get update && apt-get install ansible
+```
+# apt-get update && apt-get install ansible
+```
 
 4. Clone this repository:
-    $ git clone https://github.com/lsst-uk/lasair-deploy.git
+```
+$ git clone https://github.com/lsst-uk/lasair-deploy.git
+```
 
 5. Install external Ansible dependencies:
-    $ ansible-galaxy -r requirements.yaml 
+```
+$ ansible-galaxy -r requirements.yaml 
+```
 
 6. Get the ```openrc.sh``` file for the OpenStack cloud, copy it to the
 login instance and source it.
@@ -52,14 +58,20 @@ of instances to create, etc.
 ## Login instance setup
 
 Run the ```login.yaml``` playbook:
-    $ ansible-playbook login.yaml
+```
+$ ansible-playbook login.yaml
+```
+
 This sets up the login instance and checks that everything is in place to 
 proceed with the deployment.
 
 ## Create OpenStack resources
 
 Run the ```openstack.yaml``` playbook:
-    $ ansible-playbook openstack.yaml
+```
+$ ansible-playbook openstack.yaml
+```
+
 This creates the required instances, volumes, etc. and writes the inventory
 file that will be used by subsequent playbooks.
 
@@ -73,10 +85,14 @@ will need to fix it up manually first.
 
 If this is a new, clean deployment then we can just go ahead and run the
 deployment playbook at this point:
-    $ ansible-playbook deploy.yaml
+```
+$ ansible-playbook deploy.yaml
+```
 
 If we want to step through the playbooks individually then we can do so, e.g:
-    $ ansible-playbook 01-keypair.yaml
+```
+$ ansible-playbook 01-keypair.yaml
+```
 
 ## Update Lasair
 
