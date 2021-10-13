@@ -26,8 +26,8 @@
       become: true
       lineinfile:
         path: /etc/hosts
-        regexp: '\s{{ item.output_key }}$'
-        line: "{{ item.output_value }} {{ item.output_key }}"
+        regexp: '\s{{ os.stack_name }}-{{ item.output_key }}$'
+        line: "{{ item.output_value }} {{ os.stack_name }}-{{ item.output_key }}"
       loop: "{{ stack_create.stack.outputs }}"
       when: item.description == "Private IP"
 
