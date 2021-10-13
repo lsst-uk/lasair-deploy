@@ -1,0 +1,24 @@
+---
+
+- name: deploy stack
+
+  hosts: localhost
+  gather_facts: False
+
+  vars_files:
+    - settings.yaml
+
+  vars:
+    template: heat_template.yaml
+
+  tasks:
+
+    - name: create stack
+      openstack.cloud.stack:
+        name: "{{ os.stack_name }}"
+        #state: present
+        state: absent
+        template: "{{ template }}"
+        parameters:
+          key_name: "{{ os.keypair_name }}"
+

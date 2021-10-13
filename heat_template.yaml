@@ -1,0 +1,42 @@
+heat_template_version: 2015-04-30
+
+description: Heat template to deploy an instance of the Lasair system
+
+parameters:
+  key_name:
+    description: Name of a KeyPair to enable SSH access.
+    type: string
+  flavor_small:
+    description: Flavor to use for small instances.
+    type: string
+    default: c3.small
+  image_id:
+    description: Name or ID of the image to use.
+    type: string
+    default: ubuntu-focal-20.04-nogui
+  net:
+    description: Name of the private network.
+    type: string
+    default: LSST - Private Network
+
+resources:
+  # Volume to use for the service instance
+  # Larger than default size is primarily for Prometheus
+  lasair-svc-vol:
+    type: OS::Cinder::Volume
+    properties:
+      size: 50
+      image: { get_param: image_id }
+  # Service instance runs vaious services (e.g. Watchlist, Area, TNS)
+  # and also monitoring (Prometheus and Grafana)
+  lasair-svc:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: key_name }
+      flavor: { get_param: flavor_small  }
+      block_device_mapping_v2:
+        - device_name: vda
+          volume_id: { get_resource: lasair-svc-vol }
+          delete_on_termination: true
+      networks:
+        - network: { get_param: net }

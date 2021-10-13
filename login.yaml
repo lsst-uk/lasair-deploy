@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  vars_files: 
+    - settings.yaml
+ 
+  tasks:
+          
+  - name: Set SSH client config
+    copy:
+      dest: ~/.ssh/config
+      mode: 0600
+      content: |
+        Host *
+          StrictHostKeyChecking accept-new
+

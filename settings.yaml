@@ -1,0 +1,16 @@
+---
+
+# Configuration for Lasair deployment
+
+# OpenStack configuration
+os:
+
+  # Name of the private network
+  network_name: LSST - Private Network
+
+  # Name of the ssh keypair in OpenStack
+  keypair_name: lasair-key
+
+  # What to call the heat stack
+  # Use different names for multiple deployments in the same project
+  stack_name: lasair-dev

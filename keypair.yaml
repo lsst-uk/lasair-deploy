@@ -1,0 +1,68 @@
+---
+# Create an SSH keypair
+# Requires that local key files 
+
+- hosts: localhost
+  gather_facts: True
+
+  vars_files:
+    - settings.yaml
+
+  vars:
+    keypair_path: "{{ ansible_env.HOME }}/ssh"
+
+  tasks:
+
+    # Set up the SSH keypair
+    - name: Test for local private key
+      stat:
+        path: "{{ keypair_path }}/id_rsa"
+      register: private_key_file
+
+    - name: Test for local public key
+      stat:
+        path: "{{ keypair_path }}/id_rsa.pub"
+      register: public_key_file
+
+    - name: Create shared ssh keypair
+      openstack.cloud.keypair:
+        name: "{{ os.keypair_name }}"
+        state: present
+      register: keypair
+
+    - name: Check that we can safely write the private key
+      assert:
+        that: not private_key_file.stat.exists
+        fail_msg: Created a new keypair, but local private key file already exists - fix or delete before proceeding
+      when: keypair.key.private_key
+
+    - name: Write private key
+      copy:
+        dest: "{{ keypair_path }}/id_rsa"
+        content: "{{ keypair.key.private_key }}"
+        mode: 0600
+      when: keypair.key.private_key and not private_key_file.stat.exists  
+
+    - name: Write public key
+      copy:
+        dest: "{{ keypair_path }}/id_rsa.pub"
+        content: "{{ keypair.key.public_key }}"
+        mode: 0644
+      when: keypair.key.public_key and not public_key_file.stat.exists
+
+    - name: Test for local private key
+      stat:
+        path: "{{ keypair_path }}/id_rsa"
+      register: private_key_file
+
+    - name: Check that private key file exists
+      assert:
+        that: private_key_file.stat.exists
+        fail_msg: No local private key file - fix or delete before proceeding
+
+    - name: Check public key content
+      assert:
+        that: item == "{{ keypair.key.public_key }}"
+        fail_msg: Local public key file has incorrect content - fix or delete before proceeding
+      with_file: "{{ keypair_path }}/id_rsa.pub"
+

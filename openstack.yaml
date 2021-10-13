@@ -1,0 +1,6 @@
+---
+- name: create ssh keypair 
+  import_playbook: keypair.yaml
+- name: deploy stack using heat
+  import_playbook: stack.yaml
+
