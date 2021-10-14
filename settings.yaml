@@ -14,3 +14,17 @@ os:
   # What to call the heat stack
   # Use different names for multiple deployments in the same project
   stack_name: lasair-dev
+
+# Instances to deploy
+instances:
+  svc:
+  kafka:
+    number: 4
+  ingest:
+    number: 4
+  sherlock:
+    number: 4
+  filter:
+    number: 4
+  cassandra:
+    number: 5

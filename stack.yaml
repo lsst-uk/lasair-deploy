@@ -31,3 +31,23 @@
       loop: "{{ stack_create.stack.outputs }}"
       when: item.description == "Private IP"
 
+    - name: update inventory
+      ini_file:
+        path: hosts
+        section: "{{ item.role }}"
+        allow_no_value: true
+        option: "{{ os.stack_name }}-{{ item.role }}{{ item.suffix }}"
+      loop: |
+        [
+        {%- for role,values in instances.items() %}
+          {%- if values.number is defined %}
+            {%- for i in range(1, values.number+1) %}
+              { 'role': '{{ role }}', 'suffix': '-{{ i }}' },
+            {%- endfor %}
+          {%- else %}
+            { 'role': '{{ role }}', 'suffix': '' },
+          {%- endif %}
+        {%- endfor %}
+        ]
+      loop_control:
+        label: "{{ os.stack_name }}-{{ item.role }}{{ item.suffix }}"
