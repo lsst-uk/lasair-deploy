@@ -21,15 +21,31 @@
         template: "{{ template }}"
         parameters:
           key_name: "{{ os.keypair_name }}"
+          n_kafka: "{{ instances.kafka.number }}"
+          n_ingest: "{{ instances.ingest.number }}"
+          n_sherlock: "{{ instances.sherlock.number }}"
+          n_filter: "{{ instances.filter.number }}"
+          n_cassandra: "{{ instances.cassandra.number }}"
 
     - name: update /etc/hosts
       become: true
       lineinfile:
         path: /etc/hosts
-        regexp: '\s{{ os.stack_name }}-{{ item.output_key }}$'
-        line: "{{ item.output_value }} {{ os.stack_name }}-{{ item.output_key }}"
-      loop: "{{ stack_create.stack.outputs }}"
-      when: item.description == "Private IP"
+        regexp: '\s{{ item.hostname }}$'
+        line: "{{ item.address }} {{ item.hostname }}"
+      loop: |
+        [
+        {%- for output in stack_create.stack.outputs %}
+          {%- if output.description == "Private IP" %}
+            { 'address': '{{ output.output_value }}', 'hostname': '{{ os.stack_name }}-{{ output.output_key }}' },
+          {%- endif %}
+          {%- if output.description == "Private IP list" %}
+            {%- for address in output.output_value %}
+              { 'address': '{{ address }}', 'hostname': '{{ os.stack_name }}-{{ output.output_key }}-{{ loop.index0 }}' },
+            {%- endfor %}
+          {%- endif %}
+        {%- endfor %}
+        ]
 
     - name: update inventory
       ini_file:
@@ -41,7 +57,7 @@
         [
         {%- for role,values in instances.items() %}
           {%- if values.number is defined %}
-            {%- for i in range(1, values.number+1) %}
+            {%- for i in range(0, values.number) %}
               { 'role': '{{ role }}', 'suffix': '-{{ i }}' },
             {%- endfor %}
           {%- else %}

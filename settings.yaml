@@ -19,12 +19,12 @@ os:
 instances:
   svc:
   kafka:
-    number: 4
+    number: 2
   ingest:
-    number: 4
+    number: 1
   sherlock:
-    number: 4
+    number: 2
   filter:
-    number: 4
+    number: 1
   cassandra:
-    number: 5
+    number: 3
