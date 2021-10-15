@@ -81,6 +81,11 @@ be created at this point. If you have already created an SSH keypair
 must match the keypair in OpenStack. If this is not the case then you
 will need to fix it up manually first.
 
+## Configure DNS
+
+At this point we need to configure any required DNS records to point to
+the public interfaces of the instances we just created.
+
 ## Deploy Lasair
 
 If this is a new, clean deployment then we can just go ahead and run the
