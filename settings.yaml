@@ -18,13 +18,14 @@ os:
 # Instances to deploy
 instances:
   svc:
+  web:
   kafka:
-    number: 2
+    number: 1
   ingest:
-    number: 1
+    number: 0
   sherlock:
-    number: 2
+    number: 0
   filter:
-    number: 1
+    number: 0
   cassandra:
-    number: 3
+    number: 0

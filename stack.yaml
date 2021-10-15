@@ -67,3 +67,16 @@
         ]
       loop_control:
         label: "{{ os.stack_name }}-{{ item.role }}{{ item.suffix }}"
+
+    # We don't currently have dedicated instances for proxy and api roles
+    # so add these to the web server
+    - name: add extra roles
+      ini_file:
+        path: hosts
+        section: "{{ item }}"
+        allow_no_value: true
+        option: "{{ os.stack_name }}-web"
+      with_items:
+        - proxy
+        - api
+

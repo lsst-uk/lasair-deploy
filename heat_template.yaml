@@ -62,6 +62,17 @@ resources:
       networks:
         - network: { get_param: net }
 
+  # Web server (also currently proxy and api)
+  web:
+    type: OS::Nova::Server
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "web"] ] }
+      key_name: { get_param: key_name }
+      flavor: { get_param: flavor_small  }
+      image: { get_param: image_id }
+      networks:
+        - network: { get_param: net }
+
   kafka_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -132,6 +143,9 @@ outputs:
   svc:
     description: Private IP
     value: { get_attr: [svc, first_address] }
+  web:
+    description: Private IP
+    value: { get_attr: [web, first_address] }
   kafka:
     description: Private IP list
     value: { get_attr: [kafka_group, first_address] }
