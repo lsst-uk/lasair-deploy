@@ -26,6 +26,10 @@
           n_sherlock: "{{ instances.sherlock.number }}"
           n_filter: "{{ instances.filter.number }}"
           n_cassandra: "{{ instances.cassandra.number }}"
+          flavor_small: "{{ os.flavor_small }}"
+          flavor_medium: "{{ os.flavor_medium }}"
+          flavor_large: "{{ os.flavor_large }}"
+          flavor_xlarge: "{{ os.flavor_xlarge }}"
 
     - name: update /etc/hosts
       become: true

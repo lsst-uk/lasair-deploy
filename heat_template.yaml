@@ -10,6 +10,18 @@ parameters:
     description: Flavor to use for small instances.
     type: string
     default: c3.small
+  flavor_medium:
+    description: Flavor to use for medium instances.
+    type: string
+    default: c3.medium
+  flavor_large:
+    description: Flavor to use for large instances.
+    type: string
+    default: c3.large
+  flavor_xlarge:
+    description: Flavor to use for xlarge instances.
+    type: string
+    default: c3.xlarge
   image_id:
     description: Name or ID of the image to use.
     type: string
@@ -83,7 +95,7 @@ resources:
     properties:
       name: { list_join: [ '-', [ { get_param: OS::stack_name }, "web"] ] }
       key_name: { get_param: key_name }
-      flavor: { get_param: flavor_small  }
+      flavor: { get_param: flavor_xlarge  }
       image: { get_param: image_id }
       networks:
         - network: { get_param: net }
@@ -109,7 +121,7 @@ resources:
         properties:
           name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka", "%index%" ]] }
           image: { get_param: image_id }
-          flavor: { get_param: flavor_small  }
+          flavor: { get_param: flavor_large  }
           networks:
             - network: { get_param: net }
 
@@ -135,7 +147,7 @@ resources:
         properties:
           name: { list_join: [ '-', [ { get_param: OS::stack_name }, "sherlock", "%index%" ]] }
           image: { get_param: image_id }
-          flavor: { get_param: flavor_small  }
+          flavor: { get_param: flavor_xlarge  }
           networks:
             - network: { get_param: net }
 
@@ -161,7 +173,7 @@ resources:
         properties:
           name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandra", "%index%" ]] }
           image: { get_param: image_id }
-          flavor: { get_param: flavor_small  }
+          flavor: { get_param: flavor_large  }
           networks:
             - network: { get_param: net }
 
