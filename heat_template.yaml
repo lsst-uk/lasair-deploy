@@ -112,6 +112,26 @@ resources:
   #    floatingip_id: { get_resource: proxy_ip }
   #    port_id: {get_attr: [web, addresses, {get_param: net}, 0, port]}
 
+  db:
+    type: OS::Nova::Server
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "db"] ] }
+      key_name: { get_param: key_name }
+      flavor: { get_param: flavor_xlarge  }
+      image: { get_param: image_id }
+      networks:
+        - network: { get_param: net }
+
+  kafka-pub:
+    type: OS::Nova::Server
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka-pub"] ] }
+      key_name: { get_param: key_name }
+      flavor: { get_param: flavor_small  }
+      image: { get_param: image_id }
+      networks:
+        - network: { get_param: net }
+
   kafka_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -185,6 +205,12 @@ outputs:
   web:
     description: Private IP
     value: { get_attr: [web, first_address] }
+  db:
+    description: Private IP
+    value: { get_attr: [db, first_address] }
+  kafka-pub:
+    description: Private IP
+    value: { get_attr: [kafka-pub, first_address] }
   kafka:
     description: Private IP list
     value: { get_attr: [kafka_group, first_address] }

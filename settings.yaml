@@ -25,8 +25,10 @@ os:
 instances:
   svc:
   web:
+  db:
   kafka:
     number: 1
+  kafka-pub:
   ingest:
     number: 0
   sherlock:
