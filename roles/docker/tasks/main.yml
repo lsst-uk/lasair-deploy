@@ -1,0 +1,6 @@
+---
+# tasks file for roles/docker
+- name: docker
+  debug:
+    msg: setting up host as a docker
+

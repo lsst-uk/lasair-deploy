@@ -1,0 +1,5 @@
+---
+# tasks file for lasair-instance
+- name: lasair instance
+  debug:
+    msg: setting up host as a lasair instance

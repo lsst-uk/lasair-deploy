@@ -1,0 +1,10 @@
+---
+- hosts: all:!localhost
+  gather_facts: false
+  roles:
+    - lasair-instance
+
+- hosts: kafka
+  gather_facts: false
+  roles:
+    - kafka

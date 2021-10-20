@@ -1,0 +1,5 @@
+---
+# tasks file for roles/kafka
+- name: kafka
+  debug:
+    msg: setting up host as a kafka

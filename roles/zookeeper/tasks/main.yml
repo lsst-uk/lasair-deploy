@@ -1,0 +1,7 @@
+---
+# tasks file for roles/zookeeper
+- name: zookeeper
+  debug:
+    msg: setting up host as a zookeeper
+
+- debug: msg="play_hosts={{play_hosts}}"
