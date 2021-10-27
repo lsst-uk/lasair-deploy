@@ -1,0 +1,7 @@
+---
+# tasks file for roles/mirrormaker
+- name: mirrormaker
+  debug:
+    msg: setting up host as a mirrormaker
+
+- debug: msg="play_hosts={{play_hosts}}"

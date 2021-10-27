@@ -1,5 +1,6 @@
 ---
 # tasks file for lasair-instance
-- name: lasair instance
-  debug:
-    msg: setting up host as a lasair instance
+
+# add hosts in inventory to /etc/hosts
+- import_tasks: etc_hosts.yaml
+

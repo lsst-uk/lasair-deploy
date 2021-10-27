@@ -38,11 +38,12 @@ ssh keys to the authorized_keys file.
 ```
 $ git clone https://github.com/lsst-uk/lasair-deploy.git
 ```
-
+<!--
 5. Install external Ansible dependencies:
 ```
 $ ansible-galaxy -r requirements.yaml 
 ```
+-->
 
 6. Get the ```openrc.sh``` file for the OpenStack cloud, copy it to the
 login instance and source it.

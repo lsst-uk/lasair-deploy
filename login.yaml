@@ -13,3 +13,9 @@
         Host *
           StrictHostKeyChecking accept-new
 
+  - name: Install collections
+    command: ansible-galaxy collection install -r requirements.yaml -p collections/
+
+#  - name: Install roles
+#    command: ansible-galaxy role install -r requirements.yaml -p roles/
+

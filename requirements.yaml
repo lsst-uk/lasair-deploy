@@ -1,3 +1,7 @@
 ---
+#roles:
+  #- src: git+https://github.com/gpfrancis/test-role.git
+  #- src: git+https://github.com/genghisken/gkansible.git#/gkansible/roles/install-mysql-sherlock
+
 collections:
-- openstack.cloud
+  - openstack.cloud

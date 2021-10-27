@@ -8,3 +8,10 @@
   gather_facts: false
   roles:
     - kafka
+
+# we currently run mirrormaker on the same hosts as kafka/zookeeper 
+- hosts: kafka
+  gather_facts: false
+  roles:
+    - mirrormaker
+ 
