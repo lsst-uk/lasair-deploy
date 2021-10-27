@@ -140,6 +140,7 @@ resources:
         type: OS::Nova::Server
         properties:
           name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka", "%index%" ]] }
+          key_name: { get_param: key_name }
           image: { get_param: image_id }
           flavor: { get_param: flavor_large  }
           networks:
@@ -153,6 +154,7 @@ resources:
         type: OS::Nova::Server
         properties:
           name: { list_join: [ '-', [ { get_param: OS::stack_name }, "ingest", "%index%" ]] }
+          key_name: { get_param: key_name }
           image: { get_param: image_id }
           flavor: { get_param: flavor_small  }
           networks:
@@ -166,6 +168,7 @@ resources:
         type: OS::Nova::Server
         properties:
           name: { list_join: [ '-', [ { get_param: OS::stack_name }, "sherlock", "%index%" ]] }
+          key_name: { get_param: key_name }
           image: { get_param: image_id }
           flavor: { get_param: flavor_xlarge  }
           networks:
@@ -179,6 +182,7 @@ resources:
         type: OS::Nova::Server
         properties:
           name: { list_join: [ '-', [ { get_param: OS::stack_name }, "filter", "%index%" ]] }
+          key_name: { get_param: key_name }
           image: { get_param: image_id }
           flavor: { get_param: flavor_small  }
           networks:
@@ -192,6 +196,7 @@ resources:
         type: OS::Nova::Server
         properties:
           name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandra", "%index%" ]] }
+          key_name: { get_param: key_name }
           image: { get_param: image_id }
           flavor: { get_param: flavor_large  }
           networks:
