@@ -1,0 +1,38 @@
+version: '3'
+
+volumes:
+    zklog:
+    zkdata:
+
+services:
+    zookeep:
+        image:
+            confluentinc/cp-zookeeper:5.4.0
+        network_mode: host
+        environment:
+            - "ZOOKEEPER_SERVER_ID={{ play_hosts.index(inventory_hostname) + 1 }}"
+            - "ZOOKEEPER_SERVERS={%
+                for host in play_hosts
+                    -%}{%-
+                        if inventory_hostname == hostvars[host]['inventory_hostname']
+                    -%}
+                        0.0.0.0
+                    {%- else -%}
+                        {{- hostvars[host]['inventory_hostname'] -}}
+                    {%- endif -%}
+                        :2888:3888
+                    {%- if not loop.last -%}
+                        ;
+                    {%- endif -%}
+                {%- endfor %}"
+            - "ZOOKEEPER_TICK_TIME=2000"
+            - "ZOOKEEPER_INIT_LIMIT=5"
+            - "ZOOKEEPER_SYNC_LIMIT=2"
+            - "ZOOKEEPER_CLIENT_PORT=2181"
+            - "ZOOKEEPER_CLIENT_PORT_ADDRESS=0.0.0.0"
+            - "KAFKA_OPTS=-Dzookeeper.admin.enableServer=false -javaagent:/opt/jmx_exporter/jmx_prometheus_javaagent.jar=0.0.0.0:8082:/opt/jmx_exporter/zookeeper.yml"
+
+        volumes:
+            - "zklog:/var/lib/zookeeper/log"
+            - "zkdata:/var/lib/zookeeper/data"
+            - /opt/jmx_exporter:/opt/jmx_exporter

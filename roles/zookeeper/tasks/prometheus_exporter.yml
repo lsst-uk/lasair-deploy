@@ -1,0 +1,23 @@
+---
+- name: "Install Prometheus node exporter"
+  apt:
+    pkg:
+      - prometheus-node-exporter
+    state: present
+    update-cache: yes
+
+- name: "Create JMX exporter directories"
+  file:
+    path: /opt/jmx_exporter
+    state: directory
+
+- name: "Get JMX exporter jar"
+  get_url:
+    url: https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.3.0/jmx_prometheus_javaagent-0.3.0.jar
+    dest: /opt/jmx_exporter/jmx_prometheus_javaagent.jar
+    mode: '0644'
+
+- name: "JMX exporter config files"
+  copy:
+    src: "jmx_exporter_zookeeper.yml"
+    dest: "/opt/jmx_exporter/zookeeper.yml"
