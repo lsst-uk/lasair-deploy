@@ -122,10 +122,10 @@ resources:
       networks:
         - network: { get_param: net }
 
-  kafka-pub:
+  kafka_pub:
     type: OS::Nova::Server
     properties:
-      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka-pub"] ] }
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka_pub"] ] }
       key_name: { get_param: key_name }
       flavor: { get_param: flavor_small  }
       image: { get_param: image_id }
@@ -213,9 +213,9 @@ outputs:
   db:
     description: Private IP
     value: { get_attr: [db, first_address] }
-  kafka-pub:
+  kafka_pub:
     description: Private IP
-    value: { get_attr: [kafka-pub, first_address] }
+    value: { get_attr: [kafka_pub, first_address] }
   kafka:
     description: Private IP list
     value: { get_attr: [kafka_group, first_address] }

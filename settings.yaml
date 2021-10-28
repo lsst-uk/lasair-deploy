@@ -28,7 +28,7 @@ instances:
   db:
   kafka:
     number: 1
-  kafka-pub:
+  kafka_pub:
   ingest:
     number: 0
   sherlock:
