@@ -1,5 +1,6 @@
 ---
 - name: "Install Prometheus node exporter"
+  become: true
   apt:
     pkg:
       - prometheus-node-exporter
@@ -7,9 +8,11 @@
     update-cache: yes
 
 - name: "Create JMX exporter directories"
+  become: true
   file:
     path: /opt/jmx_exporter
     state: directory
+    owner: "{{ ansible_user_id }}"
 
 - name: "Get JMX exporter jar"
   get_url:

@@ -1,6 +1,9 @@
 ---
-- hosts: all:!localhost
+- hosts: all
   gather_facts: true
+
+- hosts: all:!localhost
+  gather_facts: false
   roles:
     - lasair_instance
 

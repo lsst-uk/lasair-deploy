@@ -10,6 +10,7 @@
     dest: zookeeper-compose.yml
 
 - name: "Start Zookeeper services"
+  become: true
   docker_service:
     project_name: zookeeper
     project_src:
