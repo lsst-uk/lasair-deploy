@@ -1,0 +1,11 @@
+---
+# vars file for roles/kafka
+
+# TODO: move this to settings
+domain: "lsst.ac.uk"
+
+num_partitions: "{{ 16 }}"
+retention_ms: "{{ 7 * 24 * 60 * 60 * 1000 }}"
+retention_bytes: "{{ -1 }}"
+data_fs:
+  - { dev: "/dev/vdb", path: "/kafka/data" }

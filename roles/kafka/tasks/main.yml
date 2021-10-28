@@ -1,5 +1,51 @@
 ---
+
+- import_tasks: prometheus_exporter.yml
+
 # tasks file for roles/kafka
-- name: kafka
-  debug:
-    msg: setting up host as a kafka
+#- name: "Create data filesystems"
+#  filesystem:
+#    fstype: xfs
+#    dev: "{{ item.dev }}"
+#  with_items: "{{ data_fs }}"
+#- name: "Create data mountpoints"
+#  file:
+#    path: "{{ item.path }}"
+#    state: directory
+#  with_items: "{{ data_fs }}"
+#- name: "Mount data filesystems"
+#  mount:
+#    path: "{{ item.path }}"
+#    src: "{{ item.dev }}"
+#    fstype: xfs
+#    opts: nofail
+#    state: mounted
+#  with_items: "{{ data_fs }}"
+
+# Temporary workaround
+- name: "Create data directory"
+  become: true
+  file:
+    path: "/kafka/data"
+    state: directory
+    mode: 0777
+
+- name: "Deploy Kafka compose file"
+  template:
+    src:  kafka-compose.yaml.j2
+    dest: kafka-compose.yml
+  vars:
+    mntpath: '/kafka/data'
+    logpath: '/kafka/data'
+
+- name: "Start Kafka services"
+  become: true
+  docker_compose:
+    project_src:
+        '.'
+    files:
+      - kafka-compose.yml
+    services:
+      - kafka
+    state:
+      present

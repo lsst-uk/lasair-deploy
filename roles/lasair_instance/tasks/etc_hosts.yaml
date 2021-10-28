@@ -6,5 +6,6 @@
     regexp: '.*{{ item }}$'
     line: "{{ hostvars[item].ansible_env.SSH_CONNECTION.split(' ')[2] }} {{item}}"
     state: present
-  when: hostvars[item].ansible_env is defined
+  when: hostvars[item].ansible_env is defined and item != 'localhost'
   with_items: "{{ groups.all }}"
+
