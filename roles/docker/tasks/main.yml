@@ -1,6 +1,23 @@
 ---
 # tasks file for roles/docker
-- name: docker
-  debug:
-    msg: setting up host as a docker
 
+- name: "Install Docker"
+  apt:
+    pkg:
+      - docker.io 
+      - docker-compose
+    state: present
+    update-cache: yes
+
+- name: "Install pip"
+  apt:
+    pkg:
+      - python3-pip
+    state: present
+    update-cache: yes
+
+- name: "Install docker python modules"
+  pip:
+    name:
+      - docker
+      - docker-compose
