@@ -1,8 +1,7 @@
 ---
 # vars file for roles/kafka
 
-# TODO: move this to settings
-#domain: "lsst.ac.uk"
+kafka_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/kafka url='+vault.url)}}"
 
 num_partitions: "{{ (play_hosts|length) * 8 }}"
 retention_ms: "{{ 7 * 24 * 60 * 60 * 1000 }}"

@@ -1,32 +1,9 @@
 ---
 
-# Configuration for Lasair deployment
-
-domain: "lsst.ac.uk"
-
-# Vault settings
-vault:
-  url: https://vault.lsst.ac.uk
-  path: secret/lasair
-
-# OpenStack configuration
-os:
-
-  # Name of the private network
-  network_name: LSST - Private Network
-
-  # Name of the ssh keypair in OpenStack
-  keypair_name: lasair-key
-
-  # What to call the heat stack
-  # Use different names for multiple deployments in the same project
-  stack_name: lasair-dev
-
-  # names of flavors to use
-  flavor_small: c3.small
-  flavor_medium: c3.medium
-  flavor_large: c3.large
-  flavor_xlarge: c3.xlarge
+# DNS domain where this deployment lives
+domain: lasair-dev.lsst.ac.uk
+# A name to distinguish *this* lasair deployment, typically the same as the first part of the domain
+lasair_name: lasair-dev
 
 # Instances to deploy
 instances:
@@ -37,10 +14,31 @@ instances:
     number: 2
   kafka_pub:
   ingest:
-    number: 0
+    number: 1
   sherlock:
     number: 0
   filter:
     number: 0
   cassandra:
     number: 0
+
+# Vault settings
+vault:
+  url: https://vault.lsst.ac.uk
+  path: secret/lasair
+
+# OpenStack configuration
+os:
+  # Name of the private network
+  network_name: LSST - Private Network
+  # Name of the ssh keypair in OpenStack
+  keypair_name: lasair-key
+  # What to call the heat stack
+  # Use different names for multiple deployments in the same project
+  stack_name: "{{ lasair_name }}"
+  # names of flavors to use
+  flavor_small: c3.small
+  flavor_medium: c3.medium
+  flavor_large: c3.large
+  flavor_xlarge: c3.xlarge
+

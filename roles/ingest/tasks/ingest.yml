@@ -1,0 +1,37 @@
+---
+
+- name: "Install packages"
+  become: true
+  apt:
+    pkg:
+      - python3-pip
+      - swig
+      - zlib1g
+    state: present
+    update-cache: true
+
+- name: "Install python packages"
+  become: true
+  pip:
+    name:
+      - confluent-kafka
+      - fastavro
+      - gkhtm
+      - cassandra-driver
+      - gkutils
+
+- name: Make sure the repo is up to date
+  git: 
+    repo: https://github.com/lsst-uk/lasair-lsst.git
+    dest: "{{ ansible_env.HOME }}/lasair-lsst"
+
+- name: Copy settings.py
+  template:
+    src:  "settings.py.j2"
+    dest: "{{ ansible_env.HOME }}/lasair-lsst/ingest/settings.py"
+
+- name: Create logs directory
+  file:
+    path: "{{ ansible_env.HOME }}/logs"
+    state: directory
+

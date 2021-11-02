@@ -3,7 +3,7 @@
 
 numstreams: 7
 #source: "public.alerts.ztf.uw.edu:9092"
-group_id: "{{ os.stack_name }}.{{ domain }}"
-client_id: "{{ inventory_hostname_short }}.{{ os.stack_name }}.{{ domain }}"
+group_id: "{{ domain }}"
+client_id: "{{ inventory_hostname_short }}.{{ domain }}"
 target: "{{ groups['kafka'] | join(':9092,') }}:9092"
 topiclist: [ "topicname" ]

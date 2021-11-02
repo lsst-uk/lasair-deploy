@@ -1,0 +1,17 @@
+---
+
+# Set up ingest as a systemd service
+
+- name: Create systemd service file
+  become: true
+  template:
+    src: ingest.service
+    dest: /etc/systemd/system/lasair-ingest.service
+
+- name: Make sure a service unit is running
+  become: true
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: lasair-ingest 
+

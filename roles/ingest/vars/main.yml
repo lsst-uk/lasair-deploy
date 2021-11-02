@@ -1,0 +1,4 @@
+---
+# vars file for ingest
+
+settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"

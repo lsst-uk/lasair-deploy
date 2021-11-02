@@ -1,0 +1,18 @@
+KAFKA_INPUT      = ["{{ groups['kafka'] | join(':9092","') }}:9092"]
+KAFKA_GROUPID    = 'LASAIR1'
+KAFKA_PROCESSES  = 1
+KAFKA_TIMEOUT    = 5
+KAFKA_MAXALERTS  = 40000
+
+SLACK_URL = 'https://hooks.slack.com/services/{{ settings.slack_url_urlhook }}'
+
+CASSANDRA_CANDIDATES    = 'candidates'
+CASSANDRA_NONCANDIDATES = 'noncandidates'
+CASSANDRA_HEAD          = ["{{ groups['cassandra'] | join('","') }}"]
+IMAGEFITS        = '/mnt/cephfs/lasair/fits'
+LOCKFILE         = '{{ ansible_env.HOME }}/lockfile'
+WAIT_TIME        = 180
+
+KAFKA_TOPIC_OUT  = 'ztf_ingest'
+KAFKA_OUTPUT     = ["{{ groups['kafka'] | join(':9092","') }}:9092"]
+SYSTEM_STATUS    = '/mnt/cephfs/lasair/system_status/status'

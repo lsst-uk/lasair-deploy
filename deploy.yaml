@@ -26,9 +26,15 @@
   vars:
     internal_only: false
     dns_lookup: false # disable dns checks for testing
-    kafka_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/kafka url='+vault.url)}}"
   roles:
     - kafka
   tags: kafka_pub
 
-
+- hosts: ingest
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  roles:
+    - ingest
+  tags: ingest
+  

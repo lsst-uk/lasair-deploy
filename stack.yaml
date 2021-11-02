@@ -51,7 +51,13 @@
         {%- endfor %}
         ]
 
-    - name: update inventory
+    - name: add sections to inventory
+      ansible.builtin.lineinfile:
+        path: hosts
+        line: "[{{ item }}]"
+      loop: "{{ instances | list }}"
+
+    - name: add hosts to inventory
       ini_file:
         path: hosts
         section: "{{ item.role }}"
@@ -74,7 +80,7 @@
 
     # We don't currently have dedicated instances for proxy and api roles
     # so add these to the web server
-    - name: add extra roles
+    - name: add extra roles in inventory
       ini_file:
         path: hosts
         section: "{{ item }}"
