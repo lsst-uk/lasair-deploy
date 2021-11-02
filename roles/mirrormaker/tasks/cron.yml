@@ -1,0 +1,34 @@
+---
+
+- name: "Check the cron daemon is installed"
+  become: true
+  apt:
+    name:  cron
+    state: present
+
+- name: "Check the cron daemon is enabled and started"
+  become: true
+  service:
+    enabled: true
+    name:  cron
+    state: started
+
+- name: "Create ~/bin directory"
+  file:
+    path: "{{ ansible_env.HOME }}/bin"
+    state: directory
+
+- name: "Deploy topic update script"
+  copy:
+    src:  'update-topic.sh'
+    dest: 'bin/update-topic.sh'
+    mode: 'u=rx,g=,o='
+
+# Needs to run after midnight UTC and before start of observations
+- name: "Install crontab entry"
+  cron:
+    name:   "Update topics"
+    user:   "{{ ansible_env.USER }}"
+    minute: '18'
+    hour:   '0'
+    job:    "{{ ansible_env.HOME }}/bin/update-topic.sh"

@@ -1,7 +1,6 @@
 ---
-# tasks file for roles/mirrormaker
-- name: mirrormaker
-  debug:
-    msg: setting up host as a mirrormaker
 
-- debug: msg="play_hosts={{play_hosts}}"
+- import_tasks: prometheus_exporter.yml 
+- import_tasks: mirrormaker.yml
+- import_tasks: cron.yml
+  

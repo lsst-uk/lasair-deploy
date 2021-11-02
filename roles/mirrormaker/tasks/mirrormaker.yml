@@ -1,0 +1,38 @@
+---
+# tasks file for roles/mirrormaker
+
+- name: "Create /etc/mirror directory"
+  become: true
+  file:
+    path: /etc/mirror
+    state: directory
+
+- name: "Deploy MirrorMaker producer config"
+  become: true
+  template:
+    src:  producer.config.j2
+    dest: /etc/mirror/producer.config
+
+- name: "Deploy MirrorMaker consumer config"
+  become: true
+  template:
+    src:  consumer.config.j2
+    dest: /etc/mirror/consumer.config
+
+- name: "Deploy MirrorMaker compose file"
+  template:
+    src:  mirror-compose.yml.j2
+    dest: mirror-compose.yml
+
+- name: "Start MirrorMaker service"
+  become: true
+  docker_compose:
+    project_name: mirrormaker
+    project_src:
+        '.'
+    files:
+      - 'mirror-compose.yml'
+    services:
+      - 'mirrormaker'
+    state:
+      present

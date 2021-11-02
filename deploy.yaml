@@ -14,10 +14,12 @@
   vars:
     auth_internal_if: false
     dns_lookup: false # disable dns checks for testing
+    source: localhost:9092 # fake source for testing
   roles:
     - kafka
     - mirrormaker # we currently run mirrormaker on the same hosts as kafka 
- 
+  tags: kafka
+
 - hosts: kafka_pub
   gather_facts: false
   vars_files:
