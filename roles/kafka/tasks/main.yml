@@ -4,12 +4,12 @@
   ansible.builtin.assert:
     that: "{{ (lookup('community.general.dig', '{{ inventory_hostname }}.{{ domain }}')) | regex_findall('[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+') | length > 0 }} "
     msg: "DNS lookup failed for {{ inventory_hostname }}.{{ domain }}"
-  when: dns_lookup
+  when: dns_lookup and not internal_only
 
 - import_tasks: prometheus_exporter.yml
 - import_tasks: auth_setup.yml
-  when: auth_internal_if
+  when: not internal_only
 - import_tasks: deploy_kafka.yml
 - import_tasks: set_acls.yml
-  when: auth_internal_if
+  when: not internal_only
   

@@ -4,6 +4,11 @@
 
 domain: "lsst.ac.uk"
 
+# Vault settings
+vault:
+  url: https://vault.lsst.ac.uk
+  path: secret/lasair
+
 # OpenStack configuration
 os:
 

@@ -14,7 +14,7 @@
     remote_src: yes
 
 - name: "Create Kafka admin user"
-  command: confluent-6.1.1/bin/kafka-configs --zookeeper localhost:2181 --alter --add-config SCRAM-SHA-256=[password={{ kafka_admin_password|quote }}] --entity-type users --entity-name {{ kafka_admin_username|quote }}
+  command: confluent-6.1.1/bin/kafka-configs --zookeeper localhost:2181 --alter --add-config SCRAM-SHA-256=[password={{ kafka_secret.admin_password|quote }}] --entity-type users --entity-name {{ kafka_secret.admin_username|quote }}
 
 - name: "Create JAAS config file"
   become: true

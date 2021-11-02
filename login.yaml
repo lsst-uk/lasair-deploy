@@ -5,6 +5,13 @@
  
   tasks:
           
+  - name: Install hvac
+    become: true
+    apt:
+      pkg: python3-hvac
+      state: present
+      update-cache: yes
+
   - name: Set SSH client config
     copy:
       dest: ~/.ssh/config

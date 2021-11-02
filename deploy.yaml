@@ -12,8 +12,7 @@
   vars_files:
     - settings.yaml
   vars:
-    auth_internal_if: false
-    dns_lookup: false # disable dns checks for testing
+    internal_only: true
     source: localhost:9092 # fake source for testing
   roles:
     - kafka
@@ -25,11 +24,9 @@
   vars_files:
     - settings.yaml
   vars:
-    auth_internal_if: true
+    internal_only: false
     dns_lookup: false # disable dns checks for testing
-    # TODO: move to vault
-    kafka_admin_username: admin
-    kafka_admin_password: b48dj2Rwgf
+    kafka_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/kafka url='+vault.url)}}"
   roles:
     - kafka
   tags: kafka_pub
