@@ -38,17 +38,14 @@ ssh keys to the authorized_keys file.
 ```
 $ git clone https://github.com/lsst-uk/lasair-deploy.git
 ```
-<!--
-5. Install external Ansible dependencies:
-```
-$ ansible-galaxy -r requirements.yaml 
-```
--->
 
-6. Get the ```openrc.sh``` file for the OpenStack cloud, copy it to the
+5. Get the ```openrc.sh``` file for the OpenStack cloud, copy it to the
 login instance and source it.
 
-7. TODO: may also need to do something about Vault at this point.
+6. Set the VAULT_TOKEN environment variable, e.g.:
+```
+$ export VAULT_TOKEN=s.Y3BveejayDWRQhUkrJbI2T6V
+```
 
 ## Configuration
 
@@ -63,8 +60,7 @@ Run the ```login.yaml``` playbook:
 $ ansible-playbook login.yaml
 ```
 
-This sets up the login instance and checks that everything is in place to 
-proceed with the deployment.
+This sets up the login instance.
 
 ## Create OpenStack resources
 
@@ -95,16 +91,13 @@ deployment playbook at this point:
 $ ansible-playbook deploy.yaml
 ```
 
-If we want to step through the playbooks individually then we can do so, e.g:
-```
-$ ansible-playbook 01-keypair.yaml
-```
-
+<!--
 ## Update Lasair
 
 If we are making an update to an existing deployment then there is an
 ```update.yaml``` playbook that skips steps that are only needed for a new
 deployment, or we can just run the relevant playbooks individually as above. 
+-->
 
 ## Test Lasair
 
