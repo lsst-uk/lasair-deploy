@@ -19,3 +19,11 @@
 #  - name: Install roles
 #    command: ansible-galaxy role install -r requirements.yaml -p roles/
 
+  - name: update inventory
+    ini_file:
+      path: "{{ lookup('env', 'PWD') }}/hosts"
+      section: login
+      allow_no_value: true
+      option: "localhost ansible_connection=local"
+        
+
