@@ -9,12 +9,27 @@
 
 - hosts: kafka
   gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    auth_internal_if: false
+    dns_lookup: false # disable dns checks for testing
   roles:
     - kafka
-
-# we currently run mirrormaker on the same hosts as kafka/zookeeper 
-- hosts: kafka
-  gather_facts: false
-  roles:
-    - mirrormaker
+    - mirrormaker # we currently run mirrormaker on the same hosts as kafka 
  
+- hosts: kafka_pub
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    auth_internal_if: true
+    dns_lookup: false # disable dns checks for testing
+    # TODO: move to vault
+    kafka_admin_username: admin
+    kafka_admin_password: b48dj2Rwgf
+  roles:
+    - kafka
+  tags: kafka_pub
+
+

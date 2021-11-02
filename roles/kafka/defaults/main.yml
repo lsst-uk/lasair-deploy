@@ -1,0 +1,4 @@
+---
+# defaults file for roles/kafka
+#
+dns_lookup: true

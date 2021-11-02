@@ -1,0 +1,8 @@
+---
+
+- name: "Set topic ACL"
+  command: confluent-6.1.1/bin/kafka-acls --bootstrap-server localhost:29092 --command-config kafka_client.config --add --allow-principal User:'*' --allow-host '*' --operation Read --topic 'lasair_' --resource-pattern-type prefixed
+
+- name: "Set group ACL"
+  command: confluent-6.1.1/bin/kafka-acls --bootstrap-server localhost:29092 --command-config kafka_client.config --add --allow-principal User:'*' --allow-host '*' --operation Read --group '*'
+

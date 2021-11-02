@@ -2,6 +2,8 @@
 
 # Configuration for Lasair deployment
 
+domain: "lsst.ac.uk"
+
 # OpenStack configuration
 os:
 
@@ -27,7 +29,7 @@ instances:
   web:
   db:
   kafka:
-    number: 1
+    number: 2
   kafka_pub:
   ingest:
     number: 0

@@ -9,22 +9,38 @@ services:
         restart:
             "no"
         environment:
-            - "KAFKA_LISTENERS=internal://0.0.0.0:29092,external://0.0.0.0:9092"
-            - "KAFKA_ADVERTISED_LISTENERS=internal://{{ inventory_hostname }}:29092,external://{{ inventory_hostname }}.{{ domain }}:9092"
-            - "KAFKA_INTER_BROKER_LISTENER_NAME=internal"
-            - "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=internal:PLAINTEXT,external:PLAINTEXT"
-            - "KAFKA_LOG_DIRS={{ logpath }}"
-            - "KAFKA_ZOOKEEPER_CONNECT={{ play_hosts | join(',') }}"
-            - "KAFKA_NUM_PARTITIONS={{ num_partitions }}"
-            - "KAFKA_DEFAULT_REPLICATION_FACTOR=2"
-            - "KAFKA_LOG_RETENTION_MS={{ retention_ms }}"
-            - "KAFKA_LOG_RETENTION_BYTES={{ retention_bytes }}"
-            - "KAFKA_AUTO_CREATE_TOPICS_ENABLE=true"
-            - "KAFKA_MESSAGE_MAX_BYTES=10485760"
-            - "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=2"
-            - "KAFKA_OPTS=-javaagent:/opt/jmx_exporter/jmx_prometheus_javaagent.jar=0.0.0.0:8083:/opt/jmx_exporter/kafka.yml"
+            KAFKA_LISTENERS: "internal://0.0.0.0:29092,external://0.0.0.0:9092"
+            KAFKA_ADVERTISED_LISTENERS: "internal://{{ inventory_hostname }}:29092,external://{{ inventory_hostname }}.{{ domain }}:9092"
+            KAFKA_INTER_BROKER_LISTENER_NAME: "internal"
+            KAFKA_LOG_DIRS: "{{ logpath }}"
+            KAFKA_ZOOKEEPER_CONNECT: "{{ play_hosts | join(',') }}"
+            KAFKA_NUM_PARTITIONS: "{{ num_partitions }}"
+            KAFKA_DEFAULT_REPLICATION_FACTOR: "{{ replication_factor }}"
+            KAFKA_LOG_RETENTION_MS: "{{ retention_ms }}"
+            KAFKA_LOG_RETENTION_BYTES: "{{ retention_bytes }}"
+            KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+            KAFKA_MESSAGE_MAX_BYTES: "10485760"
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "{{ replication_factor }}"
+            {% if auth_internal_if -%}
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "internal:SASL_PLAINTEXT,external:PLAINTEXT"
+            KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: "SCRAM-SHA-256"
+            KAFKA_OPTS: "-javaagent:/opt/jmx_exporter/jmx_prometheus_javaagent.jar=0.0.0.0:8083:/opt/jmx_exporter/kafka.yml -Djava.security.auth.login.config=/etc/kafka_server_jaas.conf"
+            KAFKA_AUTHORIZER_CLASS_NAME: "kafka.security.authorizer.AclAuthorizer"
+            KAFKA_SASL_ENABLED_MECHANISMS: "SCRAM-SHA-256"
+            KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
+            KAFKA_SUPER_USERS: "User:admin"
+            ZOOKEEPER_SASL_ENABLED: "false"
+            {% else -%}
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "internal:PLAINTEXT,external:PLAINTEXT"
+            KAFKA_OPTS: "-javaagent:/opt/jmx_exporter/jmx_prometheus_javaagent.jar=0.0.0.0:8083:/opt/jmx_exporter/kafka.yml"
+            {% endif %}
+
         volumes:
             - /opt/jmx_exporter:/opt/jmx_exporter
             - type:   "bind"
               source: "{{ mntpath }}"
               target: "{{ logpath }}"
+            {% if auth_internal_if -%}
+            - /etc/kafka_server_jaas.conf:/etc/kafka_server_jaas.conf
+            {% endif %}
+

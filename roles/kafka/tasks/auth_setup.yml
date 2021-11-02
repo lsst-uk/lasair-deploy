@@ -1,0 +1,29 @@
+---
+
+- name: "Install JDK"
+  become: true
+  apt:
+    pkg: default-jdk-headless
+    state: present
+    update-cache: yes
+
+- name: "Get Kafka tools"
+  ansible.builtin.unarchive:
+    src: http://packages.confluent.io/archive/6.1/confluent-community-6.1.1.tar.gz
+    dest: "{{ ansible_env.HOME }}"
+    remote_src: yes
+
+- name: "Create Kafka admin user"
+  command: confluent-6.1.1/bin/kafka-configs --zookeeper localhost:2181 --alter --add-config SCRAM-SHA-256=[password={{ kafka_admin_password|quote }}] --entity-type users --entity-name {{ kafka_admin_username|quote }}
+
+- name: "Create JAAS config file"
+  become: true
+  template:
+    src: kafka_server_jaas.conf
+    dest: /etc/kafka_server_jaas.conf
+
+- name: "Create client config file"
+  template:
+    src: kafka_client.config
+    dest: "{{ ansible_env.HOME }}/kafka_client.config"
+

@@ -5,3 +5,4 @@
 
 collections:
   - openstack.cloud
+  - community.general
