@@ -1,0 +1,18 @@
+---
+# tasks file for prometheus
+
+
+- name: "Install Prometheus"
+  become: true
+  apt:
+    pkg:
+      - prometheus
+      - prometheus-blackbox-exporter
+    state: present
+    update-cache: yes
+
+- name: "Configure Prometheus"
+  become: true
+  template:
+    src: prometheus.yml
+    dest: /etc/prometheus/prometheus.yml

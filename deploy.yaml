@@ -7,6 +7,14 @@
   roles:
     - lasair_instance
 
+- hosts: svc
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  roles:
+    - prometheus
+  tags: svc
+
 - hosts: kafka
   gather_facts: false
   vars_files:
