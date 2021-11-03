@@ -41,3 +41,6 @@
   template:
     src:  watchlists_settings.py.j2
     dest: "{{ ansible_env.HOME }}/lasair-lsst/services/watchlists/settings.py"
+
+- import_tasks: cron.yml
+

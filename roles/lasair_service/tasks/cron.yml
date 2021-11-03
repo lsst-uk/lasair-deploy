@@ -1,0 +1,51 @@
+---
+
+- name: "Check the cron daemon is installed"
+  become: true
+  apt:
+    name:  cron
+    state: present
+
+- name: "Check the cron daemon is enabled and started"
+  become: true
+  service:
+    enabled: true
+    name:  cron
+    state: started
+
+# Polls the TNS for new entries (every 4 hours at 1 minute past)
+- name: "Crontab for TNS"
+  cron:
+    name:   "Poll TNS"
+    user:   "{{ ansible_env.USER }}"
+    minute: '1'
+    hour:   '*/4'
+    job:    "python3 {{ ansible_env.HOME }}/lasair-lsst/services/TNS/poll_tns.py --pageSize=500 --inLastNumberOfDays=180"
+
+# Dump the crossmatch_tns table to CephFS (every 4 hours at 11 minute past)
+- name: "Crontab to dump crossmatch_tns"
+  cron:
+    name:   "Dump crossmatch_tns"
+    user:   "{{ ansible_env.USER }}"
+    minute: '11'
+    hour:   '*/4'
+    job:    "{{ ansible_env.HOME }}/lasair-lsst/services/TNS/dumpTNS.sh"
+
+# Build MOCs from any updated watchlists from master MySQL to CephFS where filter nodes can see them (12 minutes past midnight)
+- name: "Crontab to build MOCs"
+  cron:
+    name:   "Build MOCs"
+    user:   "{{ ansible_env.USER }}"
+    minute: '12'
+    hour:   '0'
+    job:    "python3 {{ ansible_env.HOME }}/lasair-lsst/services/watchlists/make_watchlist_files.py"
+
+# Copy any updated area files (MOC) from master MySQL to CephFS where filter nodes can see them (10 minutes past midnight)
+- name: "Crontab for area files"
+  cron:
+    name:   "Copy area files"
+    user:   "{{ ansible_env.USER }}"
+    minute: '10'
+    hour:   '0'
+    job:    "python3 {{ ansible_env.HOME }}/lasair-lsst/services/areas/make_area_files.py"
+
