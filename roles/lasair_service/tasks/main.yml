@@ -1,0 +1,43 @@
+---
+# tasks file for roles/lasair_service
+
+- name: Install packages
+  become: yes
+  apt:
+      name: 
+        - swig
+        - python3-dev
+        - python3-pip
+      state: present
+      update_cache: true
+
+- name: Install python packages
+  pip:
+      executable: pip3
+      name:
+        - gkhtm
+        - docopt
+        - numpy
+        - mocpy
+        - requests
+        - mysql-connector-python
+
+- name: Make sure the repo is up to date
+  git: 
+      repo: https://github.com/lsst-uk/lasair-lsst.git
+      dest: "{{ ansible_env.HOME }}/lasair-lsst"
+
+- name: settings.py TNS
+  template:
+    src:  TNS_settings.py.j2
+    dest: "{{ ansible_env.HOME }}/lasair-lsst/services/TNS/settings.py"
+
+- name: settings.py areas
+  template:
+    src:  areas_settings.py.j2
+    dest: "{{ ansible_env.HOME }}/lasair-lsst/services/areas/settings.py"
+
+- name: settings.py watchlists
+  template:
+    src:  watchlists_settings.py.j2
+    dest: "{{ ansible_env.HOME }}/lasair-lsst/services/watchlists/settings.py"
