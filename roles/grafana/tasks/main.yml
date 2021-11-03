@@ -1,0 +1,73 @@
+---
+# tasks file for grafana
+
+- name: "Add Grafana GPG key"
+  become: true
+  apt_key:
+    id: 4E40DDF6D76E284A4A6780E48C8C34C524098CB6
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: "Add Grafana repo"
+  become: true
+  apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
+
+- name: "Install Packages"
+  become: true
+  apt:
+    pkg:
+      - grafana
+      - nginx
+      - software-properties-common
+    state: present
+    update-cache: yes
+
+- name: "Install Certbot"
+  become: true
+  community.general.snap:
+    name:
+      - certbot
+    classic: yes
+
+- name: "Get certificate"
+  become: true
+  command: "certbot certonly --standalone -m {{ email }} -d svc.{{ domain }} --agree-tos"
+  register: certoutput
+  args:
+    creates: "/etc/letsencrypt/live/svc.{{ domain }}"
+  when: enable_letsencrypt
+
+- debug: var=certoutput.stdout_lines
+  when: enable_letsencrypt
+
+- name: "Enable Grafana service"
+  become: true
+  service:
+    enabled: true
+    name:  grafana-server
+    state: started
+
+- name: "Set admin password"
+  become: true
+  command: grafana-cli --config=/etc/grafana/grafana.ini admin reset-admin-password {{ grafana_secret.admin_password | quote}}
+
+- name: "Create Nginx config file"
+  become: true
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/sites-available/grafana
+
+- name: "Enable Nginx config"
+  become: true
+  file:
+    src: /etc/nginx/sites-available/grafana
+    dest: /etc/nginx/sites-enabled/grafana
+    state: link
+
+- name: "Disable default Nginx config"
+  become: true
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent

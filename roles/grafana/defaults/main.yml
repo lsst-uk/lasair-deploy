@@ -1,0 +1,5 @@
+---
+# defaults file for grafana
+
+enable_letsencrypt:  true
+

@@ -1,0 +1,6 @@
+---
+# vars file for grafana
+
+grafana_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/grafana url='+vault.url)}}"
+
+server_name: "svc.{{ domain }}"

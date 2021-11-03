@@ -11,8 +11,11 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+  vars:
+    enable_letsencrypt: false
   roles:
     - prometheus
+    - grafana
   tags: svc
 
 - hosts: kafka
