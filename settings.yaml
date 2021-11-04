@@ -18,7 +18,7 @@ instances:
   sherlock:
     number: 0
   filter:
-    number: 0
+    number: 1
   cassandra:
     number: 0
 

@@ -50,3 +50,11 @@
     - ingest
   tags: ingest
   
+- hosts: filter
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  roles:
+    - filter
+  tags: filter
+

@@ -1,0 +1,95 @@
+- name: Install apt packages
+  become: true
+  apt: 
+      name:
+        - swig
+        - python3-dev
+        - python3-pip
+        - postfix
+      state: present
+      update_cache: true
+
+- name: Install python packages
+  become: true
+  pip: 
+      executable: pip3 
+      name: 
+        - gkhtm
+        - gkutils
+        - numpy
+        - ephem
+        - confluent-kafka==1.5
+        - mysql-connector-python
+        - mocpy
+
+- name: Create csvfiles directory
+  file:
+      path: "{{ ansible_env.HOME }}/csvfiles/"
+      state: directory
+      mode: 0777
+
+- name: Modify apparmor so MySQL can write
+  become: true
+  lineinfile:
+    dest: /etc/apparmor.d/usr.sbin.mysqld
+    line: "{{ ansible_env.HOME }}/csvfiles/** rwk,"
+    insertbefore: "}"
+    state: present
+
+- name: Restart apparmor
+  become: true
+  service:
+    name: apparmor
+    state: restarted
+    enabled: yes
+
+#- name: Copy git credentials
+#  copy:
+#    src: /home/ubuntu/.git-credentials
+#    dest: /home/ubuntu/.git-credentials
+
+- name: Creates directory for logs
+  file:
+    path: "{{ ansible_env.HOME }}/logs"
+    state: directory
+
+- name: Make sure the repo is up to date
+  git: 
+    repo: https://github.com/lsst-uk/lasair-lsst.git
+    dest: "{{ ansible_env.HOME }}/lasair-lsst"
+
+- name: settings.py for filter module
+  template:
+    src:  settings.py.j2
+    dest: "{{ ansible_env.HOME }}/lasair-lsst/filter/settings.py"
+
+- name: Run mysql setup
+  shell:
+      cmd: mysql --user=root --password=root123password < mysql_setup.sql
+      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility"
+
+- name: Create object table
+  shell:
+      cmd: mysql --user=ztf --password=123password < objects.sql
+      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+
+- name: Create sherlock_classifications table
+  shell:
+      cmd: mysql --user=ztf --password=123password < sherlock_classifications.sql
+      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+
+- name: Create area_hits table
+  shell:
+      cmd: mysql --user=ztf --password=123password < area_hits.sql
+      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+
+- name: Create watchlist_hits table
+  shell:
+      cmd: mysql --user=ztf --password=123password < watchlist_hits.sql
+      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+
+- name: Create annotations table
+  shell:
+      cmd: mysql --user=ztf --password=123password < annotations.sql
+      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+

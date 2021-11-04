@@ -1,0 +1,36 @@
+DB_HOST_LOCAL    = 'localhost'
+DB_USER_LOCAL    = 'ztf'
+DB_PASS_LOCAL    = '{{ settings.local_db_password }}'
+
+DB_HOST_REMOTE   = '{{ settings.master_db_ip }}'
+DB_USER_REMOTE   = '{{ settings.master_db_readonly_username }}'
+DB_PASS_REMOTE   = '{{ settings.master_db_readonly_password }}'
+
+DB_DATABASE      = 'ztf'
+
+SLACK_URL = 'https://hooks.slack.com/services/{{ settings.slack_url_urlhook }}'
+
+KAFKA_HOST      = ["{{ groups['kafka'] | join(':9092","') }}:9092"]
+
+KAFKA_TOPIC_IN   = 'ztf_sherlock'
+
+KAFKA_GROUPID    = 'LASAIR2'
+KAFKA_PROCESSES  = 2
+KAFKA_TIMEOUT    = 10
+KAFKA_LASAIR_LOGS = '/mnt/cephfs/lasair/streams/'
+KAFKA_MAXALERTS  = 10000
+WAIT_TIME        = 180
+LOCKFILE         = '{{ ansible_env.HOME }}/lockfile'
+
+KAFKA_PRODUCER   = ["{{ groups['kafka_pub'] | join(':29092","') }}:29092"]
+KAFKA_PASSWORD   = '{{ settings.kafka_password }}'
+
+WATCHLIST_MOCS      = '/mnt/cephfs/lasair/watchlists'
+WATCHLIST_CHUNK     = 50000
+WATCHLIST_MAX_DEPTH = 13
+AREA_MOCS           = '/mnt/cephfs/lasair/areas'
+AREA_MAX_DEPTH      = 13
+
+GRAFANA_USERNAME = 'ztf'
+GRAFANA_PASSWORD = '{{ settings.grafana_password }}'
+SYSTEM_STATUS       = '/mnt/cephfs/lasair/system_status/status'
