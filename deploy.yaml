@@ -66,3 +66,11 @@
     - filter
   tags: filter
 
+- hosts: web
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  roles:
+    - webserver
+  tags: web
+

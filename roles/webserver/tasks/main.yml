@@ -1,0 +1,74 @@
+---
+
+- name: Install apt packages
+  become: true
+  apt: 
+    name: 
+      - python3-pip
+      - apache2
+      - apache2-dev
+      - apache2-utils
+      - libexpat1
+      - ssl-cert
+      - libmysqlclient-dev
+      - swig
+      - postfix
+    state: present
+    update_cache: true
+
+- name: Install python packages
+  pip: 
+    executable: pip3 
+    name: 
+      - mysql-connector-python
+      - mysqlclient
+      - django
+      - djangorestframework
+      - pyephem
+      - requests
+      - MOCpy
+      - astropy
+      - cassandra-driver
+      - gkhtm
+      - gkutils
+      - mod_wsgi-httpd
+      - mod_wsgi
+
+- name: Create WSGI directory
+  file:
+      path: "{{ ansible_env.HOME }}/mod_wsgi_space"
+      state: directory
+
+- name: Make sure the repo is up to date
+  git:
+      repo: https://github.com/lsst-uk/lasair-lsst-web.git
+      dest: "{{ ansible_env.HOME }}/lasair-lsst-web"
+
+- name: Settings.py for django
+  template:
+    src:  settings.py.j2
+    dest: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/lasair/settings.py"
+
+# Is this correct?
+- name: Run collectstatic
+  command: 
+    cmd: python3 manage.py collectstatic --noinput
+    chdir: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair"
+
+#- name: Create symlink for services log
+#  file:
+#    src: /mnt/cephfs/lasair/services_log
+#    dest: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/static/services_log"
+#    state: link
+
+#- name: Create symlink for streams
+#  file:
+#    src: /mnt/cephfs/lasair/streams
+#    dest: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/static/streams"
+#    state: link
+
+- name: Restart web server
+  command:
+    cmd: "/bin/bash {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/restart_webserver"
+
+
