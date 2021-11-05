@@ -1,0 +1,15 @@
+---
+# handlers file for webserver
+
+- name: restart_apache2
+  become: true
+  service:
+    name: apache2
+    state: restarted
+
+- name: reload_apache2
+  become: true
+  service:
+    name: apache2
+    state: reloaded
+

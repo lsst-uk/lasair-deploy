@@ -71,4 +71,25 @@
   command:
     cmd: "/bin/bash {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/restart_webserver"
 
+- name: Enable Apache modules
+  become: true
+  apache2_module:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - rewrite
+    - proxy
+    - proxy_http
+    - proxy_balancer
+    - lbmethod_byrequests
+  notify:
+    - restart_apache2
+
+- name: Set Apache site config
+  become: true
+  template:
+    src: 000-default.conf
+    dest: /etc/apache2/sites-available/000-default.conf
+  notify:
+    - reload_apache2
 
