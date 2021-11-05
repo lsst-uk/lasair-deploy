@@ -50,6 +50,14 @@
     - ingest
   tags: ingest
   
+- hosts: sherlock
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  roles:
+    - sherlock
+  tags: sherlock
+  
 - hosts: filter
   gather_facts: false
   vars_files:
