@@ -1,0 +1,44 @@
+---
+
+- name: "Create /opt/lasair directory"
+  become: true
+  file:
+    path: /opt/lasair
+    state: directory
+    owner: "{{ ansible_user_id }}"
+
+- name: "Deploy Sherlock config"
+  template:
+    src:  sherlock_settings.yaml.j2
+    dest: /opt/lasair/sherlock_settings.yaml
+
+- name: "Deploy Sherlock wrapper config"
+  template:
+    src:  wrapper_config.yaml.j2
+    dest: /opt/lasair/config.yaml
+
+- name: "Deploy Sherlock wrapper runner config"
+  template:
+    src:  wrapper_runner.json.j2
+    dest: /opt/lasair/wrapper_runner.json
+
+- name: "Deploy Docker compose file"
+  template:
+    src:  sherlock-wrapper-compose.yml.j2
+    dest: sherlock-wrapper-compose.yml
+
+- name: "Start Sherlock wrapper service"
+  become: true
+  docker_compose:
+    project_name: sherlock_wrapper
+    project_src:
+        '.'
+    files:
+      - 'sherlock-wrapper-compose.yml'
+    services:
+      - 'sherlock_wrapper'
+    state:
+      present
+    scale:
+      sherlock_wrapper: 2
+

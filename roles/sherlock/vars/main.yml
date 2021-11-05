@@ -1,0 +1,13 @@
+---
+# vars file for sherlock
+
+sherlock_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/sherlock url='+vault.url)}}"
+
+image: "gpfrancis/sherlock-wrapper:0.6.0"
+brokers: "{{ groups['kafka'] | join(':9092","') }}:9092"
+group_id: "sherlock_wrapper_1"
+input_topic: "ztf_ingest"
+output_topic: "ztf_sherlock"
+cache_db: "mysql://user:pass@127.0.0.1/cache"
+sherlock_db: "crossmatch_catalogues"
+sherlock_db_host: "192.168.0.14"

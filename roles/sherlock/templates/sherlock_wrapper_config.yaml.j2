@@ -1,0 +1,57 @@
+--- # Configuration for sherlock wrapper
+
+# Setting any option on the command line overrides the value in this file
+
+#####################################################################
+# REQUIRED SETTINGS
+#####################################################################
+
+# comma separated list of Kafka brokers and ports
+broker: {{ brokers }}
+
+# topic to consume input messages
+input_topic: {{ input_topic }}
+
+# topic to produce output messages
+output_topic: {{ output_topic }}
+
+
+#####################################################################
+# OPTIONAL SETTINGS
+#####################################################################
+
+# Kafka client group id
+group: {{ group_id }}
+
+# Kafka consumer timeout in s
+poll_timeout: 20
+
+# Maximum poll interval in ms
+max_poll_interval: 900000
+
+# stop when end of topic reached
+##stop_at_end: false
+
+# number of messages to process per batch
+batch_size: 790
+
+# maximum number of batches to process
+##max_batches: -1
+
+# maximum number of non-fatal errors before aborting
+## max_errors: -1
+
+# location of cache database
+#cache_db: 
+
+# location of sherlock settings file
+##sherlock_settings: sherlock.yaml
+
+# log only critical and error messages
+##quiet: false
+
+# log info messages and above
+#verbose: true
+
+# log debug messages and above
+##debug: false
