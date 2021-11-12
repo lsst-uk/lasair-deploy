@@ -1,0 +1,30 @@
+# Various tests to validate that Lasair is deployed correctly
+
+---
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+
+  tasks:
+
+    - name: kafka listening on port 9092
+      command: nc -z "{{ item }}" 9092
+      loop: "{{ groups['kafka'] }}"
+
+    - name: kafka_pub listening on port 9092
+      command: nc -z "{{ item }}" 9092
+      loop: "{{ groups['kafka_pub'] }}"
+
+    - name: kafka_pub listening on port 29092
+      command: nc -z "{{ item }}" 29092
+      loop: "{{ groups['kafka_pub'] }}"
+
+    - name: web server listening on port 80
+      command: nc -z "{{ item }}" 80
+      loop: "{{ groups['web'] }}"
+
+    #- name: db server listening on port 3306
+    #  command: nc -z "{{ item }}" 3306
+    #  loop: "{{ groups['db'] }}"
+
