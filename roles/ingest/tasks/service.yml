@@ -11,7 +11,9 @@
 - name: Make sure a service unit is running
   become: true
   ansible.builtin.systemd:
-    state: started
-    enabled: true
+    #state: started
+    #enabled: true
+    state: stopped
+    enabled: false
     name: lasair-ingest 
 

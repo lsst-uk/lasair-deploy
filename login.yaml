@@ -5,10 +5,12 @@
  
   tasks:
           
-  - name: Install hvac
+  - name: Install apt packages
     become: true
     apt:
-      pkg: python3-hvac
+      pkg: 
+        - python3-hvac
+        - kafkacat
       state: present
       update-cache: yes
 

@@ -27,4 +27,26 @@
     #- name: db server listening on port 3306
     #  command: nc -z "{{ item }}" 3306
     #  loop: "{{ groups['db'] }}"
+    #
+    #
+    #  ubuntu@admin:~/lasair-deploy$ echo "three" | kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -P -p 0
+    #  ubuntu@admin:~/lasair-deploy$ kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -C -o -1 -c 1 -p 0
+
+    - name: set kafka test str
+      set_fact: kafka_test_str="{{ lookup('community.general.random_string', special=false) }}"
+
+    - name: test kafka produce
+      shell: "echo {{ kafka_test_str }} | kafkacat -q -b {{ item }}:9092 -t deploy_test -P -p 0"
+      loop: "{{ groups['kafka'] }}"
+
+    - name: test kafka consume
+      shell: "kafkacat -q -b {{ item }}:9092 -t deploy_test -C -o -1 -c 1 -p 0"
+      register: kafka_output
+      loop: "{{ groups['kafka'] }}"
+
+    - name: check kafka output
+      assert:
+        that: "item == kafka_test_str"
+        quiet: true
+      loop: "{{ kafka_output.results | map(attribute='stdout') | list }}"
 
