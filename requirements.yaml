@@ -6,3 +6,7 @@
 collections:
   - openstack.cloud
   - community.general
+  - name: git+https://github.com/genghisken/gkansible.git
+    type: git
+    version: master
+
