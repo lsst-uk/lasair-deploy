@@ -24,11 +24,10 @@
       command: nc -z "{{ item }}" 80
       loop: "{{ groups['web'] }}"
 
-    #- name: db server listening on port 3306
-    #  command: nc -z "{{ item }}" 3306
-    #  loop: "{{ groups['db'] }}"
-    #
-    #
+    - name: db server listening on port 3306
+      command: nc -z "{{ item }}" 3306
+      loop: "{{ groups['db'] }}"
+    
     #  ubuntu@admin:~/lasair-deploy$ echo "three" | kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -P -p 0
     #  ubuntu@admin:~/lasair-deploy$ kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -C -o -1 -c 1 -p 0
 

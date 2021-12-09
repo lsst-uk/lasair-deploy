@@ -74,3 +74,9 @@
     - webserver
   tags: web
 
+- hosts: db
+  gather_facts: false
+  roles:
+    - gkansible.gkservercollection.mariadb
+  tags: db
+
