@@ -29,9 +29,12 @@ of the deployment and as a login node. Ensure that all Lasair admins
 who need to can log into this instance by adding their public
 ssh keys to the authorized_keys file.
 
-3. Install Ansible. Assuming that we are using an Ubuntu image:
+3. Install Ansible. We require version 2.10 or later.
+
+If we are using Ubuntu 20.04 then the packaged version of Ansible is
+only 2.9 so we must install using pip:
 ```
-# apt-get update && apt-get install ansible
+# apt-get update && apt-get install python3-pip && pip3 install ansible
 ```
 
 4. Clone this repository:

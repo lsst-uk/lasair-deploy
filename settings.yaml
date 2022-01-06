@@ -1,9 +1,9 @@
 ---
 
 # DNS domain where this deployment lives
-domain: lasair-dev.lsst.ac.uk
+domain: lasair-test.lsst.ac.uk
 # A name to distinguish *this* lasair deployment, typically the same as the first part of the domain
-lasair_name: lasair-dev
+lasair_name: lasair-test
 
 # Instances to deploy
 instances:
@@ -11,14 +11,14 @@ instances:
   web:
   db:
   kafka:
-    number: 2
+    number: 0
   kafka_pub:
   ingest:
-    number: 1
+    number: 0
   sherlock:
     number: 0
   filter:
-    number: 1
+    number: 0
   cassandra:
     number: 0
 
@@ -29,16 +29,18 @@ vault:
 
 # OpenStack configuration
 os:
+  # Name of the base image
+  image_name: ubuntu-focal
   # Name of the private network
-  network_name: LSST - Private Network
+  network_name: test
   # Name of the ssh keypair in OpenStack
-  keypair_name: lasair-key
+  keypair_name: gareth-somerville
   # What to call the heat stack
   # Use different names for multiple deployments in the same project
   stack_name: "{{ lasair_name }}"
   # names of flavors to use
-  flavor_small: c3.small
-  flavor_medium: c3.medium
-  flavor_large: c3.large
-  flavor_xlarge: c3.xlarge
+  flavor_small: m1.tiny
+  flavor_medium: m1.small
+  flavor_large: m1.medium
+  flavor_xlarge: m1.large
 

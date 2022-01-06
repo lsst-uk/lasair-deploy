@@ -5,6 +5,12 @@
  
   tasks:
           
+  - name: Check Ansible version
+    assert:
+      that: ansible_version.full >= "2.10.0" 
+      fail_msg: "Ansible version >= 2.10 required"
+      quiet: true
+    
   - name: Install apt packages
     become: true
     apt:
