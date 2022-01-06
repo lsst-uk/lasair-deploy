@@ -20,7 +20,9 @@
         state: present
         template: "{{ template }}"
         parameters:
+          image_id: "{{ os.image_name }}"
           key_name: "{{ os.keypair_name }}"
+          net: "{{ os.network_name }}"
           n_kafka: "{{ instances.kafka.number|default(1) }}"
           n_ingest: "{{ instances.ingest.number|default(1) }}"
           n_sherlock: "{{ instances.sherlock.number|default(1) }}"
