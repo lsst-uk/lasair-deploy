@@ -33,7 +33,7 @@ parameters:
   external_net:
     description: Name of the external network.
     type: string
-    default: External
+    default: external
   n_kafka:
     description: Number of kafka instances
     type: number
@@ -79,15 +79,15 @@ resources:
         - network: { get_param: net }
   # Assign the service instance a floating IP
   # DISABLED FOR TESTING AT RAL
-  #svc_ip:
-  #  type: OS::Neutron::FloatingIP
-  #  properties:
-  #    floating_network: { get_param: external_net }
-  #association:
-  #  type: OS::Neutron::FloatingIPAssociation
-  #  properties:
-  #    floatingip_id: { get_resource: svc_ip }
-  #    port_id: {get_attr: [svc, addresses, {get_param: net}, 0, port]}
+  svc_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: external_net }
+  svc_ip_association:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: svc_ip }
+      port_id: {get_attr: [svc, addresses, {get_param: net}, 0, port]}
 
   # Web server (also currently proxy and api)
   web:
@@ -102,15 +102,15 @@ resources:
 
   # Assign the proxy server a floating IP
   # DISABLED FOR TESTING AT RAL
-  #proxy_ip:
-  #  type: OS::Neutron::FloatingIP
-  #  properties:
-  #    floating_network: { get_param: external_net }
-  #association:
-  #  type: OS::Neutron::FloatingIPAssociation
-  #  properties:
-  #    floatingip_id: { get_resource: proxy_ip }
-  #    port_id: {get_attr: [web, addresses, {get_param: net}, 0, port]}
+  proxy_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: external_net }
+  proxy_ip_association:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: proxy_ip }
+      port_id: {get_attr: [web, addresses, {get_param: net}, 0, port]}
 
   db:
     type: OS::Nova::Server
