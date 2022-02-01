@@ -27,3 +27,13 @@
     path: /mnt/cephfs
     state: directory
     mode: '0755'
+
+- name: Configure and mount CephFS
+  become: true
+  mount:
+    boot: false
+    fstype: ceph
+    opts: "secretfile=/etc/ceph/ceph.secret,name={{ os.share_user }}"
+    path: /mnt/cephfs
+    src: "{{ ceph.exports }}"
+    state: mounted
