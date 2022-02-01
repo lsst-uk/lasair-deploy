@@ -4,6 +4,8 @@
 
 - hosts: all:!localhost
   gather_facts: false
+  vars_files:
+    - settings.yaml
   roles:
     - lasair_instance
 
@@ -14,7 +16,6 @@
   vars:
     enable_letsencrypt: false
   roles:
-    - lasair_instance
     - lasair_service
     - prometheus
     - grafana

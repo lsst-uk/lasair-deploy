@@ -1,0 +1,29 @@
+---
+- name: Install Ceph packages
+  become: true
+  apt:
+      name:
+        - ceph-common
+      state: present
+      update_cache: true
+
+- name: Create /etc/ceph directory
+  become: true
+  file:
+    path: /etc/ceph
+    state: directory
+    mode: '0755'
+
+- name: Create secret file
+  become: true
+  template:
+    src: ceph.secret.j2
+    dest: /etc/ceph/ceph.secret
+    mode: '0600'
+
+- name: Create mountpoint
+  become: true
+  file:
+    path: /mnt/cephfs
+    state: directory
+    mode: '0755'
