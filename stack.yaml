@@ -36,6 +36,20 @@
           flavor_large: "{{ os.flavor_large }}"
           flavor_xlarge: "{{ os.flavor_xlarge }}"
 
+    - name: update exports.yaml
+      lineinfile:
+        path: exports.yaml
+        regexp: "exports"
+        line: "  exports: {{ item }}"
+      loop: |
+        [
+        {%- for output in stack_create.stack.outputs %}
+          {%- if output.description == "Export locations" %}
+            {{ output.output_value | regex_replace('\[(.*)\]', '\1')  }}, 
+          {%- endif %}
+        {%- endfor %}
+        ]
+
     - name: update /etc/hosts
       become: true
       lineinfile:
