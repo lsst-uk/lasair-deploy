@@ -1,4 +1,6 @@
+# This file contains the CephFS export location - it is modified by the stack.yaml playbook when the stack is created.
+
 ---
-os:
-  exports: 
+ceph:
+  exports: 10.19.4.16:6789,10.19.4.17:6789,10.19.4.18:6789:/volumes/_nogroup/558c9ca3-5066-4002-ad86-bc165caee520/e91799ec-c6f9-4cc7-a0e7-31853dad1f16
 

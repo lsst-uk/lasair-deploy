@@ -6,6 +6,7 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+    - exports.yaml
   roles:
     - lasair_instance
 
