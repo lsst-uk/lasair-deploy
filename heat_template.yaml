@@ -34,6 +34,18 @@ parameters:
     description: Name of the external network.
     type: string
     default: external
+  share_net:
+    description: Name of the network for Manila shares.
+    type: string
+    default: cephfs
+  share_size:
+    description: Size of shared filesystem in GB.
+    type: number
+    default: 10
+  share_user:
+    description: Username for CephFS.
+    type: string
+    default: lasair
   n_kafka:
     description: Number of kafka instances
     type: number
@@ -56,6 +68,17 @@ parameters:
     default: 1
 
 resources:
+  # Shared filesystem
+  share_fs:
+    type: OS::Manila::Share
+    properties:
+      name: { get_param: OS::stack_name }
+    #  name: { list_join: [ '-', [ { get_param: OS::stack_name }, "share"] ] }
+      description: "Lasair shared filesystem"
+      access_rules: [{"access_level": "rw", "access_type": "cephx", "access_to": { get_param: share_user} }]
+      size: { get_param: share_size }
+      share_protocol: "CEPHFS"
+      share_type: "default"
   # Volume to use for the service instance
   # Larger than default size is primarily for Prometheus
   svc-vol:
@@ -204,6 +227,9 @@ resources:
 
 
 outputs:
+  share_fs:
+    description: Export locations
+    value: { get_attr: [share_fs, export_locations] }
   svc:
     description: Private IP
     value: { get_attr: [svc, first_address] }
