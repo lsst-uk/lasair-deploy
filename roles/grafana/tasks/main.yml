@@ -48,6 +48,14 @@
     enabled: true
     name:  grafana-server
     state: started
+  notify:
+    - Pause for 30s
+
+# After starting the Grafana service we pause for 30s before trying to set the admin password to ensure that
+# everything is running, otherwise the password reset will fail
+
+- name: Flush handlers
+  meta: flush_handlers
 
 - name: "Set admin password"
   become: true
