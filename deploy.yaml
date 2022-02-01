@@ -14,6 +14,7 @@
   vars:
     enable_letsencrypt: false
   roles:
+    - lasair_instance
     - lasair_service
     - prometheus
     - grafana
