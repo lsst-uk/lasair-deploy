@@ -3,5 +3,4 @@
 
 # add hosts in inventory to /etc/hosts
 - import_tasks: etc_hosts.yaml
-- import_tasks: share_fs.yaml
 

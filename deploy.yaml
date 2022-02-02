@@ -9,6 +9,7 @@
     - exports.yaml
   roles:
     - lasair_instance
+    - lasair_cephfs
 
 - hosts: svc
   gather_facts: false
