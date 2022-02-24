@@ -14,9 +14,9 @@ instances:
     number: 1
   kafka_pub:
   ingest:
-    number: 2
-  sherlock:
     number: 1
+  sherlock:
+    number: 2
   filter:
     number: 1
   cassandra:
@@ -38,7 +38,7 @@ os:
   # Size of shared filesystem in GB
   share_size: 10
   # Ceph username for shared filesystem
-  share_user: gareth-test
+  share_user: lasair-test
   # Name of the ssh keypair in OpenStack
   keypair_name: gareth-somerville
   # What to call the heat stack
