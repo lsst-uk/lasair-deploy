@@ -11,16 +11,16 @@ instances:
   web:
   db:
   kafka:
-    number: 0
+    number: 1
   kafka_pub:
   ingest:
-    number: 0
+    number: 2
   sherlock:
-    number: 0
+    number: 1
   filter:
-    number: 0
+    number: 1
   cassandra:
-    number: 0
+    number: 1
 
 # Vault settings
 vault:
@@ -45,8 +45,9 @@ os:
   # Use different names for multiple deployments in the same project
   stack_name: "{{ lasair_name }}"
   # names of flavors to use
-  flavor_small: m1.tiny
-  flavor_medium: m1.small
-  flavor_large: m1.medium
-  flavor_xlarge: m1.large
+  flavor_small: tiny
+  flavor_medium: small
+  flavor_large: medium
+  flavor_xlarge: large
+  flavor_kafka: kafka-test
 

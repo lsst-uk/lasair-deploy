@@ -35,6 +35,7 @@
           flavor_medium: "{{ os.flavor_medium }}"
           flavor_large: "{{ os.flavor_large }}"
           flavor_xlarge: "{{ os.flavor_xlarge }}"
+          flavor_kafka: "{{ os.flavor_kafka }}"
 
     - name: update exports.yaml
       lineinfile:

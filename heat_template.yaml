@@ -1,4 +1,4 @@
-heat_template_version: 2015-04-30
+heat_template_version: 2016-10-14
 
 description: Heat template to deploy an instance of the Lasair system
 
@@ -9,19 +9,31 @@ parameters:
   flavor_small:
     description: Flavor to use for small instances.
     type: string
-    default: c3.small
+    default: small
   flavor_medium:
     description: Flavor to use for medium instances.
     type: string
-    default: c3.medium
+    default: medium
   flavor_large:
     description: Flavor to use for large instances.
     type: string
-    default: c3.large
+    default: large
   flavor_xlarge:
     description: Flavor to use for xlarge instances.
     type: string
-    default: c3.xlarge
+    default: xlarge
+  flavor_kafka:
+    description: Flavor to use for kafka instances.
+    type: string
+    default: kafka 
+  volume_large:
+    description: Size of large volumes
+    type: number
+    default: 50
+  volume_small:
+    description: Size of small volumes
+    type: number
+    default: 25
   image_id:
     description: Name or ID of the image to use.
     type: string
@@ -68,172 +80,129 @@ parameters:
     default: 1
 
 resources:
-  # Shared filesystem
   share_fs:
     type: OS::Manila::Share
     properties:
       name: { get_param: OS::stack_name }
-    #  name: { list_join: [ '-', [ { get_param: OS::stack_name }, "share"] ] }
       description: "Lasair shared filesystem"
       access_rules: [{"access_level": "rw", "access_type": "cephx", "access_to": { get_param: share_user} }]
       size: { get_param: share_size }
       share_protocol: "CEPHFS"
       share_type: "default"
-  # Volume to use for the service instance
-  # Larger than default size is primarily for Prometheus
-  svc-vol:
-    type: OS::Cinder::Volume
-    properties:
-      size: 50
-      image: { get_param: image_id }
-  # Service instance runs vaious services (e.g. Watchlist, Area, TNS)
-  # and also monitoring (Prometheus and Grafana)
   svc:
-    type: OS::Nova::Server
+    type: server_with_volume.yaml
     properties:
-      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "svc"] ] }
       key_name: { get_param: key_name }
-      flavor: { get_param: flavor_small  }
-      block_device_mapping_v2:
-        - device_name: vda
-          volume_id: { get_resource: svc-vol }
-          delete_on_termination: true
-      networks:
-        - network: { get_param: net }
-        - network: { get_param: share_net }
-  # Assign the service instance a floating IP
-  # DISABLED FOR TESTING AT RAL
-  svc_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: external_net }
-  svc_ip_association:
-    type: OS::Neutron::FloatingIPAssociation
-    properties:
-      floatingip_id: { get_resource: svc_ip }
-      port_id: {get_attr: [svc, addresses, {get_param: net}, 0, port]}
-
-  # Web server (also currently proxy and api)
+      flavor: { get_param: flavor_medium  }
+      server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "svc"] ] }
+      volume_size: { get_param: volume_large }
+      image_id: { get_param: image_id }
+      net: { get_param: net }
+      share_net: { get_param: share_net }
+      external_net: { get_param: external_net }
+      assign_public_ip: true
   web:
-    type: OS::Nova::Server
+    type: server_with_volume.yaml
     properties:
-      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "web"] ] }
       key_name: { get_param: key_name }
-      flavor: { get_param: flavor_xlarge  }
-      image: { get_param: image_id }
-      networks:
-        - network: { get_param: net }
-        - network: { get_param: share_net }
-
-  # Assign the proxy server a floating IP
-  # DISABLED FOR TESTING AT RAL
-  proxy_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: external_net }
-  proxy_ip_association:
-    type: OS::Neutron::FloatingIPAssociation
-    properties:
-      floatingip_id: { get_resource: proxy_ip }
-      port_id: {get_attr: [web, addresses, {get_param: net}, 0, port]}
-
+      flavor: { get_param: flavor_large  }
+      server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "web"] ] }
+      volume_size: { get_param: volume_large }
+      image_id: { get_param: image_id }
+      net: { get_param: net }
+      share_net: { get_param: share_net }
+      external_net: { get_param: external_net }
+      assign_public_ip: true
   db:
-    type: OS::Nova::Server
+    type: server_with_volume.yaml
     properties:
-      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "db"] ] }
       key_name: { get_param: key_name }
-      flavor: { get_param: flavor_xlarge  }
-      image: { get_param: image_id }
-      networks:
-        - network: { get_param: net }
-        - network: { get_param: share_net }
-
+      flavor: { get_param: flavor_large  }
+      server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "db"] ] }
+      volume_size: { get_param: volume_small }
+      image_id: { get_param: image_id }
+      net: { get_param: net }
+      share_net: { get_param: share_net }
   kafka_pub:
-    type: OS::Nova::Server
+    type: server_with_volume.yaml
     properties:
-      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka_pub"] ] }
       key_name: { get_param: key_name }
       flavor: { get_param: flavor_small  }
-      image: { get_param: image_id }
-      networks:
-        - network: { get_param: net }
-        - network: { get_param: share_net }
-
+      server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka_pub"] ] }
+      volume_size: { get_param: volume_small }
+      image_id: { get_param: image_id }
+      net: { get_param: net }
+      share_net: { get_param: share_net }
   kafka_group:
     type: OS::Heat::ResourceGroup
     properties:
       count: { get_param: n_kafka }
       resource_def:
-        type: OS::Nova::Server
+        type: server_with_volume.yaml
         properties:
-          name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka", "%index%" ]] }
           key_name: { get_param: key_name }
-          image: { get_param: image_id }
-          flavor: { get_param: flavor_large  }
-          networks:
-            - network: { get_param: net }
-            - network: { get_param: share_net }
-
+          flavor: { get_param: flavor_kafka  }
+          server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka", "%index%" ]] }
+          volume_size: { get_param: volume_small }
+          image_id: { get_param: image_id }
+          net: { get_param: net }
+          share_net: { get_param: share_net }
   ingest_group:
     type: OS::Heat::ResourceGroup
     properties:
       count: { get_param: n_ingest }
       resource_def:
-        type: OS::Nova::Server
+        type: server_with_volume.yaml
         properties:
-          name: { list_join: [ '-', [ { get_param: OS::stack_name }, "ingest", "%index%" ]] }
           key_name: { get_param: key_name }
-          image: { get_param: image_id }
           flavor: { get_param: flavor_small  }
-          networks:
-            - network: { get_param: net }
-            - network: { get_param: share_net }
-
+          server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "ingest", "%index%" ]] }
+          volume_size: { get_param: volume_small }
+          image_id: { get_param: image_id }
+          net: { get_param: net }
+          share_net: { get_param: share_net }
   sherlock_group:
     type: OS::Heat::ResourceGroup
     properties:
       count: { get_param: n_sherlock }
       resource_def:
-        type: OS::Nova::Server
+        type: server_with_volume.yaml
         properties:
-          name: { list_join: [ '-', [ { get_param: OS::stack_name }, "sherlock", "%index%" ]] }
           key_name: { get_param: key_name }
-          image: { get_param: image_id }
-          flavor: { get_param: flavor_xlarge  }
-          networks:
-            - network: { get_param: net }
-            - network: { get_param: share_net }
-
+          flavor: { get_param: flavor_small  }
+          server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "sherlock", "%index%" ]] }
+          volume_size: { get_param: volume_small }
+          image_id: { get_param: image_id }
+          net: { get_param: net }
+          share_net: { get_param: share_net }
   filter_group:
     type: OS::Heat::ResourceGroup
     properties:
       count: { get_param: n_filter }
       resource_def:
-        type: OS::Nova::Server
+        type: server_with_volume.yaml
         properties:
-          name: { list_join: [ '-', [ { get_param: OS::stack_name }, "filter", "%index%" ]] }
           key_name: { get_param: key_name }
-          image: { get_param: image_id }
           flavor: { get_param: flavor_small  }
-          networks:
-            - network: { get_param: net }
-            - network: { get_param: share_net }
-
+          server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "filter", "%index%" ]] }
+          volume_size: { get_param: volume_small }
+          image_id: { get_param: image_id }
+          net: { get_param: net }
+          share_net: { get_param: share_net }
   cassandra_group:
     type: OS::Heat::ResourceGroup
     properties:
       count: { get_param: n_cassandra }
       resource_def:
-        type: OS::Nova::Server
+        type: server_with_volume.yaml
         properties:
-          name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandra", "%index%" ]] }
           key_name: { get_param: key_name }
-          image: { get_param: image_id }
-          flavor: { get_param: flavor_large  }
-          networks:
-            - network: { get_param: net }
-            - network: { get_param: share_net }
-
+          flavor: { get_param: flavor_small  }
+          server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandra", "%index%" ]] }
+          volume_size: { get_param: volume_small }
+          image_id: { get_param: image_id }
+          net: { get_param: net }
+          share_net: { get_param: share_net }
 
 outputs:
   share_fs:
