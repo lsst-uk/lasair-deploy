@@ -37,7 +37,7 @@
           flavor_xlarge: "{{ os.flavor_xlarge }}"
           flavor_kafka: "{{ os.flavor_kafka }}"
 
-    - name: update tmp.yaml
+    - name: update exports.yaml
       template:
         src: exports.yaml.j2
         dest: exports.yaml
