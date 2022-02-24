@@ -80,6 +80,31 @@ be created at this point. If you have already created an SSH keypair
 must match the keypair in OpenStack. If this is not the case then you
 will need to fix it up manually first.
 
+## Set CephFS credentials
+
+CephFS requires that an access key be looked up and stored in Vault. This is not
+yet automated. The process is as follows (the deployment here is called
+lasair-test and the share-user lasair-user):
+
+Look up the key:
+```
+$ openstack share access list --columns access_to,access_key lasair-test
++-------------+------------------------------------------+
+| access_to   | access_key                               |
++-------------+------------------------------------------+
+| lasair-user | ABCDeFghIjklMnOPQrS1tUvWXyZ2Ls34LZAx7A== |
++-------------+------------------------------------------+
+```
+
+Create/update the secret in vault:
+```
+$ vault kv put secret/lasair/cephx 'lasair-user=ABCDeFghIjklMnOPQrS1tUvWXyZ2Ls34LZAx7A=='
+Success! Data written to: secret/lasair/cephx
+```
+
+If we have multiple user/key pairs in the same secret then be sure to avoid
+overwriting any others.
+
 ## Configure DNS
 
 At this point we need to configure any required DNS records to point to
