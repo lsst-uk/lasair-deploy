@@ -53,7 +53,7 @@ resources:
       key_name: { get_param: key_name }
       flavor: { get_param: flavor }
       block_device_mapping_v2:
-        - device_name: vda
+        - device_name: sda
           volume_id: { get_resource: vol }
           delete_on_termination: true
       networks:
