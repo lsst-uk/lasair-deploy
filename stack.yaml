@@ -37,19 +37,24 @@
           flavor_xlarge: "{{ os.flavor_xlarge }}"
           flavor_kafka: "{{ os.flavor_kafka }}"
 
-    - name: update exports.yaml
-      lineinfile:
-        path: exports.yaml
-        regexp: "exports"
-        line: "  exports: {{ item }}"
-      loop: |
-        [
-        {%- for output in stack_create.stack.outputs %}
-          {%- if output.description == "Export locations" %}
-            {{ output.output_value | regex_replace('\[(.*)\]', '\1')  }}, 
-          {%- endif %}
-        {%- endfor %}
-        ]
+    - name: update tmp.yaml
+      template:
+        src: exports.yaml.j2
+        dest: exports.yaml
+
+#    - name: update exports.yaml
+#      lineinfile:
+#        path: exports.yaml
+#        regexp: "exports"
+#        line: "  exports: {{ item }}"
+#      loop: |
+#        [
+#        {%- for output in stack_create.stack.outputs %}
+#          {%- if output.description == "Export locations" %}
+#            {{ output.output_value | regex_replace('\[(.*)\]', '\1')  }}, 
+#          {%- endif %}
+#        {%- endfor %}
+#        ]
 
     - name: update /etc/hosts
       become: true
