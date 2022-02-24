@@ -1,0 +1,3 @@
+---
+cephx_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/cephx url='+vault.url)}}"
+cephx_key: "{{ cephx_secret[os.share_user] }}"

@@ -29,9 +29,11 @@ of the deployment and as a login node. Ensure that all Lasair admins
 who need to can log into this instance by adding their public
 ssh keys to the authorized_keys file.
 
-3. Install Ansible. Assuming that we are using an Ubuntu image:
+3. Install Ansible. We require version 2.10 or later.
+If we are using Ubuntu 20.04 then the packaged version of Ansible is
+only 2.9 so we must install using pip:
 ```
-# apt-get update && apt-get install ansible
+# apt-get update && apt-get install python3-pip && pip3 install ansible
 ```
 
 4. Clone this repository:
@@ -77,6 +79,31 @@ be created at this point. If you have already created an SSH keypair
 (e.g. from a previous  deployment) then the local files (in ~/.ssh) 
 must match the keypair in OpenStack. If this is not the case then you
 will need to fix it up manually first.
+
+## Set CephFS credentials
+
+CephFS requires that an access key be looked up and stored in Vault. This is not
+yet automated. The process is as follows (the deployment here is called
+lasair-test and the share-user lasair-user):
+
+Look up the key:
+```
+$ openstack share access list --columns access_to,access_key lasair-test
++-------------+------------------------------------------+
+| access_to   | access_key                               |
++-------------+------------------------------------------+
+| lasair-user | ABCDeFghIjklMnOPQrS1tUvWXyZ2Ls34LZAx7A== |
++-------------+------------------------------------------+
+```
+
+Create/update the secret in vault:
+```
+$ vault kv put secret/lasair/cephx 'lasair-user=ABCDeFghIjklMnOPQrS1tUvWXyZ2Ls34LZAx7A=='
+Success! Data written to: secret/lasair/cephx
+```
+
+If we have multiple user/key pairs in the same secret then be sure to avoid
+overwriting any others.
 
 ## Configure DNS
 

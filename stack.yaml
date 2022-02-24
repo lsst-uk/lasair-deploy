@@ -20,7 +20,12 @@
         state: present
         template: "{{ template }}"
         parameters:
+          image_id: "{{ os.image_name }}"
           key_name: "{{ os.keypair_name }}"
+          net: "{{ os.network_name }}"
+          share_net: "{{ os.share_network_name }}"
+          share_size: "{{ os.share_size }}"
+          share_user: "{{ os.share_user }}"
           n_kafka: "{{ instances.kafka.number|default(1) }}"
           n_ingest: "{{ instances.ingest.number|default(1) }}"
           n_sherlock: "{{ instances.sherlock.number|default(1) }}"
@@ -30,6 +35,21 @@
           flavor_medium: "{{ os.flavor_medium }}"
           flavor_large: "{{ os.flavor_large }}"
           flavor_xlarge: "{{ os.flavor_xlarge }}"
+          flavor_kafka: "{{ os.flavor_kafka }}"
+
+    - name: update exports.yaml
+      lineinfile:
+        path: exports.yaml
+        regexp: "exports"
+        line: "  exports: {{ item }}"
+      loop: |
+        [
+        {%- for output in stack_create.stack.outputs %}
+          {%- if output.description == "Export locations" %}
+            {{ output.output_value | regex_replace('\[(.*)\]', '\1')  }}, 
+          {%- endif %}
+        {%- endfor %}
+        ]
 
     - name: update /etc/hosts
       become: true

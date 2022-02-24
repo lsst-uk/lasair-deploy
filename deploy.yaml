@@ -4,6 +4,8 @@
 
 - hosts: all:!localhost
   gather_facts: false
+  vars_files:
+    - settings.yaml
   roles:
     - lasair_instance
 
@@ -11,9 +13,11 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+    - exports.yaml
   vars:
     enable_letsencrypt: false
   roles:
+    - lasair_cephfs
     - lasair_service
     - prometheus
     - grafana
@@ -46,7 +50,9 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+    - exports.yaml
   roles:
+    - lasair_cephfs
     - ingest
   tags: ingest
   
@@ -70,7 +76,9 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+    - exports.yaml
   roles:
+    - lasair_cephfs
     - webserver
   tags: web
 

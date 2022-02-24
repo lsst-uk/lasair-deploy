@@ -67,9 +67,18 @@
 #    dest: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/static/streams"
 #    state: link
 
+
+- name: Create restart script
+  template:
+    src: restart_webserver.sh.j2
+    dest: restart_webserver.sh
+    mode: 0755
+
 - name: Restart web server
+  become: true
   command:
-    cmd: "/bin/bash {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/restart_webserver"
+    #cmd: "/bin/bash {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/restart_webserver"
+    cmd: "{{ ansible_env.HOME }}/restart_webserver.sh"
 
 - name: Enable Apache modules
   become: true

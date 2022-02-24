@@ -1,0 +1,79 @@
+heat_template_version: 2016-10-14
+
+description: Heat template to create a server from a volume
+
+parameters:
+  key_name:
+    description: Name of a KeyPair to enable SSH access.
+    type: string
+  flavor:
+    description: Flavor to use.
+    type: string
+    default: small
+  server_name:
+    description: Server name string.
+    type: string
+  volume_size:
+    description: Size of volume
+    type: number
+    default: 25
+  image_id:
+    description: Name or ID of the image to use.
+    type: string
+    default: ubuntu-focal
+  net:
+    description: Name of the private network.
+    type: string
+    default: test
+  share_net:
+    description: Name of the network for Manila shares.
+    type: string
+    default: cephfs
+  external_net:
+    description: Name of the external network.
+    type: string
+    default: external
+  assign_public_ip:
+    type: boolean
+    default: false
+
+conditions:
+  public_ip: { get_param: assign_public_ip }
+
+resources:
+  vol:
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: volume_size }
+      image: { get_param: image_id }
+  srv:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: server_name }
+      key_name: { get_param: key_name }
+      flavor: { get_param: flavor }
+      block_device_mapping_v2:
+        - device_name: sda
+          volume_id: { get_resource: vol }
+          delete_on_termination: true
+      networks:
+        - network: { get_param: net }
+        - network: { get_param: share_net }
+  pub_ip:
+    condition: public_ip 
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: external_net }
+  pub_ip_association:
+    condition: public_ip 
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: pub_ip }
+      port_id: {get_attr: [srv, addresses, {get_param: net}, 0, port]}
+
+
+outputs:
+  first_address:
+    description: Private IP
+    value: { get_attr: [srv, first_address] }
+
