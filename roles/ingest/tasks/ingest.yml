@@ -19,6 +19,7 @@
       - gkhtm
       - cassandra-driver
       - gkutils
+      - gkdbutils
 
 - name: Make sure the repo is up to date
   git: 
