@@ -39,6 +39,10 @@ os:
   share_size: 10
   # Ceph username for shared filesystem
   share_user: lasair-test
+  # Volume type to use for "fast" volumes
+  fast_volume_type: ceph-ssd
+  # Size of Cassandra volumes
+  cassandra_size: 15
   # Name of the ssh keypair in OpenStack
   keypair_name: gareth-somerville
   # What to call the heat stack

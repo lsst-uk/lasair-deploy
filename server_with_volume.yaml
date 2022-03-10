@@ -17,6 +17,13 @@ parameters:
     description: Size of volume
     type: number
     default: 25
+  extra_volume_size:
+    description: Size of extra volume
+    type: number
+    default: 0
+  extra_volume_type:
+    type: string
+    default: ceph-ssd
   image_id:
     description: Name or ID of the image to use.
     type: string
@@ -39,6 +46,7 @@ parameters:
 
 conditions:
   public_ip: { get_param: assign_public_ip }
+  extra_volume: { not: { equals: [ { get_param: extra_volume_size }, 0] } }
 
 resources:
   vol:
@@ -70,7 +78,18 @@ resources:
     properties:
       floatingip_id: { get_resource: pub_ip }
       port_id: {get_attr: [srv, addresses, {get_param: net}, 0, port]}
-
+  extra_vol:
+    condition: extra_volume
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: extra_volume_size }
+      volume_type: { get_param: extra_volume_type }
+  extra_vol_attachment:
+    condition: extra_volume
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      instance_uuid: { get_resource: srv } 
+      volume_id: { get_resource: extra_vol }
 
 outputs:
   first_address:

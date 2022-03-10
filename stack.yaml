@@ -26,6 +26,8 @@
           share_net: "{{ os.share_network_name }}"
           share_size: "{{ os.share_size }}"
           share_user: "{{ os.share_user }}"
+          extra_volume_type: "{{ os.fast_volume_type }}"
+          cassandra_volume_size: "{{ os.cassandra_size }}"
           n_kafka: "{{ instances.kafka.number|default(1) }}"
           n_ingest: "{{ instances.ingest.number|default(1) }}"
           n_sherlock: "{{ instances.sherlock.number|default(1) }}"

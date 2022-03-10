@@ -58,6 +58,14 @@ parameters:
     description: Username for CephFS.
     type: string
     default: lasair
+  extra_volume_type:
+    description: Type to use for extra volumes
+    type: string
+    default: ceph-ssd
+  cassandra_volume_size:
+    description: Size of Cassandra filesystems in GB.
+    type: number
+    default: 15
   n_kafka:
     description: Number of kafka instances
     type: number
@@ -200,6 +208,7 @@ resources:
           flavor: { get_param: flavor_small  }
           server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandra", "%index%" ]] }
           volume_size: { get_param: volume_small }
+          extra_volume_size: { get_param: cassandra_volume_size }
           image_id: { get_param: image_id }
           net: { get_param: net }
           share_net: { get_param: share_net }
