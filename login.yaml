@@ -17,6 +17,9 @@
       pkg: 
         - python3-hvac
         - kafkacat
+        - python3-openstackclient
+        - python3-heatclient
+        - python3-manilaclient
       state: present
       update-cache: yes
 

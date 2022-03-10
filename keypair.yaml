@@ -9,7 +9,7 @@
     - settings.yaml
 
   vars:
-    keypair_path: "{{ ansible_env.HOME }}/ssh"
+    keypair_path: "{{ ansible_env.HOME }}/.ssh"
 
   tasks:
 
