@@ -87,13 +87,48 @@ parameters:
     type: number
     default: 1
   n_filter:
-    description: Number of sherlock instances
+    description: Number of filter instances
     type: number
     default: 1
   n_cassandra:
-    description: Number of sherlock instances
+    description: Number of cassandra instances
     type: number
     default: 1
+  n_frontend_db:
+    description: Number of frontend_db instances
+    type: number
+    default: 0 
+  n_backend_db:
+    description: Number of backend_db instances
+    type: number
+    default: 0
+  create_db:
+    description: Create a standalone database instance
+    type: boolean
+    default: true
+  create_cluster_control:
+    description: Create a database cluster control instance
+    type: boolean
+    default: false
+  create_svc:
+    description: Create service instance
+    type: boolean
+    default: true
+  create_web:
+    description: Create web instance
+    type: boolean
+    default: true
+  create_kafka_pub:
+    description: Create kafka_pub instance
+    type: boolean
+    default: true
+
+conditions:
+  create_svc: { get_param: create_svc }
+  create_web: { get_param: create_web }
+  create_db: { get_param: create_db }
+  create_cluster_control: { get_param: create_cluster_control }
+  create_kafka_pub: { get_param: create_kafka_pub }
 
 resources:
   share_fs:
@@ -130,6 +165,7 @@ resources:
       external_net: { get_param: external_net }
       assign_public_ip: true
   db:
+    condition: create_db
     type: server_with_volume.yaml
     properties:
       key_name: { get_param: key_name }
@@ -139,6 +175,45 @@ resources:
       image_id: { get_param: image_id }
       net: { get_param: net }
       share_net: { get_param: share_net }
+  cluster_control:
+    condition: create_cluster_control
+    type: server_with_volume.yaml
+    properties:
+      key_name: { get_param: key_name }
+      flavor: { get_param: flavor_small }
+      server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cluster_control"] ] }
+      volume_size: { get_param: volume_small }
+      image_id: { get_param: image_id }
+      net: { get_param: net }
+      share_net: { get_param: share_net }
+  frontend_db_group:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: n_frontend_db }
+      resource_def:
+        type: server_with_volume.yaml
+        properties:
+          key_name: { get_param: key_name }
+          flavor: { get_param: flavor_kafka  }
+          server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "frontend_db", "%index%" ]] }
+          volume_size: { get_param: volume_small }
+          image_id: { get_param: image_id }
+          net: { get_param: net }
+          share_net: { get_param: share_net }
+  backend_db_group:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: n_backend_db }
+      resource_def:
+        type: server_with_volume.yaml
+        properties:
+          key_name: { get_param: key_name }
+          flavor: { get_param: flavor_kafka  }
+          server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "backend_db", "%index%" ]] }
+          volume_size: { get_param: volume_small }
+          image_id: { get_param: image_id }
+          net: { get_param: net }
+          share_net: { get_param: share_net }
   kafka_pub:
     type: server_with_volume.yaml
     properties:
@@ -229,15 +304,19 @@ outputs:
     description: Export locations
     value: { get_attr: [share_fs, export_locations] }
   svc:
+    condition: create_svc
     description: Private IP
     value: { get_attr: [svc, first_address] }
   web:
+    condition: create_web
     description: Private IP
     value: { get_attr: [web, first_address] }
   db:
+    condition: create_db
     description: Private IP
     value: { get_attr: [db, first_address] }
   kafka_pub:
+    condition: create_kafka_pub
     description: Private IP
     value: { get_attr: [kafka_pub, first_address] }
   kafka:
@@ -255,6 +334,16 @@ outputs:
   cassandra:
     description: Private IP list
     value: { get_attr: [cassandra_group, first_address] }
+  frontend_db:
+    description: Private IP list
+    value: { get_attr: [frontend_db_group, first_address] }
+  backend_db:
+    description: Private IP list
+    value: { get_attr: [backend_db_group, first_address] }
+  cluster_control:
+    condition: create_cluster_control
+    description: Private IP
+    value: { get_attr: [cluster_control, first_address] }
 
 
 

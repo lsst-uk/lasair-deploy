@@ -7,12 +7,22 @@ lasair_name: lasair-test
 
 # Instances to deploy
 instances:
-  svc:
-  web:
   db:
+    create: false
+  frontend_db:
+    number: 1
+  backend_db:
+    number: 2
+  cluster_control:
+    create: true
+  svc:
+    create: true
+  web:
+    create: true
   kafka:
     number: 1
   kafka_pub:
+    create: true
     volume_size: 15
   ingest:
     number: 1
