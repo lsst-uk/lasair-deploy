@@ -36,7 +36,7 @@
           n_filter: "{{ instances.filter.number|default(1) }}"
           n_cassandra: "{{ instances.cassandra.number|default(1) }}"
           n_frontend_db: "{{ instances.frontend_db.number|default(0) }}"
-          n_backend_db: "{{ instances.frontend_db.number|default(0) }}"
+          n_backend_db: "{{ instances.backend_db.number|default(0) }}"
           create_db: "{{ instances.db.create|default(true) }}"
           create_cluster_control: "{{ instances.cluster_control.create|default(false) }}"
           create_kafka_pub: "{{ instances.kafka_pub.create|default(true) }}"
