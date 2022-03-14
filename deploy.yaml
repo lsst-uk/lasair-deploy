@@ -8,6 +8,8 @@
     - settings.yaml
   roles:
     - lasair_instance
+  tags:
+    - lasair_instance
 
 - hosts: svc
   gather_facts: false
