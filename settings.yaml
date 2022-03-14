@@ -13,6 +13,7 @@ instances:
   kafka:
     number: 1
   kafka_pub:
+    volume_size: 15
   ingest:
     number: 1
   sherlock:
@@ -21,6 +22,10 @@ instances:
     number: 1
   cassandra:
     number: 1
+    volume_size: 15
+
+# Size of shared filesystem in GB
+share_size: 10
 
 # Vault settings
 vault:
@@ -35,14 +40,13 @@ os:
   network_name: test
   # Name of the network to use for Manila shares
   share_network_name: cephfs
-  # Size of shared filesystem in GB
-  share_size: 10
   # Ceph username for shared filesystem
-  share_user: lasair-test
+  # Should be unique to this deployment
+  share_user: "{{ lasair_name }}"
   # Volume type to use for "fast" volumes
   fast_volume_type: ceph-ssd
-  # Size of Cassandra volumes
-  cassandra_size: 15
+  # Volume type to use for "slow" volumes
+  slow_volume_type: ceph-hdd
   # Name of the ssh keypair in OpenStack
   keypair_name: gareth-somerville
   # What to call the heat stack
