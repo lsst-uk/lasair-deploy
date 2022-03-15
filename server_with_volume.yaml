@@ -1,4 +1,4 @@
-heat_template_version: 2016-10-14
+heat_template_version: 2017-09-01
 
 description: Heat template to create a server from a volume
 
@@ -34,8 +34,9 @@ parameters:
     default: test
   share_net:
     description: Name of the network for Manila shares.
+    # if left unset then PLACEHOLDER will get removed later
     type: string
-    default: cephfs
+    default: PLACEHOLDER
   external_net:
     description: Name of the external network.
     type: string
@@ -65,8 +66,10 @@ resources:
           volume_id: { get_resource: vol }
           delete_on_termination: true
       networks:
-        - network: { get_param: net }
-        - network: { get_param: share_net }
+        # if share_net was left as default then set it to the same as net and remove duplicates to get rid of it
+        list_concat_unique: 
+          - [ network: { get_param: net } ]
+          - [ network: { str_replace: { template: { get_param: share_net }, params: { PLACEHOLDER: { get_param: net } } } } ]
   pub_ip:
     condition: public_ip 
     type: OS::Neutron::FloatingIP

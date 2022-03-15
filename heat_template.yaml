@@ -1,4 +1,5 @@
-heat_template_version: 2016-10-14
+heat_template_version: 2017-09-01
+#heat_template_version: 2016-10-14
 
 description: Heat template to deploy an instance of the Lasair system
 
@@ -161,7 +162,7 @@ resources:
       volume_size: { get_param: volume_large }
       image_id: { get_param: image_id }
       net: { get_param: net }
-      share_net: { get_param: share_net }
+      #share_net: { get_param: share_net }
       external_net: { get_param: external_net }
       assign_public_ip: true
   db:
@@ -174,7 +175,7 @@ resources:
       volume_size: { get_param: volume_small }
       image_id: { get_param: image_id }
       net: { get_param: net }
-      share_net: { get_param: share_net }
+      #share_net: { get_param: share_net }
   cluster_control:
     condition: create_cluster_control
     type: server_with_volume.yaml
@@ -185,7 +186,7 @@ resources:
       volume_size: { get_param: volume_small }
       image_id: { get_param: image_id }
       net: { get_param: net }
-      share_net: { get_param: share_net }
+      #share_net: { get_param: share_net }
   frontend_db_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -199,7 +200,7 @@ resources:
           volume_size: { get_param: volume_small }
           image_id: { get_param: image_id }
           net: { get_param: net }
-          share_net: { get_param: share_net }
+          #share_net: { get_param: share_net }
   backend_db_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -213,7 +214,7 @@ resources:
           volume_size: { get_param: volume_small }
           image_id: { get_param: image_id }
           net: { get_param: net }
-          share_net: { get_param: share_net }
+          #share_net: { get_param: share_net }
   kafka_pub:
     type: server_with_volume.yaml
     properties:
@@ -225,7 +226,7 @@ resources:
       extra_volume_type: { get_param: slow_volume_type } 
       image_id: { get_param: image_id }
       net: { get_param: net }
-      share_net: { get_param: share_net }
+      #share_net: { get_param: share_net }
   kafka_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -239,7 +240,7 @@ resources:
           volume_size: { get_param: volume_small }
           image_id: { get_param: image_id }
           net: { get_param: net }
-          share_net: { get_param: share_net }
+          #share_net: { get_param: share_net }
   ingest_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -267,7 +268,7 @@ resources:
           volume_size: { get_param: volume_small }
           image_id: { get_param: image_id }
           net: { get_param: net }
-          share_net: { get_param: share_net }
+          #share_net: { get_param: share_net }
   filter_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -297,7 +298,7 @@ resources:
           extra_volume_type: { get_param: fast_volume_type }
           image_id: { get_param: image_id }
           net: { get_param: net }
-          share_net: { get_param: share_net }
+          #share_net: { get_param: share_net }
 
 outputs:
   share_fs:

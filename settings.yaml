@@ -1,9 +1,9 @@
 ---
 
 # DNS domain where this deployment lives
-domain: lasair-test.lsst.ac.uk
+domain: lasair-test2.lsst.ac.uk
 # A name to distinguish *this* lasair deployment, typically the same as the first part of the domain
-lasair_name: lasair-test
+lasair_name: lasair-test2
 
 # Instances to deploy
 instances:
@@ -41,6 +41,9 @@ share_size: 10
 vault:
   url: https://vault.lsst.ac.uk
   path: secret/lasair
+
+# An admin email address for services that expect one
+admin_email: admin@example.com
 
 # OpenStack configuration
 os:
