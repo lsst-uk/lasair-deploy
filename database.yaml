@@ -1,0 +1,112 @@
+---
+
+- hosts: db,frontend_db,backend_db,cluster_control
+  gather_facts: true
+  tags: facts
+
+- hosts: db,frontend_db,backend_db,cluster_control
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  roles:
+    - lasair_instance
+  tags:
+    - lasair_instance
+
+- hosts: cluster_control
+  become: yes
+  tasks:
+  - name: "Install python3-mysqldb"
+    become: true
+    apt:
+      pkg:
+        - python3-mysqldb
+      state: present
+      update-cache: yes
+  tags: cluster_control
+
+- hosts: cluster_control
+  become: yes
+  roles:
+    - gkansible.gkservercollection.severalnines_clustercontrol
+  vars_files:
+    - settings.yaml
+  vars:
+    runtag: "controller"
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.master_db_root_password }}"
+    cmon_mysql_password: "{{ settings.master_db_root_password }}"
+    cc_admin:
+      - set: true
+        email: admin_email
+        password: "{{ settings.master_db_root_password }}"
+    cc_license:
+      - set: false
+  tags: cluster_control_1
+
+- hosts: backend_db,frontend_db
+  become: yes
+  roles:
+    - role: gkansible.gkservercollection.severalnines_clustercontrol
+      tags: dbnodes
+  vars:
+    runtag: "dbnodes"
+    clustercontrol_ip_address: "{{ hostvars[groups['cluster_control'][0]]['ansible_all_ipv4_addresses'][0] }}"
+    remote_login_user: "root"
+    remote_login_user_home: "/root"
+    ssh_keyfile: "{{ remote_login_user_home }}/.ssh/id_rsa"
+    ssh_user: "{{ remote_login_user }}"
+  tags: db_1
+
+- hosts: cluster_control
+  become: yes
+  roles:
+    - role: gkansible.gkservercollection.severalnines_clustercontrol
+      tags: "deploy-database"
+  vars_files:
+    - settings.yaml
+  vars:
+    runtag: "deploy-database"
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.master_db_root_password }}"
+    remote_login_user: "root"
+    remote_login_user_home: "/root"
+    clustercontrol_ip_address: "{{ hostvars[groups['cluster_control'][0]]['ansible_all_ipv4_addresses'][0] }}"
+    cc_cluster:
+      # minimal create new galera
+      - deployment: true
+        operation: "create"
+        cluster_type: "galera"
+        cluster_name: "galera_cluster"
+        mysql_cnf_template: "my.cnf.mdb10x-galera"
+        mysql_datadir: "/var/lib/mysql"
+        mysql_root_password: "{{ settings.master_db_root_password }}"
+        mysql_hostnames: "{{ groups['backend_db'] + groups['frontend_db'] }}"
+        mysql_password: "{{ settings.master_db_root_password }}"
+        cmon_mysql_password: "{{ settings.master_db_root_password }}"
+        mysql_port: 3306
+        mysql_version: "10.4"
+        ssh_keyfile: "{{ remote_login_user_home }}/.ssh/id_rsa"
+        ssh_user: "{{ remote_login_user }}"
+        sudo_password: ""
+        vendor: "mariadb"
+        nodes: | 
+          [
+          {%- for host in groups['backend_db'] + groups['frontend_db'] -%}
+            { hostname: "{{ host }}", hostname_data: "{{ host }}", hostname_internal: "", port: "3306" },
+          {%- endfor -%}
+          ]
+  tags: cluster_control_2
+
+- hosts: backend_db,frontend_db
+  become: true
+  roles:
+    - gkansible.gkservercollection.severalnines_clustercontrol
+  vars_files:
+    - settings.yaml
+  vars:
+    runtag: "credential-templates"
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_username: root
+    mysql_root_password: "{{ settings.master_db_root_password }}"
+  tags: db_2
