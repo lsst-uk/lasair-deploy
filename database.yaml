@@ -10,8 +10,17 @@
     - settings.yaml
   roles:
     - lasair_instance
-  tags:
-    - lasair_instance
+  tags: lasair_instance
+
+- hosts: db
+  gather_facts: false
+  roles:
+    - gkansible.gkservercollection.mariadb 
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+  tags: standalone
 
 - hosts: cluster_control
   gather_facts: false
@@ -116,7 +125,7 @@
     mysql_root_password: "{{ settings.master_db_root_password }}"
   tags: db_2
 
-- hosts: cluster_control,backend_db,frontend_db
+- hosts: db,cluster_control,backend_db,frontend_db
   gather_facts: false
   tasks:
     - name: Wait for port 3306 to become open on database hosts
