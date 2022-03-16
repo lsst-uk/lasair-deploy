@@ -14,6 +14,7 @@
     - lasair_instance
 
 - hosts: cluster_control
+  gather_facts: false
   become: yes
   tasks:
   - name: "Install python3-mysqldb"
@@ -26,6 +27,7 @@
   tags: cluster_control
 
 - hosts: cluster_control
+  gather_facts: false
   become: yes
   roles:
     - gkansible.gkservercollection.severalnines_clustercontrol
@@ -45,6 +47,7 @@
   tags: cluster_control_1
 
 - hosts: backend_db,frontend_db
+  gather_facts: false
   become: yes
   roles:
     - role: gkansible.gkservercollection.severalnines_clustercontrol
@@ -59,6 +62,7 @@
   tags: db_1
 
 - hosts: cluster_control
+  gather_facts: false
   become: yes
   roles:
     - role: gkansible.gkservercollection.severalnines_clustercontrol
@@ -99,6 +103,7 @@
   tags: cluster_control_2
 
 - hosts: backend_db,frontend_db
+  gather_facts: false
   become: true
   roles:
     - gkansible.gkservercollection.severalnines_clustercontrol
@@ -110,3 +115,12 @@
     mysql_root_username: root
     mysql_root_password: "{{ settings.master_db_root_password }}"
   tags: db_2
+
+- hosts: cluster_control,backend_db,frontend_db
+  gather_facts: false
+  tasks:
+    - name: Wait for port 3306 to become open on database hosts
+      wait_for:
+        port: 3306
+  tags: wait
+
