@@ -12,7 +12,7 @@
     - lasair_instance
   tags: lasair_instance
 
-- hosts: db
+- hosts: db,frontend_db,backend_db
   gather_facts: false
   become: yes
   tasks:
@@ -147,6 +147,7 @@
     - name: Wait for port 3306 to become open on database hosts
       wait_for:
         port: 3306
+        timeout: 3600
   tags: wait
 
 
