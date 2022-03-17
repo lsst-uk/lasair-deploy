@@ -1,6 +1,13 @@
 # Various tests to validate that Lasair is deployed correctly
 
 ---
+
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Ping all hosts
+      ping:
+
 - hosts: localhost
   gather_facts: false
   vars_files:

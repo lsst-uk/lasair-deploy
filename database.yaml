@@ -14,6 +14,23 @@
 
 - hosts: db
   gather_facts: false
+  become: yes
+  tasks:
+    - name: create filesystem for data
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/sdb
+    - name: ensure data filesystem is mounted
+      ansible.posix.mount:
+        path: /data
+        src: /dev/sdb
+        fstype: ext4
+        opts: nofail
+        state: mounted
+  tags: filesystem
+
+- hosts: db
+  gather_facts: false
   roles:
     - gkansible.gkservercollection.mariadb 
   vars_files:
@@ -26,13 +43,12 @@
   gather_facts: false
   become: yes
   tasks:
-  - name: "Install python3-mysqldb"
-    become: true
-    apt:
-      pkg:
-        - python3-mysqldb
-      state: present
-      update-cache: yes
+    - name: "Install python3-mysqldb"
+      become: true
+      apt:
+        pkg: python3-mysqldb
+        state: present
+        update-cache: yes
   tags: cluster_control
 
 - hosts: cluster_control
@@ -133,3 +149,102 @@
         port: 3306
   tags: wait
 
+
+# Setup Maxscale - this can only run once the databases are up and running
+- hosts: frontend_db
+  gather_facts: false
+  become: true
+  become_user: root
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    password: "{{ settings.master_db_root_password }}"
+    ip: "{{ hostvars[groups['cluster_control'][0]]['ansible_all_ipv4_addresses'][0] }}"
+  tasks: 
+    - name: Install PyMySQL
+      apt:
+        pkg: python3-pymysql
+        state: present
+        update-cache: yes
+    - name: Add MaxScale MySQL User on Cluster
+      community.mysql.mysql_query:
+        query:
+          - CREATE USER IF NOT EXISTS 'maxscale'@'{{ ip }}' IDENTIFIED BY "{{ password }}"
+          - GRANT SELECT ON mysql.user TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.db TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.tables_priv TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.columns_priv TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.proxies_priv TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.roles_mapping TO 'maxscale'@'{{ ip }}';
+          - GRANT SHOW DATABASES ON *.* TO 'maxscale'@'{{ ip }}';
+        login_user: root
+        login_password: "{{ password }}"
+        single_transaction: yes
+  tags: maxscale_user
+
+- hosts: backend_db,frontend_db
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Request lowercase tables names on all mysql servers
+      ini_file:
+        path: /etc/mysql/my.cnf
+        section: MYSQLD
+        option: lower_case_table_names
+        value: "1"
+        backup: no
+    - name: Request lowercase tables names on all mysql servers
+      ini_file:
+        path: /etc/mysql/my.cnf
+        section: MYSQLD
+        option: log_bin_trust_function_creators
+        value: "1"
+        backup: no
+    - name: Increase open file limit
+      ini_file:
+        path: /etc/systemd/system/mariadb.service.d/override.conf
+        section: Service
+        option: LimitNOFILE
+        value: "infinity"
+        backup: no
+  tags: lc_tables
+
+
+- hosts: cluster_control
+  gather_facts: false
+  become: true
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    maxscale_deb_url: https://dlm.mariadb.com/1961572/MaxScale/2.5.18/packages/ubuntu/focal/x86_64/maxscale-2.5.18-1.ubuntu.focal.x86_64.deb
+    backend_servers: "{{ groups['backend_db'] }}"
+    frontend_servers: "{{ groups['frontend_db'] }}"
+  roles: 
+    - gkansible.gkservercollection.maxscale
+  tags: maxscale
+
+- hosts: cluster_control
+  gather_facts: false
+  become: true
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    runtag: "credential-templates"
+    backend_servers: "{{ groups['backend_db'] }}"
+    frontend_servers: "{{ groups['frontend_db'] }}"
+  roles: 
+    - gkansible.gkservercollection.maxscale
+  tags: maxscale
+
+- hosts: cluster_control
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: maxscale restart
+      service:
+        name: maxscale
+        state: restarted
+  tags: maxscale

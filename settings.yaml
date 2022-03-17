@@ -8,11 +8,14 @@ lasair_name: lasair-test2
 # Instances to deploy
 instances:
   db:
-    create: false
+    create: true
+    volume_size: 5
   frontend_db:
     number: 1
+    volume_size: 5
   backend_db:
     number: 2
+    volume_size: 5
   cluster_control:
     create: true
   svc:
