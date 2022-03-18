@@ -22,7 +22,7 @@
         dev: /dev/sdb
     - name: ensure data filesystem is mounted
       ansible.posix.mount:
-        path: /data
+        path: /var/lib/mysql
         src: /dev/sdb
         fstype: ext4
         opts: nofail
@@ -37,6 +37,7 @@
     - settings.yaml
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    datadir: /var/lib/mysql
   tags: standalone
 
 - hosts: cluster_control
@@ -127,6 +128,21 @@
           ] 
   tags: cluster_control_2
 
+- hosts: db,cluster_control,backend_db,frontend_db
+  gather_facts: false
+  tasks:
+    - name: Wait for port 3306 to become open on database hosts
+      wait_for:
+        port: 3306
+        timeout: 3600
+    - name: Wait for another 300s to make sure everything is done
+      wait_for:
+        timeout: 300
+  tags: wait
+
+  # Work in progress - stepping over this one play at a time appears to work
+  # but running the whole playbook is failing - probably not waiting long enough/for the right thing
+
 - hosts: backend_db,frontend_db
   gather_facts: false
   become: true
@@ -140,16 +156,6 @@
     mysql_root_username: root
     mysql_root_password: "{{ settings.master_db_root_password }}"
   tags: db_2
-
-- hosts: db,cluster_control,backend_db,frontend_db
-  gather_facts: false
-  tasks:
-    - name: Wait for port 3306 to become open on database hosts
-      wait_for:
-        port: 3306
-        timeout: 3600
-  tags: wait
-
 
 # Setup Maxscale - this can only run once the databases are up and running
 - hosts: frontend_db
