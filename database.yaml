@@ -122,9 +122,9 @@
         nodes: | 
           [
           {%- for host in groups['backend_db'] + groups['frontend_db'] -%}
-            { hostname: "{{ host }}", hostname_data: "{{ host }}", hostname_internal: "", port: "3306" },
+            { "hostname": "{{ host }}", "hostname_data": "{{ host }}", "hostname_internal": "", "port": "3306" },
           {%- endfor -%}
-          ]
+          ] 
   tags: cluster_control_2
 
 - hosts: backend_db,frontend_db
