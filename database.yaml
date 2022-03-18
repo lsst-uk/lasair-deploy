@@ -65,7 +65,7 @@
     cmon_mysql_password: "{{ settings.master_db_root_password }}"
     cc_admin:
       - set: true
-        email: admin_email
+        email: "{{ admin_email }}"
         password: "{{ settings.master_db_root_password }}"
     cc_license:
       - set: false
