@@ -1,0 +1,25 @@
+---
+# tasks file for lasair-database
+
+- name: Setup Lasair Database
+  become: true
+  community.mysql.mysql_query:
+    query:
+      - CREATE DATABASE IF NOT EXISTS {{ mysql_db_name }};
+      - USE {{ mysql_db_name }};
+      - CREATE USER IF NOT EXISTS '{{ mysql_db_user }}'@'localhost' IDENTIFIED BY '{{ mysql_db_password }}';
+      - CREATE USER IF NOT EXISTS '{{ mysql_db_user }}'@'%' IDENTIFIED BY '{{ mysql_db_password }}';
+      - GRANT ALL PRIVILEGES ON {{ mysql_db_name }}.* TO '{{ mysql_db_user }}'@'localhost';
+      - GRANT ALL PRIVILEGES ON {{ mysql_db_name }}.* TO '{{ mysql_db_user }}'@'%';
+      - GRANT FILE ON *.* TO '{{ mysql_db_user }}'@'localhost';
+      - GRANT FILE ON *.* TO '{{ mysql_db_user }}'@'%';
+      - CREATE USER IF NOT EXISTS '{{ msql_db_user_readonly }}'@'localhost' IDENTIFIED BY '{{ mysql_db_password_readonly }}';
+      - CREATE USER IF NOT EXISTS '{{ msql_db_user_readonly }}'@'%' IDENTIFIED BY '{{ mysql_db_password_readonly }}';
+      - GRANT SELECT ON {{ mysql_db_name }}.* TO '{{ msql_db_user_readonly }}'@'%';
+      - DROP FUNCTION IF EXISTS jdnow;
+      - CREATE FUNCTION jdnow () RETURNS DOUBLE DETERMINISTIC RETURN (unix_timestamp(now())/86400 + 2440587.5);
+      - GRANT EXECUTE ON FUNCTION {{ mysql_db_name }}.jdnow TO '{{ msql_db_user_readonly }}'@'%';
+    login_host: 127.0.0.1
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    single_transaction: yes

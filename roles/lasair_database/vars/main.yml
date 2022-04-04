@@ -1,0 +1,9 @@
+---
+
+mysql_root_password: "{{ settings.master_db_root_password }}"
+mysql_db_name: "{{ settings.master_db_username }}"
+mysql_db_user: "{{ settings.master_db_username }}"
+mysql_db_password: "{{ settings.master_db_password }}"
+msql_db_user_readonly: "{{ settings.master_db_readonly_username}}"
+mysql_db_password_readonly: "{{ settings.master_db_readonly_password }}"
+
