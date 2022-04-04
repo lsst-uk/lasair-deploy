@@ -1,38 +1,35 @@
 Role Name
 =========
 
-A brief description of the role goes here.
-
-Requirements
-------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Role for initial setup of the Lasair database.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+`mysql_root_password`: MysQL/MariaDB root password
+`mysql_db_name`: Database name
+`mysql_db_user`: Username for full read/write access
+`mysql_db_password`: Password for above
+`msql_db_user_readonly`: Username for read only access
+`mysql_db_password_readonly`: Password for above
 
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+The `settings` dict in defaults contains reasonable values for testing and can be overridden in production using values from Vault.
 
 Example Playbook
 ----------------
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
+    - hosts: db,backend_db[0]
+      vars_files:
+        - settings.yaml
+      vars:
+        settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
       roles:
-         - { role: username.rolename, x: 42 }
+        - lasair_database
 
 License
 -------
 
-BSD
+Apache-2.0
 
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
