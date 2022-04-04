@@ -1,7 +1,7 @@
 ---
 # tasks file for lasair-database
 
-- name: Setup Lasair Database
+- name: Setup Lasair database
   community.mysql.mysql_query:
     query:
       - CREATE DATABASE IF NOT EXISTS {{ mysql_db_name }};
@@ -22,3 +22,20 @@
     login_user: root
     login_password: "{{ mysql_root_password }}"
     single_transaction: yes
+
+- name: Create tables
+  community.mysql.mysql_query:
+    query: "{{ lookup('url', git_url + '/' + git_branch + item, split_lines=false) }}"
+    login_host: 127.0.0.1
+    login_user: "{{ mysql_db_user }}"
+    login_password: "{{ mysql_db_password }}"
+    login_db: "{{ mysql_db_name }}"
+    single_transaction: yes
+  with_items:
+    - "/utility/schema/objects.sql"
+    - "/utility/schema/sherlock_classifications.sql"
+    - "/utility/schema/crossmatch_tns.sql"
+    - "/utility/schema/area_hits.sql"
+    - "/utility/schema/watchlist_hits.sql"
+    - "/utility/schema/annotations.sql"
+
