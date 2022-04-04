@@ -18,8 +18,7 @@ The `settings` dict in defaults contains reasonable values for testing and can b
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
+    # Apply to either standalone DB host or the first Galera backend
     - hosts: db,backend_db[0]
       vars_files:
         - settings.yaml
