@@ -2,7 +2,6 @@
 # tasks file for lasair-database
 
 - name: Setup Lasair Database
-  become: true
   community.mysql.mysql_query:
     query:
       - CREATE DATABASE IF NOT EXISTS {{ mysql_db_name }};
