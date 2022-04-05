@@ -37,8 +37,18 @@
     - settings.yaml
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.master_db_root_password }}"
     datadir: /var/lib/mysql
   tags: standalone
+
+- hosts: cluster_control,frontend_db,backend_db
+  roles:
+    - gkansible.gkservercollection.basic_packages
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+  tags: basic_packages
 
 - hosts: cluster_control
   gather_facts: false
@@ -135,9 +145,9 @@
       wait_for:
         port: 3306
         timeout: 3600
-    - name: Wait for another 300s to make sure everything is done
+    - name: Wait for another 60s to make sure everything is done
       wait_for:
-        timeout: 300
+        timeout: 60
   tags: wait
 
   # Work in progress - stepping over this one play at a time appears to work
@@ -255,3 +265,14 @@
         name: maxscale
         state: restarted
   tags: maxscale
+
+- hosts: db,backend_db[0]
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    git_branch: develop # use the dev branch schemas for now
+  roles:
+    - lasair_database
+  tags: setup_database
