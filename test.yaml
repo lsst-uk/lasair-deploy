@@ -35,11 +35,11 @@
 
     - name: db server listening on port 3306
       command: nc -z "{{ item }}" 3306
-      loop: "{{ groups['db'] }}"
+      loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
     
     - name: validate object db schema
       command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json
-      loop: "{{ groups['db'] }}"
+      loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
 
 
     #  ubuntu@admin:~/lasair-deploy$ echo "three" | kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -P -p 0
