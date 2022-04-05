@@ -1,16 +1,12 @@
 ---
 
-- name: Setup Sherlock database
-  community.mysql.mysql_query:
-    query:
-      - CREATE DATABASE IF NOT EXISTS {{ db_name }};
-      - CREATE USER IF NOT EXISTS '{{ sherlock_user }}'@'%' IDENTIFIED BY '{{ sherlock_password }}'
-      - GRANT SELECT, SHOW VIEW ON crossmatch_catalogues.* TO '{{ sherlock_user }}'@'%'
+- name: Create Sherlock database
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
     login_host: 127.0.0.1
     login_user: root
     login_password: "{{ mysql_root_password }}"
-    single_transaction: yes
-
-- name: Load Schema
-  ansible.builtin.shell: mysql -u root --password={{ mysql_root_password | quote }} {{ db_name | quote }} < /mnt/sherlock/sherlock_schema.sql
+  notify:
+    - Create Sherlock user
+    - Load schema
 
