@@ -1,0 +1,8 @@
+---
+
+db_name: crossmatch_catalogues
+
+# database should never be accessed remotely
+sherlock_user: sherlock
+sherlock_password: sherlock
+

@@ -1,6 +1,7 @@
 ---
 - hosts: all
   gather_facts: true
+  tags: facts
 
 - hosts: all:!localhost
   gather_facts: false
@@ -65,7 +66,7 @@
     - exports.yaml
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
-    mysql_root_password: "{{ settings.master_db_root_password }}"
+    mysql_root_password: "{{ settings.local_db_root_password }}"
     datadir: /var/lib/mysql
     is_sherlock: true
   roles:
