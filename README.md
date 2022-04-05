@@ -13,8 +13,8 @@ deploy a new instance of Lasair.
 ## Preliminaries
 
 Lasair is designed to run in an OpenStack cloud. A minimal deployment 
-for development purposes is likely to require 5 instances with around 
-16GB of memory each, in addition to a more minimal bootstrap/login 
+for development purposes is likely to require several small instances,
+in addition to a more minimal bootstrap/login 
 instance; a production scale deployment is likely to require 
 considerably greater resources.
 
@@ -41,8 +41,8 @@ only 2.9 so we must install using pip:
 $ git clone https://github.com/lsst-uk/lasair-deploy.git
 ```
 
-5. Get the ```openrc.sh``` file for the OpenStack cloud, copy it to the
-login instance and source it.
+5. Get the ```openrc.sh``` file (or possibly application credential)
+for the OpenStack cloud, copy it to the login instance and source it. 
 
 6. Set the VAULT_TOKEN environment variable, e.g.:
 ```
@@ -80,6 +80,10 @@ be created at this point. If you have already created an SSH keypair
 must match the keypair in OpenStack. If this is not the case then you
 will need to fix it up manually first.
 
+It is possible to rerun this on an existing deployment in order to change
+the deployment, e.g. to add extra instances, but take care as deletion
+of instances/volumes etc. will not be warned!
+
 ## Set CephFS credentials
 
 CephFS requires that an access key be looked up and stored in Vault. This is not
@@ -112,26 +116,25 @@ the public interfaces of the instances we just created.
 
 ## Deploy Lasair
 
-If this is a new, clean deployment then we can just go ahead and run the
-deployment playbook at this point:
+First we need to deploy the database - either a standalone MariaDB server
+or a Galera cluster:
+```
+$ ansible-playbook database.yaml
+```
+
+We can now go ahead and run the deployment playbook:
 ```
 $ ansible-playbook deploy.yaml
 ```
 
-<!--
-## Update Lasair
-
-If we are making an update to an existing deployment then there is an
-```update.yaml``` playbook that skips steps that are only needed for a new
-deployment, or we can just run the relevant playbooks individually as above. 
--->
+The deployment playbook can be used to update Lasair.
 
 ## Test Lasair
 
 Once Lasair is deployed/updated we can run ```test.sh``` to run the
 post-deployment tests.
 
-
+---
 
 Copyright 2022 The University of Edinburgh and Queen's University Belfast
 
