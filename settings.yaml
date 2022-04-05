@@ -11,13 +11,13 @@ instances:
     create: true
     volume_size: 5
   frontend_db:
-    number: 0
+    number: 1
     volume_size: 5
   backend_db:
-    number: 0
+    number: 2
     volume_size: 5
   cluster_control:
-    create: false
+    create: true
   svc:
     create: true
   web:
@@ -47,6 +47,9 @@ vault:
 
 # An admin email address for services that expect one
 admin_email: admin@example.com
+
+# CephFS export location for the Sherlock database share
+sherlock_share: "10.19.4.16:6789,10.19.4.17:6789,10.19.4.18:6789:/volumes/_nogroup/f7d66a57-bdce-4924-8817-4b968ca9648f/7a8807b0-f30d-46a5-820a-1114071e5a04"
 
 # OpenStack configuration
 os:

@@ -154,6 +154,7 @@ resources:
       share_protocol: "CEPHFS"
       share_type: "default"
   svc:
+    condition: create_svc
     type: server_with_volume.yaml
     properties:
       key_name: { get_param: key_name }
@@ -166,6 +167,7 @@ resources:
       external_net: { get_param: external_net }
       assign_public_ip: true
   web:
+    condition: create_web
     type: server_with_volume.yaml
     properties:
       key_name: { get_param: key_name }
@@ -174,7 +176,7 @@ resources:
       volume_size: { get_param: volume_large }
       image_id: { get_param: image_id }
       net: { get_param: net }
-      #share_net: { get_param: share_net }
+      share_net: { get_param: share_net }
       external_net: { get_param: external_net }
       assign_public_ip: true
   db:
@@ -286,7 +288,7 @@ resources:
           volume_size: { get_param: volume_small }
           image_id: { get_param: image_id }
           net: { get_param: net }
-          #share_net: { get_param: share_net }
+          share_net: { get_param: share_net }
   filter_group:
     type: OS::Heat::ResourceGroup
     properties:

@@ -227,7 +227,7 @@
         backup: no
   tags: lc_tables
 
-
+  # skip this for now
 - hosts: cluster_control
   gather_facts: false
   become: true
@@ -238,8 +238,8 @@
     maxscale_deb_url: https://dlm.mariadb.com/1961572/MaxScale/2.5.18/packages/ubuntu/focal/x86_64/maxscale-2.5.18-1.ubuntu.focal.x86_64.deb
     backend_servers: "{{ groups['backend_db'] }}"
     frontend_servers: "{{ groups['frontend_db'] }}"
-  roles: 
-    - gkansible.gkservercollection.maxscale
+#  roles: 
+#    - gkansible.gkservercollection.maxscale
   tags: maxscale
 
 - hosts: cluster_control
@@ -252,8 +252,8 @@
     runtag: "credential-templates"
     backend_servers: "{{ groups['backend_db'] }}"
     frontend_servers: "{{ groups['frontend_db'] }}"
-  roles: 
-    - gkansible.gkservercollection.maxscale
+#  roles: 
+#    - gkansible.gkservercollection.maxscale
   tags: maxscale
 
 - hosts: cluster_control
