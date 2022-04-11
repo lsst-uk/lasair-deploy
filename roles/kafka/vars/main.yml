@@ -7,5 +7,8 @@ num_partitions: "{{ (play_hosts|length) * 8 }}"
 retention_ms: "{{ 7 * 24 * 60 * 60 * 1000 }}"
 retention_bytes: "-1"
 replication_factor: "{{ 1 if (play_hosts|length)==1 else 2 }}"
-#data_fs:
-#  - { dev: "/dev/vdb", path: "/kafka/data" }
+data_fs:
+  dev: "/dev/sdb"
+  path: "/mnt"
+  type: "ext4"
+

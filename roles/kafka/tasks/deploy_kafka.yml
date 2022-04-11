@@ -1,30 +1,30 @@
 ---
 
-# tasks file for roles/kafka
-#- name: "Create data filesystems"
-#  filesystem:
-#    fstype: xfs
-#    dev: "{{ item.dev }}"
-#  with_items: "{{ data_fs }}"
-#- name: "Create data mountpoints"
-#  file:
-#    path: "{{ item.path }}"
-#    state: directory
-#  with_items: "{{ data_fs }}"
-#- name: "Mount data filesystems"
-#  mount:
-#    path: "{{ item.path }}"
-#    src: "{{ item.dev }}"
-#    fstype: xfs
-#    opts: nofail
-#    state: mounted
-#  with_items: "{{ data_fs }}"
+- name: "Create data filesystems"
+  become: true
+  filesystem:
+    fstype: "{{ data_fs.type }}"
+    dev: "{{ data_fs.dev }}"
 
-# Temporary workaround
+- name: "Create data mountpoints"
+  become: true
+  file:
+    path: "{{ data_fs.path }}"
+    state: directory
+
+- name: "Mount data filesystems"
+  become: true
+  mount:
+    path: "{{ data_fs.path }}"
+    src: "{{ data_fs.dev }}"
+    fstype: "{{ data_fs.type }}"
+    opts: nofail
+    state: mounted
+
 - name: "Create data directory"
   become: true
   file:
-    path: "/kafka/data"
+    path: "{{ data_fs.path }}/data"
     state: directory
     mode: 0777
 
@@ -33,8 +33,8 @@
     src:  kafka-compose.yaml.j2
     dest: kafka-compose.yml
   vars:
-    mntpath: '/kafka/data'
-    logpath: '/kafka/data'
+    mntpath: "{{ data_fs.path }}/data"
+    logpath: "{{ data_fs.path }}/data"
 
 - name: "Start Kafka services"
   become: true

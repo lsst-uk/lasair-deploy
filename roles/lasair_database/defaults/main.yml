@@ -1,0 +1,17 @@
+---
+
+# Some default values that should work for testing
+# Obviously these should always get overridden in production
+settings:
+  master_db_username: ztf
+  master_db_password: 123password
+  master_db_readonly_username: readonly_ztf
+  master_db_readonly_password: 456password
+  master_db_port: 3306
+
+# url to get git repo content from
+git_url: https://raw.githubusercontent.com/lsst-uk/lasair-lsst
+
+# git branch to use
+git_branch: main
+

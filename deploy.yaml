@@ -1,19 +1,26 @@
 ---
 - hosts: all
   gather_facts: true
+  tags: facts
 
 - hosts: all:!localhost
   gather_facts: false
+  vars_files:
+    - settings.yaml
   roles:
+    - lasair_instance
+  tags:
     - lasair_instance
 
 - hosts: svc
   gather_facts: false
   vars_files:
     - settings.yaml
+    - exports.yaml
   vars:
     enable_letsencrypt: false
   roles:
+    - lasair_cephfs
     - lasair_service
     - prometheus
     - grafana
@@ -46,7 +53,9 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+    - exports.yaml
   roles:
+    - lasair_cephfs
     - ingest
   tags: ingest
   
@@ -54,7 +63,15 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+    - exports.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.local_db_root_password }}"
+    datadir: /var/lib/mysql
+    is_sherlock: true
   roles:
+    - lasair_cephfs
+    - gkansible.gkservercollection.mariadb
     - sherlock
   tags: sherlock
   
@@ -70,13 +87,8 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+    - exports.yaml
   roles:
+    - lasair_cephfs
     - webserver
   tags: web
-
-- hosts: db
-  gather_facts: false
-  roles:
-    - gkansible.gkservercollection.mariadb
-  tags: db
-

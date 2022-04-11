@@ -14,12 +14,12 @@
 
 - name: "Deploy Sherlock wrapper config"
   template:
-    src:  wrapper_config.yaml.j2
+    src:  sherlock_wrapper_config.yaml.j2
     dest: /opt/lasair/config.yaml
 
 - name: "Deploy Sherlock wrapper runner config"
   template:
-    src:  wrapper_runner.json.j2
+    src:  sherlock_wrapper_runner.json.j2
     dest: /opt/lasair/wrapper_runner.json
 
 - name: "Deploy Docker compose file"

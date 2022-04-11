@@ -20,16 +20,55 @@
         state: present
         template: "{{ template }}"
         parameters:
+          image_id: "{{ os.image_name }}"
           key_name: "{{ os.keypair_name }}"
+          net: "{{ os.network_name }}"
+          share_net: "{{ os.share_network_name }}"
+          share_size: "{{ share_size }}"
+          share_user: "{{ os.share_user }}"
+          fast_volume_type: "{{ os.fast_volume_type }}"
+          slow_volume_type: "{{ os.slow_volume_type }}"
+          cassandra_volume_size: "{{ instances.cassandra.volume_size }}"
+          db_volume_size: "{{ instances.db.volume_size }}"
+          frontend_db_volume_size: "{{ instances.frontend_db.volume_size }}"
+          backend_db_volume_size: "{{ instances.backend_db.volume_size }}"
+          kafka_pub_size: "{{ instances.kafka_pub.volume_size }}"
           n_kafka: "{{ instances.kafka.number|default(1) }}"
           n_ingest: "{{ instances.ingest.number|default(1) }}"
           n_sherlock: "{{ instances.sherlock.number|default(1) }}"
           n_filter: "{{ instances.filter.number|default(1) }}"
           n_cassandra: "{{ instances.cassandra.number|default(1) }}"
+          n_frontend_db: "{{ instances.frontend_db.number|default(0) }}"
+          n_backend_db: "{{ instances.backend_db.number|default(0) }}"
+          create_db: "{{ instances.db.create|default(true) }}"
+          create_cluster_control: "{{ instances.cluster_control.create|default(false) }}"
+          create_kafka_pub: "{{ instances.kafka_pub.create|default(true) }}"
+          create_svc: "{{ instances.svc.create|default(true) }}"
+          create_web: "{{ instances.web.create|default(true) }}"
           flavor_small: "{{ os.flavor_small }}"
           flavor_medium: "{{ os.flavor_medium }}"
           flavor_large: "{{ os.flavor_large }}"
           flavor_xlarge: "{{ os.flavor_xlarge }}"
+          flavor_kafka: "{{ os.flavor_kafka }}"
+
+    - name: update exports.yaml
+      template:
+        src: exports.yaml.j2
+        dest: exports.yaml
+
+#    - name: update exports.yaml
+#      lineinfile:
+#        path: exports.yaml
+#        regexp: "exports"
+#        line: "  exports: {{ item }}"
+#      loop: |
+#        [
+#        {%- for output in stack_create.stack.outputs %}
+#          {%- if output.description == "Export locations" %}
+#            {{ output.output_value | regex_replace('\[(.*)\]', '\1')  }}, 
+#          {%- endif %}
+#        {%- endfor %}
+#        ]
 
     - name: update /etc/hosts
       become: true
@@ -41,7 +80,9 @@
         [
         {%- for output in stack_create.stack.outputs %}
           {%- if output.description == "Private IP" %}
-            { 'address': '{{ output.output_value }}', 'hostname': '{{ os.stack_name }}-{{ output.output_key }}' },
+            {%- if output.output_value %}
+              { 'address': '{{ output.output_value }}', 'hostname': '{{ os.stack_name }}-{{ output.output_key }}' },
+            {%- endif %}
           {%- endif %}
           {%- if output.description == "Private IP list" %}
             {%- for address in output.output_value %}
@@ -70,7 +111,7 @@
             {%- for i in range(0, values.number) %}
               { 'role': '{{ role }}', 'suffix': '-{{ i }}' },
             {%- endfor %}
-          {%- else %}
+          {%- elif values.create %}
             { 'role': '{{ role }}', 'suffix': '' },
           {%- endif %}
         {%- endfor %}

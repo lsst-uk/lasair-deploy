@@ -1,0 +1,278 @@
+---
+
+- hosts: db,frontend_db,backend_db,cluster_control
+  gather_facts: true
+  tags: facts
+
+- hosts: db,frontend_db,backend_db,cluster_control
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  roles:
+    - lasair_instance
+  tags: lasair_instance
+
+- hosts: db,frontend_db,backend_db
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: create filesystem for data
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/sdb
+    - name: ensure data filesystem is mounted
+      ansible.posix.mount:
+        path: /var/lib/mysql
+        src: /dev/sdb
+        fstype: ext4
+        opts: nofail
+        state: mounted
+  tags: filesystem
+
+- hosts: db
+  gather_facts: false
+  roles:
+    - gkansible.gkservercollection.mariadb 
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.master_db_root_password }}"
+    datadir: /var/lib/mysql
+  tags: standalone
+
+- hosts: cluster_control,frontend_db,backend_db
+  roles:
+    - gkansible.gkservercollection.basic_packages
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+  tags: basic_packages
+
+- hosts: cluster_control
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: "Install python3-mysqldb"
+      become: true
+      apt:
+        pkg: python3-mysqldb
+        state: present
+        update-cache: yes
+  tags: cluster_control
+
+- hosts: cluster_control
+  gather_facts: false
+  become: yes
+  roles:
+    - gkansible.gkservercollection.severalnines_clustercontrol
+  vars_files:
+    - settings.yaml
+  vars:
+    runtag: "controller"
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.master_db_root_password }}"
+    cmon_mysql_password: "{{ settings.master_db_root_password }}"
+    cc_admin:
+      - set: true
+        email: "{{ admin_email }}"
+        password: "{{ settings.master_db_root_password }}"
+    cc_license:
+      - set: false
+  tags: cluster_control_1
+
+- hosts: backend_db,frontend_db
+  gather_facts: false
+  become: yes
+  roles:
+    - role: gkansible.gkservercollection.severalnines_clustercontrol
+      tags: dbnodes
+  vars:
+    runtag: "dbnodes"
+    clustercontrol_ip_address: "{{ hostvars[groups['cluster_control'][0]]['ansible_all_ipv4_addresses'][0] }}"
+    remote_login_user: "root"
+    remote_login_user_home: "/root"
+    ssh_keyfile: "{{ remote_login_user_home }}/.ssh/id_rsa"
+    ssh_user: "{{ remote_login_user }}"
+  tags: db_1
+
+- hosts: cluster_control
+  gather_facts: false
+  become: yes
+  roles:
+    - role: gkansible.gkservercollection.severalnines_clustercontrol
+      tags: "deploy-database"
+  vars_files:
+    - settings.yaml
+  vars:
+    runtag: "deploy-database"
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.master_db_root_password }}"
+    remote_login_user: "root"
+    remote_login_user_home: "/root"
+    clustercontrol_ip_address: "{{ hostvars[groups['cluster_control'][0]]['ansible_all_ipv4_addresses'][0] }}"
+    cc_cluster:
+      # minimal create new galera
+      - deployment: true
+        operation: "create"
+        cluster_type: "galera"
+        cluster_name: "galera_cluster"
+        mysql_cnf_template: "my.cnf.mdb10x-galera"
+        mysql_datadir: "/var/lib/mysql"
+        mysql_root_password: "{{ settings.master_db_root_password }}"
+        mysql_hostnames: "{{ groups['backend_db'] + groups['frontend_db'] }}"
+        mysql_password: "{{ settings.master_db_root_password }}"
+        cmon_mysql_password: "{{ settings.master_db_root_password }}"
+        mysql_port: 3306
+        mysql_version: "10.4"
+        ssh_keyfile: "{{ remote_login_user_home }}/.ssh/id_rsa"
+        ssh_user: "{{ remote_login_user }}"
+        sudo_password: ""
+        vendor: "mariadb"
+        nodes: | 
+          [
+          {%- for host in groups['backend_db'] + groups['frontend_db'] -%}
+            { "hostname": "{{ host }}", "hostname_data": "{{ host }}", "hostname_internal": "", "port": "3306" },
+          {%- endfor -%}
+          ] 
+  tags: cluster_control_2
+
+- hosts: db,cluster_control,backend_db,frontend_db
+  gather_facts: false
+  tasks:
+    - name: Wait for port 3306 to become open on database hosts
+      wait_for:
+        port: 3306
+        timeout: 3600
+    - name: Wait for another 60s to make sure everything is done
+      wait_for:
+        timeout: 60
+  tags: wait
+
+  # Work in progress - stepping over this one play at a time appears to work
+  # but running the whole playbook is failing - probably not waiting long enough/for the right thing
+
+- hosts: backend_db,frontend_db
+  gather_facts: false
+  become: true
+  roles:
+    - gkansible.gkservercollection.severalnines_clustercontrol
+  vars_files:
+    - settings.yaml
+  vars:
+    runtag: "credential-templates"
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_username: root
+    mysql_root_password: "{{ settings.master_db_root_password }}"
+  tags: db_2
+
+# Setup Maxscale - this can only run once the databases are up and running
+- hosts: frontend_db
+  gather_facts: false
+  become: true
+  become_user: root
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    password: "{{ settings.master_db_root_password }}"
+    ip: "{{ hostvars[groups['cluster_control'][0]]['ansible_all_ipv4_addresses'][0] }}"
+  tasks: 
+    - name: Install PyMySQL
+      apt:
+        pkg: python3-pymysql
+        state: present
+        update-cache: yes
+    - name: Add MaxScale MySQL User on Cluster
+      community.mysql.mysql_query:
+        query:
+          - CREATE USER IF NOT EXISTS 'maxscale'@'{{ ip }}' IDENTIFIED BY "{{ password }}"
+          - GRANT SELECT ON mysql.user TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.db TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.tables_priv TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.columns_priv TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.proxies_priv TO 'maxscale'@'{{ ip }}';
+          - GRANT SELECT ON mysql.roles_mapping TO 'maxscale'@'{{ ip }}';
+          - GRANT SHOW DATABASES ON *.* TO 'maxscale'@'{{ ip }}';
+        login_user: root
+        login_password: "{{ password }}"
+        single_transaction: yes
+  tags: maxscale_user
+
+- hosts: backend_db,frontend_db
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Request lowercase tables names on all mysql servers
+      ini_file:
+        path: /etc/mysql/my.cnf
+        section: MYSQLD
+        option: lower_case_table_names
+        value: "1"
+        backup: no
+    - name: Request lowercase tables names on all mysql servers
+      ini_file:
+        path: /etc/mysql/my.cnf
+        section: MYSQLD
+        option: log_bin_trust_function_creators
+        value: "1"
+        backup: no
+    - name: Increase open file limit
+      ini_file:
+        path: /etc/systemd/system/mariadb.service.d/override.conf
+        section: Service
+        option: LimitNOFILE
+        value: "infinity"
+        backup: no
+  tags: lc_tables
+
+  # skip this for now
+- hosts: cluster_control
+  gather_facts: false
+  become: true
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    maxscale_deb_url: https://dlm.mariadb.com/1961572/MaxScale/2.5.18/packages/ubuntu/focal/x86_64/maxscale-2.5.18-1.ubuntu.focal.x86_64.deb
+    backend_servers: "{{ groups['backend_db'] }}"
+    frontend_servers: "{{ groups['frontend_db'] }}"
+#  roles: 
+#    - gkansible.gkservercollection.maxscale
+  tags: maxscale
+
+- hosts: cluster_control
+  gather_facts: false
+  become: true
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    runtag: "credential-templates"
+    backend_servers: "{{ groups['backend_db'] }}"
+    frontend_servers: "{{ groups['frontend_db'] }}"
+#  roles: 
+#    - gkansible.gkservercollection.maxscale
+  tags: maxscale
+
+- hosts: cluster_control
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: maxscale restart
+      service:
+        name: maxscale
+        state: restarted
+  tags: maxscale
+
+- hosts: db,backend_db[0]
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    git_branch: develop # use the dev branch schemas for now
+  roles:
+    - lasair_database
+  tags: setup_database

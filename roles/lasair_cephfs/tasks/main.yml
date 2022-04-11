@@ -1,0 +1,66 @@
+---
+- name: Install Ceph packages
+  become: true
+  apt:
+      name:
+        - ceph-common
+      state: present
+      update_cache: true
+
+- name: Create /etc/ceph directory
+  become: true
+  file:
+    path: /etc/ceph
+    state: directory
+    mode: '0755'
+
+- name: Create secret file
+  become: true
+  template:
+    src: ceph.secret.j2
+    dest: /etc/ceph/ceph.secret
+    mode: '0600'
+
+- name: Create mountpoint
+  become: true
+  file:
+    path: /mnt/cephfs
+    state: directory
+    mode: '0755'
+
+- name: Configure and mount CephFS
+  become: true
+  mount:
+    boot: false
+    fstype: ceph
+    opts: "secretfile=/etc/ceph/ceph.secret,name={{ os.share_user }}"
+    path: /mnt/cephfs
+    src: "{{ ceph.exports }}"
+    state: mounted
+
+- name: Create sherlock secret file
+  become: true
+  template:
+    src: ceph.sherlock.secret.j2
+    dest: /etc/ceph/ceph.sherlock.secret
+    mode: '0600'
+  when: is_sherlock == true
+
+- name: Create sherlock mountpoint
+  become: true
+  file:
+    path: /mnt/sherlock
+    state: directory
+    mode: '0755'
+  when: is_sherlock == true
+
+- name: Configure and mount CephFS
+  become: true
+  mount:
+    boot: false
+    fstype: ceph
+    opts: "secretfile=/etc/ceph/ceph.sherlock.secret,name=sherlock"
+    path: /mnt/sherlock
+    src: "{{ sherlock_share }}"
+    state: mounted
+  when: is_sherlock == true

@@ -1,24 +1,37 @@
 # Various tests to validate that Lasair is deployed correctly
 
 ---
+
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Ping all hosts
+      ping:
+      tags: ping
+
 - hosts: localhost
   gather_facts: false
   vars_files:
     - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
 
   tasks:
 
     - name: kafka listening on port 9092
       command: nc -z "{{ item }}" 9092
       loop: "{{ groups['kafka'] }}"
+      tags: kafka
 
     - name: kafka_pub listening on port 9092
       command: nc -z "{{ item }}" 9092
       loop: "{{ groups['kafka_pub'] }}"
+      tags: kafka
 
     - name: kafka_pub listening on port 29092
       command: nc -z "{{ item }}" 29092
       loop: "{{ groups['kafka_pub'] }}"
+      tags: kafka
 
     - name: web server listening on port 80
       command: nc -z "{{ item }}" 80
@@ -26,26 +39,37 @@
 
     - name: db server listening on port 3306
       command: nc -z "{{ item }}" 3306
-      loop: "{{ groups['db'] }}"
+      loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
+      tags: db
     
+    - name: validate object db schema
+      command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json
+      loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
+      tags: db
+
+
     #  ubuntu@admin:~/lasair-deploy$ echo "three" | kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -P -p 0
     #  ubuntu@admin:~/lasair-deploy$ kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -C -o -1 -c 1 -p 0
 
     - name: set kafka test str
       set_fact: kafka_test_str="{{ lookup('community.general.random_string', special=false) }}"
+      tags: kafka
 
     - name: test kafka produce
       shell: "echo {{ kafka_test_str }} | kafkacat -q -b {{ item }}:9092 -t deploy_test -P -p 0"
       loop: "{{ groups['kafka'] }}"
+      tags: kafka
 
     - name: test kafka consume
       shell: "kafkacat -q -b {{ item }}:9092 -t deploy_test -C -o -1 -c 1 -p 0"
       register: kafka_output
       loop: "{{ groups['kafka'] }}"
+      tags: kafka
 
     - name: check kafka output
       assert:
         that: "item == kafka_test_str"
         quiet: true
       loop: "{{ kafka_output.results | map(attribute='stdout') | list }}"
+      tags: kafka
 

@@ -1,0 +1,23 @@
+#!/bin/bash
+#export APACHEPATH={{ ansible_env.HOME }}/mod_wsgi
+export PORT=8080
+
+#$APACHEPATH/apachectl stop
+apachectl stop
+sleep 1
+
+mod_wsgi-express setup-server \
+--user {{ ansible_effective_user_id }} \
+--group {{ ansible_effective_group_id }} \
+--working-directory {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair \
+--python-path       {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair \
+--python-path       {{ ansible_env.HOME }}/lasair-lsst-web/src \
+--url-alias /lasair/static static \
+--url-alias /media media \
+--application-type module lasair.wsgi \
+#--server-root $APACHEPATH \
+--port $PORT \
+--mount-point /
+
+#$APACHEPATH/apachectl start
+apachectl start

@@ -1,4 +1,5 @@
 ---
 # tasks file for sherlock
 
+- import_tasks: database.yml
 - import_tasks: wrapper.yml

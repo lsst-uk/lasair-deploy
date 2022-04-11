@@ -1,0 +1,12 @@
+---
+
+- name: Create Sherlock database
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    login_host: 127.0.0.1
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  notify:
+    - Create Sherlock user
+    - Load schema
+

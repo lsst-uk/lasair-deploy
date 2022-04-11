@@ -9,11 +9,14 @@
     - settings.yaml
 
   vars:
-    keypair_path: "{{ ansible_env.HOME }}/ssh"
+    keypair_path: "{{ ansible_env.HOME }}/.ssh"
 
   tasks:
 
     # Set up the SSH keypair
+    # Either creates a new keypair in OpenStack and saves the keys locally
+    # or, if a local key already exists, check that it matches
+   
     - name: Test for local private key
       stat:
         path: "{{ keypair_path }}/id_rsa"
@@ -34,19 +37,20 @@
       assert:
         that: not private_key_file.stat.exists
         fail_msg: Created a new keypair, but local private key file already exists - fix or delete before proceeding
+        quiet: true
       when: keypair.key.private_key
 
     - name: Write private key
       copy:
         dest: "{{ keypair_path }}/id_rsa"
-        content: "{{ keypair.key.private_key }}"
+        content: "{{ keypair.key.private_key | trim }}"
         mode: 0600
       when: keypair.key.private_key and not private_key_file.stat.exists  
 
     - name: Write public key
       copy:
         dest: "{{ keypair_path }}/id_rsa.pub"
-        content: "{{ keypair.key.public_key }}"
+        content: "{{ keypair.key.public_key | trim }}"
         mode: 0644
       when: keypair.key.public_key and not public_key_file.stat.exists
 
@@ -59,10 +63,11 @@
       assert:
         that: private_key_file.stat.exists
         fail_msg: No local private key file - fix or delete before proceeding
+        quiet: true
 
     - name: Check public key content
       assert:
-        that: item == "{{ keypair.key.public_key }}"
+        that: "{{ lookup('file', keypair_path + '/id_rsa.pub', rstrip=true) == (keypair.key.public_key | trim) }}"
         fail_msg: Local public key file has incorrect content - fix or delete before proceeding
-      with_file: "{{ keypair_path }}/id_rsa.pub"
+        quiet: true
 
