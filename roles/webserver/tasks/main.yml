@@ -75,9 +75,7 @@
     mode: 0755
 
 - name: Restart web server
-  become: true
   command:
-    #cmd: "/bin/bash {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/restart_webserver"
     cmd: "{{ ansible_env.HOME }}/restart_webserver.sh"
 
 - name: Enable Apache modules
