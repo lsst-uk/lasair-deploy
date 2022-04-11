@@ -1,10 +1,12 @@
 #!/bin/bash
-#export APACHEPATH={{ ansible_env.HOME }}/mod_wsgi
+export APACHEPATH={{ ansible_env.HOME }}/mod_wsgi
 export PORT=8080
 
-#$APACHEPATH/apachectl stop
+$APACHEPATH/apachectl stop
 apachectl stop
 sleep 1
+
+cd {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair
 
 mod_wsgi-express setup-server \
 --user {{ ansible_effective_user_id }} \
@@ -15,9 +17,9 @@ mod_wsgi-express setup-server \
 --url-alias /lasair/static static \
 --url-alias /media media \
 --application-type module lasair.wsgi \
-#--server-root $APACHEPATH \
+--server-root $APACHEPATH \
 --port $PORT \
 --mount-point /
 
-#$APACHEPATH/apachectl start
+$APACHEPATH/apachectl start
 apachectl start
