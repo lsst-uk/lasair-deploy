@@ -33,6 +33,8 @@
       - gkutils
       - mod_wsgi-httpd
       - mod_wsgi
+      - confluent-kafka
+      - fastavro
 
 - name: Create WSGI directory
   file:
