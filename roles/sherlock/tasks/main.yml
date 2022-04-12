@@ -1,5 +1,6 @@
 ---
 # tasks file for sherlock
 
-- import_tasks: database.yml
+# db is now done in mysql_sherlock role
+#- import_tasks: database.yml
 - import_tasks: wrapper.yml
