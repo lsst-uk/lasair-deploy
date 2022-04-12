@@ -79,7 +79,12 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.local_db_root_password }}"
+    datadir: /var/lib/mysql
   roles:
+    - gkansible.gkservercollection.mariadb
     - filter
   tags: filter
 
