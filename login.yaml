@@ -24,6 +24,12 @@
       state: present
       update-cache: yes
 
+  - name: Install vault snap
+    become: true
+    community.general.snap:
+      name:
+        - vault
+
   - name: Set SSH client config
     copy:
       dest: ~/.ssh/config
