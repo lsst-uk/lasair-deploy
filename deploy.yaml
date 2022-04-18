@@ -79,6 +79,9 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+  vars:
+    db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
   roles:
     - filter
   tags: filter
@@ -88,6 +91,11 @@
   vars_files:
     - settings.yaml
     - exports.yaml
+  vars:
+    db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
+    sherlock_svc_host: "{{ groups['sherlock'][0] }}"
+    cassandra_head: "['{{ groups['cassandranodes'][0] }}']"
   roles:
     - lasair_cephfs
     - webserver
