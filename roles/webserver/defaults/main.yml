@@ -1,0 +1,7 @@
+---
+# defaults file for webserver
+
+settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+db_host: settings.master_db_ip
+db_port: settings.master_db_port
+
