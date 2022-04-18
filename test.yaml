@@ -73,3 +73,12 @@
       loop: "{{ kafka_output.results | map(attribute='stdout') | list }}"
       tags: kafka
 
+- hosts: cassandranodes
+  gather_facts: false
+  tasks:
+    - name: cassandra listening on port 9042
+      wait_for:
+        port: 9042
+        timeout: 1
+      tags: net
+  tags: cassandra

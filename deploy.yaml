@@ -92,3 +92,33 @@
     - lasair_cephfs
     - webserver
   tags: web
+
+- hosts: cassandranodes
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    cassandra_cluster_name: "{{ lasair_name }}"
+  roles:
+    - gkansible.gkservercollection.cassandra4
+  tags: cassandra
+
+- hosts: cassandranodes
+  vars_files:
+    - settings.yaml
+  vars:
+    cassandra_cluster_name: "{{ lasair_name }}"
+  roles:
+    - gkansible.gkservercollection.cassandra_start_service
+  serial: 1
+  tags: cassandra
+
+- hosts: cassandranodes[0]
+  vars_files:
+    - settings.yaml
+  vars:
+    cassandra_cluster_name: "{{ lasair_name }}"
+  roles:
+    - gkansible.gkservercollection.cassandra_schema_lasair
+  tags: cassandra
+
