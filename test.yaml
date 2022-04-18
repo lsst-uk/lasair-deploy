@@ -18,39 +18,44 @@
 
   tasks:
 
+    # network connectivity tests
     - name: kafka listening on port 9092
       command: nc -z "{{ item }}" 9092
       loop: "{{ groups['kafka'] }}"
-      tags: kafka
+      tags: net, kafka
 
     - name: kafka_pub listening on port 9092
       command: nc -z "{{ item }}" 9092
       loop: "{{ groups['kafka_pub'] }}"
-      tags: kafka
+      tags: net, kafka
 
     - name: kafka_pub listening on port 29092
       command: nc -z "{{ item }}" 29092
       loop: "{{ groups['kafka_pub'] }}"
-      tags: kafka
+      tags: net, kafka
 
     - name: web server listening on port 80
       command: nc -z "{{ item }}" 80
       loop: "{{ groups['web'] }}"
+      tags: net, web
+
+    - name: web server listening on port 8080
+      command: nc -z "{{ item }}" 8080
+      loop: "{{ groups['web'] }}"
+      tags: net, web
 
     - name: db server listening on port 3306
       command: nc -z "{{ item }}" 3306
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
-      tags: db
+      tags: net, db
     
+    # database tests
     - name: validate object db schema
       command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
       tags: db
 
-
-    #  ubuntu@admin:~/lasair-deploy$ echo "three" | kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -P -p 0
-    #  ubuntu@admin:~/lasair-deploy$ kafkacat -q -b lasair-dev-kafka-0:9092 -t deploy_test -C -o -1 -c 1 -p 0
-
+    # kafka tests
     - name: set kafka test str
       set_fact: kafka_test_str="{{ lookup('community.general.random_string', special=false) }}"
       tags: kafka
@@ -72,4 +77,25 @@
         quiet: true
       loop: "{{ kafka_output.results | map(attribute='stdout') | list }}"
       tags: kafka
+
+    # webserver tests
+    - name: check we can get home page
+      ansible.builtin.uri:
+        url: "http://{{ item }}:8080"
+      #loop: "{{ groups['web'] }}"
+      loop: 
+        - 10.65.0.198
+      tags: web
+
+    - name: check static file content
+      assert:
+        that: >
+          "{{ lookup('url', 'http://'+item+':8080/lasair/static/css/lasair-web.css', split_lines=false) | hash('md5') }}"
+          ==
+          "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair-lsst-web/main/src/lasair-webapp/lasair/staticfiles/css/lasair-web.css', split_lines=false) | hash('md5') }}"
+        quiet: true
+      #loop: "{{ groups['web'] }}"
+      loop: 
+        - 10.65.0.198
+      tags: web
 
