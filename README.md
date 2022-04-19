@@ -31,7 +31,6 @@ $  openstack router list
 $  openstack router create lasair-dev
 $  openstack router set lasair-dev --external-gateway external
 $  openstack router add subnet lasair-dev lasair-dev-subnet
-
 ```
 
 2. Manually create an instance (in the network created above if 
