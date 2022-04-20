@@ -1,0 +1,7 @@
+---
+  
+# Some default values that should work for testing
+mysql_db_name: ztf
+mysql_db_user: ztf
+mysql_db_password: 123password
+
