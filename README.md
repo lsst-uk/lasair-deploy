@@ -27,7 +27,6 @@ For example:
 ```
 $  openstack network create lasair-dev
 $  openstack subnet create lasair-dev-subnet --network lasair-dev --subnet-range 10.1.1.0/24
-$  openstack router list
 $  openstack router create lasair-dev
 $  openstack router set lasair-dev --external-gateway external
 $  openstack router add subnet lasair-dev lasair-dev-subnet
