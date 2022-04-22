@@ -13,6 +13,7 @@
     dest: /opt/lasair/sherlock_service_settings.yaml
 
 - name: "Install apt packages"
+  become: true
   apt:
     name:
       - gcc
@@ -30,22 +31,24 @@
 
 - name: "Copy main.py"
   get_url:
-    url: "https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/sherlocksvc/app/main.py"
+    url: "https://raw.githubusercontent.com/lsst-uk/lasair-lsst/develop/sherlocksvc/app/main.py"
     dest: /opt/lasair/main.py
     mode: 0644
 
-#- name: "Start Sherlock wrapper service"
-#  become: true
-#  docker_compose:
-#    project_name: sherlock_wrapper
-#    project_src:
-#        '.'
-#    files:
-#      - 'sherlock-wrapper-compose.yml'
-#    services:
-#      - 'sherlock_wrapper'
-#    state:
-#      present
-#    scale:
-#      sherlock_wrapper: 2
+- name: "Create uwsgi ini file"
+  template:
+    src:  sherlock_service.ini.j2
+    dest: /opt/lasair/sherlock_service.ini
 
+- name: Create systemd service file
+  become: true
+  copy:
+    src: sherlocksvc.service
+    dest: /etc/systemd/system/sherlocksvc.service
+
+- name: Make sure service unit is running
+  become: true
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: sherlocksvc
