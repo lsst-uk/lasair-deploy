@@ -104,3 +104,11 @@
         - 10.65.0.198
       tags: web
 
+    # sherlock tests
+    - name: check that sherlocksvc returns 400 on /query
+      ansible.builtin.uri:
+        url: "http://{{ item }}/query"
+        status_code: 400
+      loop: "{{ groups['sherlock'] }}"
+      tags: sherlock
+
