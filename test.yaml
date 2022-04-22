@@ -48,7 +48,12 @@
       command: nc -z "{{ item }}" 3306
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
       tags: net, db
-    
+
+    - name: sherlock service listening on port 80
+      command: nc -z "{{ item }}" 80
+      loop: "{{ groups['sherlock'] }}"
+      tags: net, sherlock
+
     # database tests
     - name: validate object db schema
       command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json
