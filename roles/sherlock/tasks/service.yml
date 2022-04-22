@@ -22,11 +22,13 @@
       - python3-dev
       - python3-yaml
       - python3-pip
+      - nginx
 
 - name: "Install pip packages"
   pip:
     name:
       - flask-restful
+      - uwsgi
       - qub-sherlock==2.2.0
 
 - name: "Copy main.py"
@@ -52,3 +54,37 @@
     state: started
     enabled: true
     name: sherlocksvc
+
+- name: Create nginx site file
+  become: true
+  copy:
+    src: sherlocksvc.nginx
+    dest: /etc/nginx/sites-available/sherlocksvc
+
+- name: Link nginx site file
+  become: true
+  file:
+    src: /etc/nginx/sites-available/sherlocksvc
+    dest:  /etc/nginx/sites-enabled/sherlocksvc
+    state: link
+
+- name: Unlink default nginx site file
+  become: true
+  file:
+    path:  /etc/nginx/sites-enabled/default
+    state: absent
+
+# could make this a handler
+- name: Restart sherlocksvc
+  become: true
+  ansible.builtin.systemd:
+    name: sherlocksvc.service
+    state: restarted
+
+# could make this a handler
+- name: Restart nginx
+  become: true
+  ansible.builtin.systemd:
+    name: nginx.service
+    state: restarted
+
