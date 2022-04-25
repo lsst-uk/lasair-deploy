@@ -82,26 +82,26 @@
 
 - name: Create object table
   shell:
-      cmd: mysql --user=ztf --password=123password < objects.sql
+      cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < objects.sql
       chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
 
 - name: Create sherlock_classifications table
   shell:
-      cmd: mysql --user=ztf --password=123password < sherlock_classifications.sql
+      cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < sherlock_classifications.sql
       chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
 
 - name: Create area_hits table
   shell:
-      cmd: mysql --user=ztf --password=123password < area_hits.sql
+      cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < area_hits.sql
       chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
 
 - name: Create watchlist_hits table
   shell:
-      cmd: mysql --user=ztf --password=123password < watchlist_hits.sql
+      cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < watchlist_hits.sql
       chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
 
 - name: Create annotations table
   shell:
-      cmd: mysql --user=ztf --password=123password < annotations.sql
+      cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < annotations.sql
       chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
 
