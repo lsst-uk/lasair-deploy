@@ -23,6 +23,15 @@ required. If there are multiple Lasair deployments in the same
 OpenStack project it is probably a good idea for each one to have its
 own network. 
 
+For example:
+```
+$  openstack network create lasair-dev
+$  openstack subnet create lasair-dev-subnet --network lasair-dev --subnet-range 10.1.1.0/24
+$  openstack router create lasair-dev
+$  openstack router set lasair-dev --external-gateway external
+$  openstack router add subnet lasair-dev lasair-dev-subnet
+```
+
 2. Manually create an instance (in the network created above if 
 applicable). This will be used to bootstrap the rest
 of the deployment and as a login node. Ensure that all Lasair admins

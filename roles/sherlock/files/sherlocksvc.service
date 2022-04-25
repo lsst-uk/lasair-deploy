@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve sherlocksvc
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/opt/lasair
+ExecStart=/home/ubuntu/.local/bin/uwsgi --ini sherlock_service.ini
+
+[Install]
+WantedBy=multi-user.target
+

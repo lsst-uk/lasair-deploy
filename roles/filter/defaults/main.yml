@@ -4,4 +4,8 @@
 settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
 db_host: settings.master_db_ip
 db_port: settings.master_db_port
-
+  
+# Some default values that should work for testing
+mysql_db_name: ztf
+mysql_db_user: ztf
+mysql_db_password: 123password
