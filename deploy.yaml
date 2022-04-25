@@ -67,6 +67,8 @@
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
     mysql_root_password: "{{ settings.local_db_root_password }}"
+    master_db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    master_db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     datadir: /var/lib/mysql
     is_sherlock: true
   roles:
@@ -79,7 +81,14 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+  vars:
+    db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.local_db_root_password }}"
+    datadir: /var/lib/mysql
   roles:
+    - gkansible.gkservercollection.mariadb
     - filter
   tags: filter
 
@@ -88,7 +97,42 @@
   vars_files:
     - settings.yaml
     - exports.yaml
+  vars:
+    db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
+    sherlock_svc_host: "{{ groups['sherlock'][0] }}"
+    cassandra_head: "{{ groups['cassandranodes'] }}"
   roles:
     - lasair_cephfs
     - webserver
   tags: web
+
+- hosts: cassandranodes
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    cassandra_cluster_name: "{{ lasair_name }}"
+  roles:
+    - gkansible.gkservercollection.cassandra4
+  tags: cassandra
+
+- hosts: cassandranodes
+  vars_files:
+    - settings.yaml
+  vars:
+    cassandra_cluster_name: "{{ lasair_name }}"
+  roles:
+    - gkansible.gkservercollection.cassandra_start_service
+  serial: 1
+  tags: cassandra
+
+- hosts: cassandranodes[0]
+  vars_files:
+    - settings.yaml
+  vars:
+    cassandra_cluster_name: "{{ lasair_name }}"
+  roles:
+    - gkansible.gkservercollection.cassandra_schema_lasair
+  tags: cassandra
+

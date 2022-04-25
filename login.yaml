@@ -20,8 +20,15 @@
         - python3-openstackclient
         - python3-heatclient
         - python3-manilaclient
+        - python3-mysql.connector
       state: present
       update-cache: yes
+
+  - name: Install vault snap
+    become: true
+    community.general.snap:
+      name:
+        - vault
 
   - name: Set SSH client config
     copy:

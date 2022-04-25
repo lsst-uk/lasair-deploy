@@ -2,7 +2,7 @@ DB_HOST_LOCAL    = 'localhost'
 DB_USER_LOCAL    = 'ztf'
 DB_PASS_LOCAL    = '{{ settings.local_db_password }}'
 
-DB_HOST_REMOTE   = '{{ settings.master_db_ip }}'
+DB_HOST_REMOTE   = '{{ db_host }}'
 DB_USER_REMOTE   = '{{ settings.master_db_readonly_username }}'
 DB_PASS_REMOTE   = '{{ settings.master_db_readonly_password }}'
 

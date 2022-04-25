@@ -28,20 +28,21 @@
       state: directory
       mode: 0777
 
-- name: Modify apparmor so MySQL can write
-  become: true
-  lineinfile:
-    dest: /etc/apparmor.d/usr.sbin.mysqld
-    line: "{{ ansible_env.HOME }}/csvfiles/** rwk,"
-    insertbefore: "}"
-    state: present
-
-- name: Restart apparmor
-  become: true
-  service:
-    name: apparmor
-    state: restarted
-    enabled: yes
+# no longer required with current version of mariadb
+#- name: Modify apparmor so MySQL can write
+#  become: true
+#  lineinfile:
+#    dest: /etc/apparmor.d/usr.sbin.mysqld
+#    line: "{{ ansible_env.HOME }}/csvfiles/** rwk,"
+#    insertbefore: "}"
+#    state: present
+#
+#- name: Restart apparmor
+#  become: true
+#  service:
+#    name: apparmor
+#    state: restarted
+#    enabled: yes
 
 #- name: Copy git credentials
 #  copy:
@@ -63,10 +64,21 @@
     src:  settings.py.j2
     dest: "{{ ansible_env.HOME }}/lasair-lsst/filter/settings.py"
 
-- name: Run mysql setup
-  shell:
-      cmd: mysql --user=root --password=root123password < mysql_setup.sql
-      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility"
+- name: Setup Lasair database
+  community.mysql.mysql_query:
+    query:
+      - CREATE DATABASE IF NOT EXISTS {{ mysql_db_name }};
+      - USE {{ mysql_db_name }};
+      - CREATE USER IF NOT EXISTS '{{ mysql_db_user }}'@'localhost' IDENTIFIED BY '{{ mysql_db_password }}';
+      - GRANT ALL PRIVILEGES ON {{ mysql_db_name }}.* TO '{{ mysql_db_user }}'@'localhost';
+      - GRANT FILE ON *.* TO '{{ mysql_db_user }}'@'localhost';
+      - DROP FUNCTION IF EXISTS jdnow;
+      - CREATE FUNCTION jdnow () RETURNS DOUBLE DETERMINISTIC RETURN (unix_timestamp(now())/86400 + 2440587.5);
+      - GRANT EXECUTE ON FUNCTION {{ mysql_db_name }}.jdnow TO '{{ mysql_db_user }}'@'localhost';
+    login_host: 127.0.0.1
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    single_transaction: yes
 
 - name: Create object table
   shell:

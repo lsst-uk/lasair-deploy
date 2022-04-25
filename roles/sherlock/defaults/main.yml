@@ -6,3 +6,9 @@ db_name: crossmatch_catalogues
 sherlock_user: sherlock
 sherlock_password: sherlock
 
+master_db_name: "{{ settings.master_db_username }}"
+master_db_host: "{{ settings.master_db_ip }}"
+master_db_port: 3306
+master_db_username: "{{ settings.master_db_username }}"
+master_db_password: "{{ settings.master_db_password }}"
+

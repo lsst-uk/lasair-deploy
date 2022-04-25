@@ -2,7 +2,7 @@
 export APACHEPATH={{ ansible_env.HOME }}/mod_wsgi
 export PORT=8080
 
-$APACHEPATH/apachectl stop
+#$APACHEPATH/apachectl stop
 sleep 1
 
 cd {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair
