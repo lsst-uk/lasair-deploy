@@ -1,0 +1,10 @@
+---
+# defaults file for webserver
+
+settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+
+db_host: "{{ settings.master_db_ip }}"
+db_port: "{{ settings.master_db_port }}"
+sherlock_svc_host: "{{ settings.sherlock_service_ip }}"
+cassandra_head: ['192.168.0.11']
+
