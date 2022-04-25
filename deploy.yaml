@@ -95,7 +95,7 @@
     db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
     db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     sherlock_svc_host: "{{ groups['sherlock'][0] }}"
-    cassandra_head: "{{ groups['cassandranodes']"
+    cassandra_head: "{{ groups['cassandranodes'] }}"
   roles:
     - lasair_cephfs
     - webserver
