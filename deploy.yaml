@@ -67,6 +67,8 @@
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
     mysql_root_password: "{{ settings.local_db_root_password }}"
+    master_db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    master_db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     datadir: /var/lib/mysql
     is_sherlock: true
   roles:
@@ -79,7 +81,12 @@
   gather_facts: false
   vars_files:
     - settings.yaml
+  vars:
+    settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    mysql_root_password: "{{ settings.local_db_root_password }}"
+    datadir: /var/lib/mysql
   roles:
+    - gkansible.gkservercollection.mariadb
     - filter
   tags: filter
 
