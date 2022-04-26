@@ -9,89 +9,109 @@
       ping:
       tags: ping
 
+# database tests
+- hosts: db, backend_db, frontend_db
+  gather_facts: false
+  tasks:
+    - name: db server listening on port 3306
+      wait_for:
+        port: 3306
+        timeout: 1
+      tags: net
+  tags: db
+- hosts: cluster_control
+  gather_facts: false
+  tasks:
+    - name: cluster control server listening on port 9001
+      wait_for:
+        port: 9001
+        timeout: 1
+      tags: net
+  tags: db
 - hosts: localhost
   gather_facts: false
   vars_files:
     - settings.yaml
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
-
   tasks:
-
-    # network connectivity tests
-    - name: kafka listening on port 9092
-      command: nc -z "{{ item }}" 9092
-      loop: "{{ groups['kafka'] }}"
-      tags: net, kafka
-
-    - name: kafka_pub listening on port 9092
-      command: nc -z "{{ item }}" 9092
-      loop: "{{ groups['kafka_pub'] }}"
-      tags: net, kafka
-
-    - name: kafka_pub listening on port 29092
-      command: nc -z "{{ item }}" 29092
-      loop: "{{ groups['kafka_pub'] }}"
-      tags: net, kafka
-
-    - name: web server listening on port 80
-      command: nc -z "{{ item }}" 80
-      loop: "{{ groups['web'] }}"
-      tags: net, web
-
-    - name: web server listening on port 8080
-      command: nc -z "{{ item }}" 8080
-      loop: "{{ groups['web'] }}"
-      tags: net, web
-
-    - name: db server listening on port 3306
-      command: nc -z "{{ item }}" 3306
-      loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
-      tags: net, db
-
-    - name: sherlock service listening on port 80
-      command: nc -z "{{ item }}" 80
-      loop: "{{ groups['sherlock'] }}"
-      tags: net, sherlock
-
-    # database tests
     - name: validate object db schema
       command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
-      tags: db
+  tags: db
 
-    # kafka tests
+# kafka tests
+- hosts: kafka, kafka_pub
+  gather_facts: false
+  tasks:
+    - name: kafka server listening on port 9092
+      wait_for:
+        port: 9092
+        timeout: 1
+      tags: net
+  tags: kafka,kafka_pub
+- hosts: kafka_pub
+  gather_facts: false
+  tasks:
+    - name: kafka server listening on port 29092
+      wait_for:
+        port: 29092
+        timeout: 1
+      tags: net
+  tags: kafka_pub
+- hosts: localhost
+  gather_facts: false
+  tasks:
     - name: set kafka test str
       set_fact: kafka_test_str="{{ lookup('community.general.random_string', special=false) }}"
-      tags: kafka
-
     - name: test kafka produce
       shell: "echo {{ kafka_test_str }} | kafkacat -q -b {{ item }}:9092 -t deploy_test -P -p 0"
       loop: "{{ groups['kafka'] }}"
-      tags: kafka
-
     - name: test kafka consume
       shell: "kafkacat -q -b {{ item }}:9092 -t deploy_test -C -o -1 -c 1 -p 0"
       register: kafka_output
       loop: "{{ groups['kafka'] }}"
-      tags: kafka
-
     - name: check kafka output
       assert:
         that: "item == kafka_test_str"
         quiet: true
       loop: "{{ kafka_output.results | map(attribute='stdout') | list }}"
-      tags: kafka
+  tags: kafka
 
-    # webserver tests
+# webserver (+ api & proxy) tests
+- hosts: web
+  gather_facts: false
+  tasks:
+    - name: web server listening on port 8080
+      wait_for:
+        port: 8080
+        timeout: 1
+      tags: net
+  tags: web
+- hosts: proxy
+  tasks:
+    - name: proxy server listening on port 80
+      wait_for:
+        port: 80
+        timeout: 1
+      tags: net
+  tags: proxy
+- hosts: api
+  tasks:
+    - name: api server listening on port 80
+      wait_for:
+        port: 80
+        timeout: 1
+      tags: net
+  tags: api
+- hosts: localhost
+  gather_facts: false
+  tasks:
     - name: check we can get home page
       ansible.builtin.uri:
         url: "http://{{ item }}:8080"
-      #loop: "{{ groups['web'] }}"
-      loop: 
-        - 10.65.0.198
-      tags: web
-
+      loop: "{{ groups['proxy'] }}"
+      tags: proxy
     - name: check static file content
       assert:
         that: >
@@ -99,20 +119,30 @@
           ==
           "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair-lsst-web/main/src/lasair-webapp/lasair/staticfiles/css/lasair-web.css', split_lines=false) | hash('md5') }}"
         quiet: true
-      #loop: "{{ groups['web'] }}"
-      loop: 
-        - 10.65.0.198
+      loop: "{{ groups['web'] }}"
       tags: web
 
-    # sherlock tests
+# sherlock tests
+- hosts: sherlock
+  gather_facts: false
+  tasks:
+    - name: sherlock service listening on port 80
+      wait_for:
+        port: 80
+        timeout: 1
+      tags: net
+  tags: sherlock
+- hosts: localhost
+  gather_facts: false
+  tasks:
     - name: check that sherlocksvc returns 400 on /query
       ansible.builtin.uri:
         url: "http://{{ item }}/query"
         status_code: 400
       loop: "{{ groups['sherlock'] }}"
-      tags: sherlock
+  tags: sherlock
 
-
+# cassandra tests
 - hosts: cassandranodes
   gather_facts: false
   tasks:

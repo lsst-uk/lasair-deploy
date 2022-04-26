@@ -10,6 +10,6 @@
     login_password: "{{ mysql_root_password }}"
     single_transaction: yes
 
-- name: Load Schema
+- name: Load schema
   ansible.builtin.shell: mysql -u root --password={{ mysql_root_password | quote }} {{ db_name | quote }} < /mnt/sherlock/sherlock_schema.sql
 
