@@ -25,14 +25,10 @@
     dest: mirror-compose.yml
 
 - name: "Start MirrorMaker service"
-  become: true
-  docker_compose:
-    project_name: mirrormaker
-    project_src:
-        '.'
-    files:
-      - 'mirror-compose.yml'
-    services:
-      - 'mirrormaker'
-    state:
-      present
+  ansible.builtin.command: bin/update-topic.sh
+  when: start_mirrormaker == true
+
+- name: "Stop Mirrormaker service"
+  ansible.builtin.command: sudo docker-compose -f mirror-compose.yml -p mirror-compose down
+  when: start_mirrormaker == false
+

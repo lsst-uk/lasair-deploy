@@ -32,7 +32,8 @@
     - settings.yaml
   vars:
     internal_only: true
-    source: localhost:9092 # fake source for testing
+    source: public.alerts.ztf.uw.edu:9092
+    start_mirrormaker: false # don't start mirrormaker automatically by default
   roles:
     - kafka
     - mirrormaker # we currently run mirrormaker on the same hosts as kafka 
@@ -67,7 +68,7 @@
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
     mysql_root_password: "{{ settings.local_db_root_password }}"
-    master_db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    master_db_host: "{{ (groups['db'] + groups['cluster_control'] + [''])[0] }}"
     master_db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     datadir: /var/lib/mysql
     is_sherlock: true
