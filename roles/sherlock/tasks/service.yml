@@ -29,6 +29,10 @@
     name:
       - flask-restful
       - uwsgi
+
+- name: "Install pip packages"
+  pip:
+    name:
       - qub-sherlock==2.2.0
 
 - name: "Copy main.py"
