@@ -123,10 +123,18 @@ Success! Data written to: secret/lasair/cephx
 If we have multiple user/key pairs in the same secret then be sure to avoid
 overwriting any others.
 
-## Configure DNS
+## Configure DNS and Security Groups
 
-At this point we need to configure any required DNS records to point to
+If the Lasair instance is going to be publicly accessible then 
+we need to configure any required DNS records to point to
 the public interfaces of the instances we just created.
+
+We also need to add those instances to appropriate security groups to
+allow access. For a production system this probably means allowing
+TCP port 80 for the proxy server (or web server if they're the same)
+and TCP port 9092 for kafka_pub. For a development system one might
+also want to allow port 8080 to the web server from a restricted
+IP range.
 
 ## Deploy Lasair
 
