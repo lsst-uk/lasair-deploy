@@ -71,9 +71,12 @@
     master_db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     datadir: /var/lib/mysql
     is_sherlock: true
+    sherlock_database_source_dir: '/mnt/sherlock/test/database'
+    sherlock_tables_sql_dir: '/mnt/sherlock/test/tables'
   roles:
     - lasair_cephfs
     - gkansible.gkservercollection.mariadb
+    - gkansible.gkservercollection.mysql_sherlock
     - sherlock
   tags: sherlock
   
