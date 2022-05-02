@@ -144,6 +144,11 @@ conditions:
   create_kafka_pub: { get_param: create_kafka_pub }
 
 resources:
+  default_server_group:
+    type: OS::Nova::ServerGroup
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "default"] ] }
+      policies: ["affinity"]
   share_fs:
     type: OS::Manila::Share
     properties:
@@ -166,6 +171,7 @@ resources:
       share_net: { get_param: share_net }
       external_net: { get_param: external_net }
       assign_public_ip: true
+      server_group: { get_resource: default_server_group }
   web:
     condition: create_web
     type: server_with_volume.yaml
@@ -179,6 +185,7 @@ resources:
       share_net: { get_param: share_net }
       external_net: { get_param: external_net }
       assign_public_ip: true
+      server_group: { get_resource: default_server_group }
   db:
     condition: create_db
     type: server_with_volume.yaml
@@ -192,6 +199,7 @@ resources:
       image_id: { get_param: image_id }
       net: { get_param: net }
       #share_net: { get_param: share_net }
+      server_group: { get_resource: default_server_group }
   cluster_control:
     condition: create_cluster_control
     type: server_with_volume.yaml
@@ -203,6 +211,7 @@ resources:
       image_id: { get_param: image_id }
       net: { get_param: net }
       #share_net: { get_param: share_net }
+      server_group: { get_resource: default_server_group }
   frontend_db_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -219,6 +228,12 @@ resources:
           image_id: { get_param: image_id }
           net: { get_param: net }
           #share_net: { get_param: share_net }
+          server_group: { get_resource: default_server_group }
+  db_server_group: # not sure why, but putting frontend and backend db in same server group fails :(
+    type: OS::Nova::ServerGroup
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "db"] ] }
+      policies: ["anti-affinity"]
   backend_db_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -234,8 +249,10 @@ resources:
           extra_volume_type: { get_param: fast_volume_type }
           image_id: { get_param: image_id }
           net: { get_param: net }
+          server_group: { get_resource: db_server_group }
           #share_net: { get_param: share_net }
   kafka_pub:
+    condition: create_kafka_pub
     type: server_with_volume.yaml
     properties:
       key_name: { get_param: key_name }
@@ -247,6 +264,12 @@ resources:
       image_id: { get_param: image_id }
       net: { get_param: net }
       #share_net: { get_param: share_net }
+      server_group: { get_resource: default_server_group }
+  kafka_server_group:
+    type: OS::Nova::ServerGroup
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "kafka"] ] }
+      policies: ["anti-affinity"]
   kafka_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -261,6 +284,12 @@ resources:
           image_id: { get_param: image_id }
           net: { get_param: net }
           #share_net: { get_param: share_net }
+          server_group: { get_resource: kafka_server_group }
+  ingest_server_group:
+    type: OS::Nova::ServerGroup
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "ingest"] ] }
+      policies: ["anti-affinity"]
   ingest_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -275,6 +304,12 @@ resources:
           image_id: { get_param: image_id }
           net: { get_param: net }
           share_net: { get_param: share_net }
+          server_group: { get_resource: ingest_server_group }
+  sherlock_server_group:
+    type: OS::Nova::ServerGroup
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "sherlock"] ] }
+      policies: ["anti-affinity"]
   sherlock_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -289,6 +324,12 @@ resources:
           image_id: { get_param: image_id }
           net: { get_param: net }
           share_net: { get_param: share_net }
+          server_group: { get_resource: sherlock_server_group }
+  filter_server_group:
+    type: OS::Nova::ServerGroup
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "filter"] ] }
+      policies: ["anti-affinity"]
   filter_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -303,6 +344,12 @@ resources:
           image_id: { get_param: image_id }
           net: { get_param: net }
           share_net: { get_param: share_net }
+          server_group: { get_resource: filter_server_group }
+  cassandra_server_group:
+    type: OS::Nova::ServerGroup
+    properties:
+      name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandra"] ] }
+      policies: ["anti-affinity"]
   cassandra_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -318,6 +365,7 @@ resources:
           extra_volume_type: { get_param: fast_volume_type }
           image_id: { get_param: image_id }
           net: { get_param: net }
+          server_group: { get_resource: cassandra_server_group }
           #share_net: { get_param: share_net }
 
 outputs:
