@@ -164,6 +164,18 @@ post-deployment tests:
 $ ansible-playbook test.yaml
 ```
 
+## Starting MirrorMaker
+
+Mirrormaker is responsible for pulling alerts from the upstream Kafka source.
+It is not started by default. To start it, edit `deploy.yaml`. In the `kafka`
+section check that the upstream source points to the correct location and 
+change the variable `start_mirrormaker` to `true`. Then run:
+```
+$ ansible-playbook deploy.yaml --tags facts,kafka
+```
+
+To stop Mirrormaker, set `start_mirrormaker` to `false` and do the same.
+
 
 ---
 
