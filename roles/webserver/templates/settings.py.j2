@@ -12,7 +12,7 @@ LASAIR_ROOT = '{{ ansible_env.HOME }}/'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DEBUG          = True
-WEB_DOMAIN     = 'lasair-iris'
+WEB_DOMAIN     = '{{ lasair_name }}'
 READONLY_USER  = '{{ settings.master_db_readonly_username }}'
 READONLY_PASS  = '{{ settings.master_db_readonly_password }}'
 
@@ -21,6 +21,12 @@ READWRITE_PASS = '{{ settings.master_db_password }}'
 
 DB_HOST        = '{{ db_host }}'
 DB_PORT        = {{ db_port }}
+
+PUBLIC_KAFKA_PRODUCER   = 'kafka-pub:29092'
+PUBLIC_KAFKA_PASSWORD   = '{{ settings.kafka_password }}'
+
+INTERNAL_KAFKA_PRODUCER = '{{ settings.kafka_producer }}:9092'
+ANNOTATION_TOPIC_OUT    = 'ztf_annotations'
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
 
