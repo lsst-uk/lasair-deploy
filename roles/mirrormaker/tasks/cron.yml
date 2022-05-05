@@ -27,8 +27,21 @@
 # Needs to run after midnight UTC and before start of observations
 - name: "Install crontab entry"
   cron:
-    name:   "Update topics"
+    name:   "Update mirrormaker topics"
     user:   "{{ ansible_env.USER }}"
     minute: '18'
     hour:   '0'
     job:    "{{ ansible_env.HOME }}/bin/update-topic.sh"
+    state: present
+  when: start_mirrormaker == true
+
+- name: "Remove crontab entry"
+  cron:
+    name:   "Update mirrormaker topics"
+    user:   "{{ ansible_env.USER }}"
+    minute: '18'
+    hour:   '0'
+    job:    "{{ ansible_env.HOME }}/bin/update-topic.sh"
+    state: absent
+  when: start_mirrormaker == false
+
