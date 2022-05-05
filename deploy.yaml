@@ -9,8 +9,7 @@
     - settings.yaml
   roles:
     - lasair_instance
-  tags:
-    - lasair_instance
+  tags: lasair_instance
 
 - hosts: svc
   gather_facts: false
@@ -72,8 +71,10 @@
     master_db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     datadir: /var/lib/mysql
     is_sherlock: true
-    sherlock_database_source_dir: '/mnt/sherlock/test/database'
-    sherlock_tables_sql_dir: '/mnt/sherlock/test/tables'
+    sherlock_catalogue_data_dir_lite: "/mnt/sherlock/data_lite"
+    sherlock_catalogue_data_dir: "/mnt/sherlock/data"
+    sherlock_sql_dir: "/mnt/sherlock/sql"
+    sherlock_import_type: "empty" # set to empty/lite/full 
   roles:
     - lasair_cephfs
     - gkansible.gkservercollection.mariadb
@@ -86,7 +87,7 @@
   vars_files:
     - settings.yaml
   vars:
-    db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    db_host: "{{ (groups['db'] + groups['cluster_control'] + [''])[0] }}"
     db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
     mysql_root_password: "{{ settings.local_db_root_password }}"
@@ -102,7 +103,7 @@
     - settings.yaml
     - exports.yaml
   vars:
-    db_host: "{{ (groups['db'] + groups['cluster_control'])[0] }}"
+    db_host: "{{ (groups['db'] + groups['cluster_control'] + [''])[0] }}"
     db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     sherlock_svc_host: "{{ groups['sherlock'][0] }}"
     cassandra_head: "{{ groups['cassandranodes'] }}"
