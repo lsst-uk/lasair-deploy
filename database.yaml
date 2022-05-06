@@ -198,6 +198,10 @@
         login_user: root
         login_password: "{{ password }}"
         single_transaction: yes
+      register: result
+      until: result is success
+      retries: 90
+      delay: 10 
   tags: maxscale_user
 
 - hosts: backend_db,frontend_db
