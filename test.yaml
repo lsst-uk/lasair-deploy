@@ -38,6 +38,7 @@
     - name: validate object db schema
       command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
+      changed_when: false
   tags: db
 
 # kafka tests
@@ -71,6 +72,7 @@
       shell: "kafkacat -q -b {{ item }}:9092 -t deploy_test -C -o -1 -c 1 -p 0"
       register: kafka_output
       loop: "{{ groups['kafka'] }}"
+      changed_when: false
     - name: check kafka output
       assert:
         that: "item == kafka_test_str"
