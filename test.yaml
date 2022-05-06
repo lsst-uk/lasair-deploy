@@ -133,8 +133,9 @@
         url: "http://{{ ansible_host }}/query"
         body_format: json
         body:
-          ra: "1.2"
-          dec: "3.4"
+          # this exists in the lite db so we should maybe check the answer too
+          ra: "26.626"
+          dec: "0.9856"
         status_code: 200
     - name: check that sherlocksvc returns 404 on non-existant object query
       ansible.builtin.uri:
