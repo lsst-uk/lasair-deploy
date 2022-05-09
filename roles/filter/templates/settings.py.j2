@@ -10,7 +10,7 @@ DB_DATABASE      = 'ztf'
 
 SLACK_URL = 'https://hooks.slack.com/services/{{ settings.slack_url_urlhook }}'
 
-KAFKA_HOST      = ["{{ groups['kafka'] | join(':9092","') }}:9092"]
+KAFKA_HOST      = "{{ groups['kafka'] | join(':9092","') }}:9092"
 
 KAFKA_TOPIC_IN   = 'ztf_sherlock'
 
