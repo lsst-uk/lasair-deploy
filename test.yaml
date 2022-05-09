@@ -38,6 +38,7 @@
     - name: validate object db schema
       command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
+      changed_when: false
   tags: db
 
 # kafka tests
@@ -71,6 +72,7 @@
       shell: "kafkacat -q -b {{ item }}:9092 -t deploy_test -C -o -1 -c 1 -p 0"
       register: kafka_output
       loop: "{{ groups['kafka'] }}"
+      changed_when: false
     - name: check kafka output
       assert:
         that: "item == kafka_test_str"
@@ -87,6 +89,17 @@
         port: 8080
         timeout: 1
       tags: net
+    - name: check we can get home page
+      ansible.builtin.uri:
+        url: "http://{{ ansible_host }}:8080"
+      tags: net
+    - name: check static file content
+      assert:
+        that: >
+          "{{ lookup('url', 'http://'+ansible_host+':8080/lasair/static/css/lasair-web.css', split_lines=false) | hash('md5') }}"
+          ==
+          "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair-lsst-web/main/src/lasair-webapp/lasair/staticfiles/css/lasair-web.css', split_lines=false) | hash('md5') }}"
+        quiet: true
   tags: web
 - hosts: proxy
   tasks:
@@ -94,7 +107,6 @@
       wait_for:
         port: 80
         timeout: 1
-      tags: net
   tags: proxy
 - hosts: api
   tasks:
@@ -104,23 +116,6 @@
         timeout: 1
       tags: net
   tags: api
-- hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: check we can get home page
-      ansible.builtin.uri:
-        url: "http://{{ item }}:8080"
-      loop: "{{ groups['proxy'] }}"
-      tags: proxy
-    - name: check static file content
-      assert:
-        that: >
-          "{{ lookup('url', 'http://'+item+':8080/lasair/static/css/lasair-web.css', split_lines=false) | hash('md5') }}"
-          ==
-          "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair-lsst-web/main/src/lasair-webapp/lasair/staticfiles/css/lasair-web.css', split_lines=false) | hash('md5') }}"
-        quiet: true
-      loop: "{{ groups['web'] }}"
-      tags: web
 
 # sherlock tests
 - hosts: sherlock
@@ -131,15 +126,25 @@
         port: 80
         timeout: 1
       tags: net
-  tags: sherlock
-- hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: check that sherlocksvc returns 400 on /query
+    - name: check that sherlocksvc returns 400 on malformed query
       ansible.builtin.uri:
-        url: "http://{{ item }}/query"
+        url: "http://{{ ansible_host }}/query"
         status_code: 400
-      loop: "{{ groups['sherlock'] }}"
+    - name: check that sherlocksvc returns 200 on good point query
+      ansible.builtin.uri:
+        url: "http://{{ ansible_host }}/query"
+        body_format: json
+        body:
+          # this exists in the lite db so we should maybe check the answer too
+          ra: "26.626"
+          dec: "0.9856"
+        status_code: 200
+    - name: check that sherlocksvc returns 404 on non-existant object query
+      ansible.builtin.uri:
+        url: "http://{{ ansible_host }}/object/notarealobject"
+        body_format: json
+        body:
+        status_code: 404
   tags: sherlock
 
 # cassandra tests

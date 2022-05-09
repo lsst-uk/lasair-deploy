@@ -44,6 +44,8 @@ parameters:
   assign_public_ip:
     type: boolean
     default: false
+  server_group:
+    type: string
 
 conditions:
   public_ip: { get_param: assign_public_ip }
@@ -70,6 +72,8 @@ resources:
         list_concat_unique: 
           - [ network: { get_param: net } ]
           - [ network: { str_replace: { template: { get_param: share_net }, params: { PLACEHOLDER: { get_param: net } } } } ]
+      scheduler_hints:
+        group: { get_param: server_group }
   pub_ip:
     condition: public_ip 
     type: OS::Neutron::FloatingIP
