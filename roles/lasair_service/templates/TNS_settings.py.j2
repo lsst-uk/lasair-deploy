@@ -1,12 +1,12 @@
-DB_HOST         = '{{ settings.master_db_ip }}'
+DB_HOST         = '{{ db_host }}'
 DB_USER_WRITE   = '{{ settings.master_db_username }}'
 DB_PASS_WRITE   = '{{ settings.master_db_password }}'
 DB_DATABASE     = 'ztf'
+DB_PORT         = {{ db_port }}
 
-TNS_SEARCH_URL   = 'http://wis-tns.weizmann.ac.il/search'
-TNS_SEARCH_URL   = 'https://www.wis-tns.org/search'
+TNS_URL          = 'https://www.wis-tns.org/system/files/tns_public_objects/'
+TNS_API_KEY      = '{{ settings.tns_api_key }}'
 TNS_WATCHLIST_ID = 141
-TNS_REPEAT_TIME  = 7200
 
 WATCHLIST_MOCS      = '/mnt/cephfs/lasair/watchlists'
 WATCHLIST_CHUNK     = 50000
