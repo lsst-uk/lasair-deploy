@@ -40,6 +40,9 @@ instances:
 # Size of shared filesystem in GB
 share_size: 10
 
+# tpye of Sherlock install - set to one of empty/lite/test/full
+sherlock_import_type: empty
+
 # Vault settings
 vault:
   url: https://vault.lsst.ac.uk

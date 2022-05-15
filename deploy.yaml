@@ -76,7 +76,6 @@
     sherlock_catalogue_data_dir_lite: "/mnt/sherlock/data_lite"
     sherlock_catalogue_data_dir: "/mnt/sherlock/data"
     sherlock_sql_dir: "/mnt/sherlock/sql"
-    sherlock_import_type: "empty" # set to empty/lite/full 
   roles:
     - lasair_cephfs
     - gkansible.gkservercollection.mariadb
