@@ -113,6 +113,7 @@
     - migrate
     - makemigrations lasair
     - migrate
+    - collectstatic --noinput
 
 - name: Create Django superuser
   shell:
