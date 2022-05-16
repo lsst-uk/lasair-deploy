@@ -36,7 +36,7 @@
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
   tasks:
     - name: validate object db schema
-      command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json
+      command: python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair4/main/common/schema/objects.py --format=py
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
       changed_when: false
   tags: db
@@ -98,7 +98,7 @@
         that: >
           "{{ lookup('url', 'http://'+ansible_host+':8080/lasair/static/css/lasair-web.css', split_lines=false) | hash('md5') }}"
           ==
-          "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair-lsst-web/main/src/lasair-webapp/lasair/staticfiles/css/lasair-web.css', split_lines=false) | hash('md5') }}"
+          "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair4/main/webserver/staticfiles/css/lasair-web.css', split_lines=false) | hash('md5') }}"
         quiet: true
   tags: web
 - hosts: proxy
