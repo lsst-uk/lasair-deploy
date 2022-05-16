@@ -103,3 +103,24 @@
   notify:
     - reload_apache2
 
+- name: Django bootstrap
+  shell:
+    chdir: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair"
+    cmd: "python3 manage.py {{ item }}"
+  environment:
+    PYTHONPATH: "{{ ansible_env.HOME }}/lasair-lsst-web/src:{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair"
+  with_items:
+    - migrate
+    - makemigrations lasair
+    - migrate
+    - collectstatic --noinput
+
+- name: Create Django superuser
+  shell:
+    chdir: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair"
+    cmd: "python3 manage.py createsuperuser --noinput --username su --email {{ admin_email }}"
+  environment:
+    PYTHONPATH: "{{ ansible_env.HOME }}/lasair-lsst-web/src:{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair"
+    DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
+  ignore_errors: true
+
