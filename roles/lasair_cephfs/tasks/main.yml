@@ -64,3 +64,20 @@
     src: "{{ sherlock_share }}"
     state: mounted
   when: is_sherlock == true
+
+- name: Create lasair directories
+  become: true
+  file:
+    path: "/mnt/cephfs/{{ item }}"
+    state: directory
+    owner: "{{ ansible_env.USER }}"
+    mode: '0755'
+  with_items:
+    - lasair
+    - lasair/areas
+    - lasair/fits
+    - lasair/services_log
+    - lasair/streams
+    - lasair/system_status
+    - lasair/watchlists
+
