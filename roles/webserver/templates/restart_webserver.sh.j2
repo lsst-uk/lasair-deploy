@@ -7,14 +7,13 @@ export PATH="$PATH:$HOME/.local/bin"
 #$APACHEPATH/apachectl stop
 sleep 1
 
-cd {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair
+cd {{ ansible_env.HOME }}/lasair4/webserver
 
 mod_wsgi-express setup-server \
 --user {{ ansible_user_id }} \
 --group {{ lookup('pipe', 'id -gn') }} \
---working-directory {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair \
---python-path       {{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair \
---python-path       {{ ansible_env.HOME }}/lasair-lsst-web/src \
+--working-directory {{ ansible_env.HOME }}/lasair4/webserver
+--python-path       {{ ansible_env.HOME }}/lasair4/webserver
 --url-alias /lasair/static static \
 --url-alias /media media \
 --application-type module lasair.wsgi \
