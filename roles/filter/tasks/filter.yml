@@ -59,10 +59,10 @@
     repo: https://github.com/lsst-uk/lasair4.git
     dest: "{{ ansible_env.HOME }}/lasair4"
 
-- name: settings.py for filter module
-  template:
-    src:  settings.py.j2
-    dest: "{{ ansible_env.HOME }}/lasair4/filter/settings.py"
+#- name: settings.py for filter module
+#  template:
+#    src:  settings.py.j2
+#    dest: "{{ ansible_env.HOME }}/lasair4/filter/settings.py"
 
 - name: Setup Lasair database
   community.mysql.mysql_query:
