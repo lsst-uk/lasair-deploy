@@ -63,7 +63,7 @@ LOCAL_DB_PASS           = '{{ settings.local_db_password }}'
 # Cassandra NoSQL database
 ##########################
 # Cassandra headnode
-CASSANDRA_HEAD          = ['192.168.0.11']
+CASSANDRA_HEAD          = "{{ groups['cassandranodes'] }}"
 
 # Table names
 CASSANDRA_CANDIDATES    = 'candidates'
@@ -93,10 +93,11 @@ ANNOTATION_GROUP_ID    = 'test004'
 WEB_DOMAIN             = '{{ lasair_name }}'
 
 # To include links in emails of filter results
-LASAIR_URL             = 'lasair-iris.roe.ac.uk'
+#LASAIR_URL             = 'lasair-iris.roe.ac.uk'
+LASAIR_URL             = '{{ domain }}'
 
 # The API calls this internal node for Sherlock
-SHERLOCK_SERVICE       = '192.168.0.10'
+SHERLOCK_SERVICE       = "{{ groups['sherlock'][0] }}"
 
 # The webserver calls on the API and should not be throttled
 API_TOKEN              = '{{ settings.powerapi_token }}'
