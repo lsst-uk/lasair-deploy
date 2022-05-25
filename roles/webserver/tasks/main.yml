@@ -96,6 +96,18 @@
     - migrate
     - collectstatic --noinput
 
+- name: Create symlink for services log
+  file:
+    src: /mnt/cephfs/lasair/services_log
+    dest: "{{ ansible_env.HOME }}/lasair4/webserver/static/services_log"
+    state: link
+
+- name: Create symlink for streams
+  file:
+    src: /mnt/cephfs/lasair/streams
+    dest: "{{ ansible_env.HOME }}/lasair4/webserver/static/streams"
+    state: link
+
 - name: Create Django superuser
   shell:
     chdir: "{{ ansible_env.HOME }}/lasair4/webserver"
