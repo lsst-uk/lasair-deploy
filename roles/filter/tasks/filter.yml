@@ -56,13 +56,13 @@
 
 - name: Make sure the repo is up to date
   git: 
-    repo: https://github.com/lsst-uk/lasair-lsst.git
-    dest: "{{ ansible_env.HOME }}/lasair-lsst"
+    repo: https://github.com/lsst-uk/lasair4.git
+    dest: "{{ ansible_env.HOME }}/lasair4"
 
-- name: settings.py for filter module
-  template:
-    src:  settings.py.j2
-    dest: "{{ ansible_env.HOME }}/lasair-lsst/filter/settings.py"
+#- name: settings.py for filter module
+#  template:
+#    src:  settings.py.j2
+#    dest: "{{ ansible_env.HOME }}/lasair4/filter/settings.py"
 
 - name: Setup Lasair database
   community.mysql.mysql_query:
@@ -83,25 +83,25 @@
 - name: Create object table
   shell:
       cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < objects.sql
-      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+      chdir: "{{ ansible_env.HOME }}/lasair4/common/schema"
 
 - name: Create sherlock_classifications table
   shell:
       cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < sherlock_classifications.sql
-      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+      chdir: "{{ ansible_env.HOME }}/lasair4/common/schema"
 
 - name: Create area_hits table
   shell:
       cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < area_hits.sql
-      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+      chdir: "{{ ansible_env.HOME }}/lasair4/common/schema"
 
 - name: Create watchlist_hits table
   shell:
       cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < watchlist_hits.sql
-      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+      chdir: "{{ ansible_env.HOME }}/lasair4/common/schema"
 
 - name: Create annotations table
   shell:
       cmd: mysql --user='{{ mysql_db_user }}' --password='{{ mysql_db_password }}' '{{ mysql_db_name }}' < annotations.sql
-      chdir: "{{ ansible_env.HOME }}/lasair-lsst/utility/schema"
+      chdir: "{{ ansible_env.HOME }}/lasair4/common/schema"
 
