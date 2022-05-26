@@ -16,7 +16,7 @@ KAFKA_GROUPID          = 'LASAIR1'
 
 # The server for the public kafka, where filter streams are prodced
 # with its username and password
-PUBLIC_KAFKA_SERVER    = "{{ groups['kafka-pub'][0] }}:29092"
+PUBLIC_KAFKA_SERVER    = "{{ groups['kafka_pub'][0] }}:29092"
 PUBLIC_KAFKA_USERNAME  = 'admin'
 PUBLIC_KAFKA_PASSWORD  = '{{ settings.kafka_password }}'
 
