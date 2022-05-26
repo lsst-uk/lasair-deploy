@@ -46,6 +46,9 @@
   git:
       repo: https://github.com/lsst-uk/lasair4.git
       dest: "{{ ansible_env.HOME }}/lasair4"
+      
+# lasair4/common/settings.py
+- import_tasks: settings.yml
 
 - name: Settings.py for django
   template:

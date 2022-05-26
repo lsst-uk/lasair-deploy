@@ -8,7 +8,7 @@
 # Kafka operation
 #################
 # The internal address of the Kafka service by which pipeline components communicate
-KAFKA_SERVER           = '{{ settings.kafka_producer }}:9092'
+KAFKA_SERVER           = "{{ (groups['kafka'] | join(':9092,') ) }}:9092"
 
 # Arbitrary Group ID for private Kafka, can be changed at will in an 
 # instantiated settings.py
@@ -16,12 +16,12 @@ KAFKA_GROUPID          = 'LASAIR1'
 
 # The server for the public kafka, where filter streams are prodced
 # with its username and password
-PUBLIC_KAFKA_SERVER    = 'kafka-pub:29092'
+PUBLIC_KAFKA_SERVER    = "{{ groups['kafka_pub'][0] }}:29092"
 PUBLIC_KAFKA_USERNAME  = 'admin'
 PUBLIC_KAFKA_PASSWORD  = '{{ settings.kafka_password }}'
 
 # Internal address of the public kafka producer
-INTERNAL_KAFKA_PRODUCER= '{{ settings.kafka_producer }}:9092'
+INTERNAL_KAFKA_PRODUCER= "{{ (groups['kafka'] | join(':9092,') ) }}:9092"
 
 # Group ID for public kafka, can be changed at will in an instantiated settings.py
 PUBLIC_GROUP_ID        = 'test124'
@@ -63,7 +63,7 @@ LOCAL_DB_PASS           = '{{ settings.local_db_password }}'
 # Cassandra NoSQL database
 ##########################
 # Cassandra headnode
-CASSANDRA_HEAD          = "{{ groups['cassandranodes'] }}"
+CASSANDRA_HEAD          = {{ groups['cassandranodes'] }}
 
 # Table names
 CASSANDRA_CANDIDATES    = 'candidates'
