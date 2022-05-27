@@ -10,7 +10,37 @@
       that: ansible_version.full >= "2.10.0" 
       fail_msg: "Ansible version >= 2.10 required"
       quiet: true
-    
+
+  - name: Check vault token
+    assert:
+      that: ansible_env.VAULT_TOKEN is defined
+      fail_msg: "VAULT_TOKEN is not set"
+      quiet: true
+
+  - name: Create token file
+    ansible.builtin.copy:
+      content: "{{ ansible_env.VAULT_TOKEN }}"
+      mode: 0600
+      dest: "{{ ansible_env.HOME }}/.vault-token"
+
+  - name: Set vault env vars in profile
+    ansible.builtin.lineinfile:
+      create: yes
+      path: "{{ ansible_env.HOME }}/.bash_profile"
+      line: "{{ item }}"
+    with_items:
+      - "export VAULT_TOKEN=`cat ~/.vault-token`"
+      - "export VAULT_ADDR='{{ vault.url }}'"
+
+  - name: Add vault public key
+    vars:
+      settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+    ansible.builtin.lineinfile:
+      create: yes
+      path: "{{ ansible_env.HOME }}/.ssh/authorized_keys"
+      line: "{{ settings.id_rsa_pub }}"
+      mode: 0600
+
   - name: Install apt packages
     become: true
     apt:
