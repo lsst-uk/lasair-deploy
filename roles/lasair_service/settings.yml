@@ -1,0 +1,5 @@
+- name: Create settings file
+  template: 
+    src: common/settings.py.j2
+    dest: "{{ ansible_env.HOME }}/lasair4/common/settings.py"
+
