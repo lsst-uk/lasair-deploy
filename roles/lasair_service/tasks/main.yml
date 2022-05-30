@@ -16,6 +16,7 @@
       executable: pip3
       name:
         - gkhtm
+        - gkutils
         - docopt
         - numpy
         - mocpy
@@ -28,4 +29,4 @@
       dest: "{{ ansible_env.HOME }}/lasair4"
 
 - import_tasks: cron.yml
-
+- import_tasks: settings.yml
