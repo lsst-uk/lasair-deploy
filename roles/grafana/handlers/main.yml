@@ -3,6 +3,7 @@
     seconds: 30
 
 - name: Restart Nginx
+  become: true
   ansible.builtin.service:
     name: nginx
     state: restarted

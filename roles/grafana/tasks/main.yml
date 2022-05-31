@@ -82,3 +82,38 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify: Restart Nginx
+
+- name: Flush handlers
+  meta: flush_handlers
+
+# Use the Grafana HTTP API
+- name: Create datasource
+  ansible.builtin.uri:
+    url: http://localhost:3000/api/datasources
+    url_username: "{{ grafana_secret.admin_username }}" 
+    url_password: "{{ grafana_secret.admin_password }}"
+    force_basic_auth: true
+    status_code: [200, 201, 409] # api will return 409 if datasource already exists
+    method: POST
+    body_format: json
+    body: |
+      {
+        "name":"Prometheus",
+        "type":"prometheus",
+        "typeLogoUrl":"",
+        "access":"proxy",
+        "url":"http://localhost:9090",
+        "password":"",
+        "user":"",
+        "database":"",
+        "basicAuth":false,
+        "basicAuthUser":"",
+        "basicAuthPassword":"",
+        "withCredentials":false,
+        "isDefault":true,
+        "jsonData":{"httpMethod":"POST"},
+        "secureJsonFields":{},
+        "version":2,
+        "readOnly":false
+      }
+    
