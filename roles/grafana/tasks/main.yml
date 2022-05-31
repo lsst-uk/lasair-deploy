@@ -117,3 +117,17 @@
         "readOnly":false
       }
     
+- name: Create dashboards
+  ansible.builtin.uri:
+    url: http://localhost:3000/api/dashboards/db
+    url_username: "{{ grafana_secret.admin_username }}" 
+    url_password: "{{ grafana_secret.admin_password }}"
+    force_basic_auth: true
+    status_code: [200, 201, 412] # api will return 412 if dashboard already exists
+    method: POST
+    body_format: json
+    body: "{{ lookup('template', item) }}"
+  loop:
+    - processing.json.j2
+    - system.json.j2
+
