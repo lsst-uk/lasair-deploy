@@ -1,3 +1,9 @@
 - name: Pause for 30s
   pause:
     seconds: 30
+
+- name: Restart Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+

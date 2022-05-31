@@ -64,8 +64,9 @@
 - name: "Create Nginx config file"
   become: true
   template:
-    src: nginx.conf
+    src: "nginx-{% if (enable_letsencrypt) %}tls{% else %}notls{% endif %}.conf"
     dest: /etc/nginx/sites-available/grafana
+  notify: Restart Nginx
 
 - name: "Enable Nginx config"
   become: true
@@ -73,9 +74,11 @@
     src: /etc/nginx/sites-available/grafana
     dest: /etc/nginx/sites-enabled/grafana
     state: link
+  notify: Restart Nginx
 
 - name: "Disable default Nginx config"
   become: true
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
+  notify: Restart Nginx
