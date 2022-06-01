@@ -2,7 +2,7 @@
 # tasks file for prometheus
 
 
-- name: "Install Prometheus"
+- name: Install Prometheus
   become: true
   apt:
     pkg:
@@ -11,8 +11,10 @@
     state: present
     update-cache: yes
 
-- name: "Configure Prometheus"
+- name: Configure Prometheus
   become: true
   template:
     src: prometheus.yml
     dest: /etc/prometheus/prometheus.yml
+  notify: Restart Prometheus
+
