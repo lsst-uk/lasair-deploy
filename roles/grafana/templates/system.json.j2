@@ -638,7 +638,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(node_network_receive_bytes{job=\"kafka-nodes\",device=\"ens3\"}[1m]))",
+          "expr": "sum(rate(node_network_receive_bytes_total{job=\"kafka-nodes\",device=\"ens3\"}[1m]))",
           "legendFormat": "Receive",
           "refId": "A",
           "datasource": {
@@ -647,7 +647,7 @@
           }
         },
         {
-          "expr": "-sum(rate(node_network_transmit_bytes{job=\"kafka-nodes\",device=\"ens3\"}[1m]))",
+          "expr": "-sum(rate(node_network_transmit_bytes_total{job=\"kafka-nodes\",device=\"ens3\"}[1m]))",
           "legendFormat": "Transmit",
           "refId": "B",
           "datasource": {
@@ -846,7 +846,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_filesystem_avail{mountpoint=~\"^/kafka/.*\"}",
+          "expr": "node_filesystem_avail_bytes{mountpoint=~\"^/kafka/.*\"}",
           "interval": "",
           "legendFormat": "{{ '{{instance}}:{{mountpoint}}' }}",
           "refId": "A",
