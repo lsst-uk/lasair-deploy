@@ -103,6 +103,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
+        "y": {{ (loop.index-1) * 4 }},
       },
       "hideTimeOverride": true,
       "links": [],
@@ -216,6 +217,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
+        "y": {{ (loop.index-1) * 4 }},
       },
       "hideTimeOverride": true,
       "links": [],
@@ -329,6 +331,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
+        "y": {{ (loop.index-1) * 4 }},
       },
       "hideTimeOverride": true,
       "links": [],
@@ -411,6 +414,7 @@
         "h": 4,
         "w": 3,
         "x": 9,
+        "y": {{ (loop.index-1) * 4 }},
       },
       "links": [],
       "maxDataPoints": 100,
@@ -439,7 +443,7 @@
           }
         }
       ],
-      "title": "Kafka {{ loop.index }} Disk Available",
+      "title": "Kafka {{ loop.index-1 }} Disk Available",
       "type": "stat"
     },
     {
@@ -486,6 +490,7 @@
         "h": 4,
         "w": 3,
         "x": 12,
+        "y": {{ (loop.index-1) * 4 }},
       },
       "links": [],
       "maxDataPoints": 100,
@@ -514,7 +519,7 @@
           }
         }
       ],
-      "title": "Kafka {{ loop.index }} Memory Used",
+      "title": "Kafka {{ loop.index-1 }} Memory Used",
       "type": "stat"
     },
     {
@@ -561,6 +566,7 @@
         "h": 4,
         "w": 3,
         "x": 15,
+        "y": {{ (loop.index-1) * 4 }},
       },
       "links": [],
       "maxDataPoints": 100,
@@ -589,7 +595,7 @@
           }
         }
       ],
-      "title": "Kafka {{ loop.index }} System Load",
+      "title": "Kafka {{ loop.index-1 }} System Load",
       "type": "stat"
     },
 {% endfor %}
@@ -609,6 +615,8 @@
       "gridPos": {
         "h": 7,
         "w": 9,
+        "x": 0,
+        "y": 8,
       },
       "hiddenSeries": false,
       "id": 36,
@@ -687,121 +695,6 @@
       }
     },
     {
-      "datasource": {
-      },
-      "description": "Check if kafka.lsst.ac.uk:9092 is up.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "Down"
-                }
-              },
-              "type": "special"
-            },
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "text": "Down"
-                },
-                "to": 0
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "text": "Up"
-                },
-                "to": 86400
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 86400,
-                "result": {
-                  "text": "Up"
-                },
-                "to": 10000000000
-              },
-              "type": "range"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#890f02",
-                "value": null
-              },
-              {
-                "color": "#e5ac0e",
-                "value": 0.5
-              },
-              {
-                "color": "#1f78c1",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-      },
-      "hideTimeOverride": true,
-      "id": 38,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.3.2",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "probe_success{instance=\"kafka.lsst.ac.uk:9092\"} OR on() vector(0)",
-          "format": "time_series",
-          "instant": true,
-          "interval": "",
-          "intervalFactor": 2,
-          "legendFormat": "",
-          "refId": "A",
-          "step": 1800,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "{{ datasource.json.uid }}"
-          }
-        }
-      ],
-      "title": "Public Kafka Endpoint",
-      "type": "stat"
-    },
-    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -817,6 +710,8 @@
       "gridPos": {
         "h": 7,
         "w": 9,
+        "x": 9,
+        "y": 8,
       },
       "hiddenSeries": false,
       "id": 6,
@@ -846,7 +741,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_filesystem_avail_bytes{mountpoint=~\"^/kafka/.*\"}",
+          "expr": "node_filesystem_avail_bytes{mountpoint=~\"^/kafka\"}",
           "interval": "",
           "legendFormat": "{{ '{{instance}}:{{mountpoint}}' }}",
           "refId": "A",
@@ -893,120 +788,7 @@
     {
       "datasource": {
       },
-      "description": "Kafka JVM uptime",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "Down"
-                }
-              },
-              "type": "special"
-            },
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "text": "Down"
-                },
-                "to": 0
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "text": "Up"
-                },
-                "to": 86400
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 86400,
-                "result": {
-                  "text": "Up"
-                },
-                "to": 10000000000
-              },
-              "type": "range"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#890f02",
-                "value": null
-              },
-              {
-                "color": "#e5ac0e",
-                "value": 1
-              },
-              {
-                "color": "#1f78c1",
-                "value": 20
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-      },
-      "hideTimeOverride": true,
-      "id": 8,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.3.2",
-      "targets": [
-        {
-          "expr": "java_lang_runtime_uptime{instance=\"mirror-2:8081\"} / 1000 OR on() vector(0)",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 2,
-          "legendFormat": "",
-          "refId": "A",
-          "step": 1800,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "{{ datasource.json.uid }}"
-          }
-        }
-      ],
-      "title": "Mirrormaker 2/2",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-      },
-      "description": "Check if https://lasair-iris.roe.ac.uk/ is up.",
+      "description": "Check if public kafka endpoint is up.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1078,6 +860,125 @@
       "gridPos": {
         "h": 4,
         "w": 3,
+        "x": 3,
+        "y": 15,
+      },
+      "hideTimeOverride": true,
+      "id": 38,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.3.2",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "probe_success{instance=\"kafka.{{ domain }}:9092\"} OR on() vector(0)",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 1800,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          }
+        }
+      ],
+      "title": "Public Kafka Endpoint",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+      },
+      "description": "Check if public website is up.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "Down"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Down"
+                },
+                "to": 0
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 86400
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 86400,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 10000000000
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#890f02",
+                "value": null
+              },
+              {
+                "color": "#e5ac0e",
+                "value": 0.5
+              },
+              {
+                "color": "#1f78c1",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 15,
       },
       "hideTimeOverride": true,
       "id": 39,
@@ -1101,7 +1002,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "probe_success{instance=\"https://lasair-iris.roe.ac.uk/\"} OR on() vector(0)",
+          "expr": "probe_success{instance=\"https://www.{{ domain }}/\"} OR on() vector(0)",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -1117,259 +1018,6 @@
       ],
       "title": "Public Website",
       "type": "stat"
-    },
-    {
-      "datasource": {
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#d44a3a",
-                "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 1000000000
-              },
-              {
-                "color": "#5794F2",
-                "value": 5000000000
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-      },
-      "id": 19,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.3.2",
-      "targets": [
-        {
-          "expr": "node_filesystem_avail{instance=\"mirror-2:9100\",mountpoint=\"/\"}",
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "{{ datasource.json.uid }}"
-          }
-        }
-      ],
-      "title": "Mirror-2 Disk Available",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#5794F2",
-                "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 70
-              },
-              {
-                "color": "#d44a3a",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-      },
-      "id": 30,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.3.2",
-      "targets": [
-        {
-          "expr": "100-(node_memory_MemAvailable{instance=\"mirror-2:9100\"}/20900044.80)",
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "{{ datasource.json.uid }}"
-          }
-        }
-      ],
-      "title": "Mirror-2 Memory Used",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#5794F2",
-                "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 100
-              },
-              {
-                "color": "#d44a3a",
-                "value": 200
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-      },
-      "id": 34,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.3.2",
-      "targets": [
-        {
-          "expr": "avg(node_load1{instance=\"mirror-2:9100\"}) /  count(count(node_cpu{instance=\"mirror-2:9100\"}) by (cpu)) * 100",
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "{{ datasource.json.uid }}"
-          }
-        }
-      ],
-      "title": "Mirror-2 System Load",
-      "type": "stat"
-    },
-    {
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-      },
-      "id": 21,
-      "options": {
-        "content": "\n\n\n\n",
-        "mode": "markdown"
-      },
-      "pluginVersion": "8.3.2",
-      "transparent": true,
-      "type": "text"
-    },
-    {
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-      },
-      "id": 22,
-      "options": {
-        "content": "\n\n\n\n",
-        "mode": "markdown"
-      },
-      "pluginVersion": "8.3.2",
-      "transparent": true,
-      "type": "text"
     }
   ],
   "refresh": "5m",
