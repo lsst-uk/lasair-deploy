@@ -116,6 +116,18 @@
         "version":2,
         "readOnly":false
       }
+
+- name: Lookup datasource
+  ansible.builtin.uri:
+    url: http://localhost:3000/api/datasources/name/Prometheus
+    url_username: "{{ grafana_secret.admin_username }}"
+    url_password: "{{ grafana_secret.admin_password }}"
+    force_basic_auth: true
+  register: datasource
+
+#- name: Print datasource 
+#  ansible.builtin.debug:
+#    var: datasource
     
 - name: Create dashboards
   ansible.builtin.uri:
