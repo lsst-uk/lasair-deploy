@@ -140,6 +140,7 @@
     body_format: json
     body: "{{ lookup('template', item) }}"
   loop:
+    - alerts.json.j2
     - processing.json.j2
     - system.json.j2
 
