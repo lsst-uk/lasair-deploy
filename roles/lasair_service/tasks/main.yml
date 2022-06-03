@@ -23,6 +23,7 @@
         - mocpy
         - requests
         - mysql-connector-python
+        - docopt
 
 - name: Make sure the repo is up to date
   git: 
