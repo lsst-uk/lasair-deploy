@@ -29,6 +29,7 @@ scrape_configs:
     static_configs:
      - targets:
        - "https://www.{{ domain }}/"
+       - "https://{{ (groups['web'] + ['localhost'])[0] }}/"
     relabel_configs:
      - source_labels: [__address__]
        target_label: __param_target
@@ -44,6 +45,7 @@ scrape_configs:
     static_configs:
      - targets:
        - "kafka.{{ domain }}:9092"
+       - "{{ (groups['kafka_pub'] + ['localhost'])[0] }}:9092"
     relabel_configs:
      - source_labels: [__address__]
        target_label: __param_target
