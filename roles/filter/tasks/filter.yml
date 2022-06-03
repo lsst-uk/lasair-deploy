@@ -21,12 +21,13 @@
         - confluent-kafka==1.5
         - mysql-connector-python
         - mocpy
+        - docopt
 
-- name: Create csvfiles directory
-  file:
-      path: "{{ ansible_env.HOME }}/csvfiles/"
-      state: directory
-      mode: 0777
+#- name: Create csvfiles directory
+#  file:
+#      path: "{{ ansible_env.HOME }}/csvfiles/"
+#      state: directory
+#      mode: 0777
 
 # no longer required with current version of mariadb
 #- name: Modify apparmor so MySQL can write

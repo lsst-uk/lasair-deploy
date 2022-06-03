@@ -20,6 +20,7 @@
       - cassandra-driver
       - gkutils
       - gkdbutils
+      - docopt
 
 - name: Make sure the repo is up to date
   git: 
