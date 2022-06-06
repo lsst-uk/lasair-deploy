@@ -24,6 +24,19 @@
     state: present
     update-cache: yes
 
+- name: Enable anon access
+  become: true
+  community.general.ini_file:
+    path: /etc/grafana/grafana.ini
+    section: auth.anonymous 
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - option: enabled
+      value: true
+    - option: org_role
+      value: Viewer
+
 - name: "Install Certbot"
   become: true
   community.general.snap:
