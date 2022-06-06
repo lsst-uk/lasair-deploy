@@ -80,7 +80,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(rate(kafka_log_log_value{name=\"LogEndOffset\", topic=\"ztf_ingest\"}[2m])) * 60 / 2",
+          "expr": "sum(rate(kafka_log_log_value{name=\"LogEndOffset\", topic=\"ztf_ingest\"}[5m])) * 60",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -91,16 +91,16 @@
         },
         {
           "exemplar": true,
-          "expr": "sum(rate(kafka_log_log_value{name=\"LogEndOffset\", topic=\"ztf_sherlock\"}[5m])) * 60 / 2",
+          "expr": "sum(rate(kafka_log_log_value{name=\"LogEndOffset\", topic=\"ztf_sherlock\"}[5m])) * 60",
           "interval": "",
           "legendFormat": "ztf_sherlock",
           "refId": "B"
         },
         {
-          "expr": "sum(rate(kafka_log_log_value{name=\"LogEndOffset\", topic=\"2Lightweight\"}[2m])) * 60 / 2",
+          "expr": "sum(rate(kafka_log_log_value{name=\"LogEndOffset\", topic=\"lasair_1Lightweight\"}[5m])) * 60",
           "hide": true,
           "interval": "",
-          "legendFormat": "2Lightweight",
+          "legendFormat": "1Lightweight",
           "refId": "C"
         }
       ],

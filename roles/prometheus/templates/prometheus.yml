@@ -63,7 +63,7 @@ scrape_configs:
   - job_name: kafka-nodes
     static_configs:
       - targets: 
-        {% for host in groups['kafka'] -%}
+        {% for host in (groups['kafka'] + groups['kafka_pub']) -%}
         - "{{ host }}:9100"
         - "{{ host }}:8081"
         - "{{ host }}:8082"
