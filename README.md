@@ -176,6 +176,22 @@ $ ansible-playbook deploy.yaml --tags facts,kafka
 
 To stop Mirrormaker, set `start_mirrormaker` to `false` and do the same.
 
+## Modify a deployment
+
+To add/remove instances:
+* Edit settings.yaml and change the number/create setting of the instances as required.
+* Run the command: `ansible-playbook stack.yaml`
+* If you have removed instances then edit `hosts` and `/etc/hosts` to remove the entries
+* If you have both removed and added instances you may need to delete `~/.ssh/known_hosts`
+
+## Remove a deployment
+
+To remove a deployment:
+```
+$ openstack stack delete <name>
+```
+
+If you are not going to recreate the deployment you can then go ahead and remove the network as well.
 
 ---
 

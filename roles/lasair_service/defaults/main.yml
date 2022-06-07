@@ -1,5 +1,5 @@
 ---
-# vars file for ingest
+# defaults file for roles/lasair_service
 
 settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
 kafka_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/kafka url='+vault.url)}}"

@@ -1,5 +1,0 @@
----
-# vars file for roles/lasair_service
-
-settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
-

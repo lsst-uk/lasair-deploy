@@ -44,32 +44,16 @@
 
 - name: Make sure the repo is up to date
   git:
-      repo: https://github.com/lsst-uk/lasair-lsst-web.git
-      dest: "{{ ansible_env.HOME }}/lasair-lsst-web"
+      repo: https://github.com/lsst-uk/lasair4.git
+      dest: "{{ ansible_env.HOME }}/lasair4"
+      
+# lasair4/common/settings.py
+- import_tasks: settings.yml
 
 - name: Settings.py for django
   template:
     src:  settings.py.j2
-    dest: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/lasair/settings.py"
-
-# Is this correct?
-- name: Run collectstatic
-  command: 
-    cmd: python3 manage.py collectstatic --noinput
-    chdir: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair"
-
-#- name: Create symlink for services log
-#  file:
-#    src: /mnt/cephfs/lasair/services_log
-#    dest: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/static/services_log"
-#    state: link
-
-#- name: Create symlink for streams
-#  file:
-#    src: /mnt/cephfs/lasair/streams
-#    dest: "{{ ansible_env.HOME }}/lasair-lsst-web/src/lasair-webapp/lasair/static/streams"
-#    state: link
-
+    dest: "{{ ansible_env.HOME }}/lasair4/webserver/lasair/settings.py"
 
 - name: Create restart script
   template:
@@ -102,4 +86,37 @@
     dest: /etc/apache2/sites-available/000-default.conf
   notify:
     - reload_apache2
+
+- name: Django bootstrap
+  shell:
+    chdir: "{{ ansible_env.HOME }}/lasair4/webserver"
+    cmd: "python3 manage.py {{ item }}"
+  environment:
+    PYTHONPATH: "{{ ansible_env.HOME }}/lasair4/webserver/lasair"
+  with_items:
+    - migrate
+    - makemigrations lasair
+    - migrate
+    - collectstatic --noinput
+
+- name: Create symlink for services log
+  file:
+    src: /mnt/cephfs/lasair/services_log
+    dest: "{{ ansible_env.HOME }}/lasair4/webserver/static/services_log"
+    state: link
+
+- name: Create symlink for streams
+  file:
+    src: /mnt/cephfs/lasair/streams
+    dest: "{{ ansible_env.HOME }}/lasair4/webserver/static/streams"
+    state: link
+
+- name: Create Django superuser
+  shell:
+    chdir: "{{ ansible_env.HOME }}/lasair4/webserver"
+    cmd: "python3 manage.py createsuperuser --noinput --username su --email {{ admin_email }}"
+  environment:
+    PYTHONPATH: "{{ ansible_env.HOME }}/lasair4/webserver/lasair"
+    DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
+  ignore_errors: true
 

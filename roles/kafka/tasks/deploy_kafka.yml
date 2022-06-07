@@ -12,6 +12,13 @@
     path: "{{ data_fs.path }}"
     state: directory
 
+- name: "Remove /mnt mount"
+  become: true
+  mount:
+    src: "{{ data_fs.dev }}"
+    path: /mnt
+    state: absent
+
 - name: "Mount data filesystems"
   become: true
   mount:

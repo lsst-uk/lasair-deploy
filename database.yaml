@@ -275,7 +275,7 @@
     - settings.yaml
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
-    git_branch: develop # use the dev branch schemas for now
+    git_branch: main
   roles:
     - lasair_database
   tags: setup_database

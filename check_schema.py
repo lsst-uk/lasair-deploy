@@ -10,6 +10,7 @@ import json
 import mysql.connector
 import requests
 import argparse
+import re
 
 def get_mysql_names(conf):
     config = {
@@ -30,7 +31,11 @@ def get_mysql_names(conf):
 
 def get_schema_names(conf):
     schema_names = []
-    my_objects = json.loads(requests.get(conf['url']).text)
+    schema = requests.get(conf['url']).text
+    # if schema format is python then convert to json first
+    if conf['format'] == 'py':
+        schema = re.sub("^.*{", "{", schema, count=1)
+    my_objects = json.loads(schema)
     for field in my_objects['fields']:
         schema_names.append(field['name'])
     return schema_names
@@ -43,7 +48,8 @@ if __name__ == "__main__":
     parser.add_argument('--host', type=str, help='MySQL hostname')
     parser.add_argument('--port', type=int, default=3306, help='MySQL port number')
     parser.add_argument('--database', type=str, default='ztf', help='Name of database')
-    parser.add_argument('--url', type=str, default="https://raw.githubusercontent.com/lsst-uk/lasair-lsst/main/utility/schema/objects.json", help='URL to get the schema from')
+    parser.add_argument('--format', type=str, default='py', help='Schema format (json|py)')
+    parser.add_argument('--url', type=str, default="https://raw.githubusercontent.com/lsst-uk/lasair4/main/common/schema/objects.py", help='URL to get the schema from')
     conf = vars(parser.parse_args())
 
     mysql_names = get_mysql_names(conf)

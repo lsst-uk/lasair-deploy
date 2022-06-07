@@ -2,4 +2,5 @@
 # tasks file for filter
 
 - import_tasks: filter.yml
+- import_tasks: settings.yml
 

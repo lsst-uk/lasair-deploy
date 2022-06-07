@@ -9,6 +9,6 @@ retention_bytes: "-1"
 replication_factor: "{{ 1 if (play_hosts|length)==1 else 2 }}"
 data_fs:
   dev: "/dev/sdb"
-  path: "/mnt"
+  path: "/kafka"
   type: "ext4"
 

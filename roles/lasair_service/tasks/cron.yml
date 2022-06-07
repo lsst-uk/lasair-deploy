@@ -13,39 +13,48 @@
     name:  cron
     state: started
 
-# Polls the TNS for new entries (every 4 hours at 1 minute past)
+# Polls the TNS for new entries (22 past midnight)
 - name: "Crontab for TNS"
   cron:
     name:   "Poll TNS"
     user:   "{{ ansible_env.USER }}"
-    minute: '1'
-    hour:   '*/4'
-    job:    "python3 {{ ansible_env.HOME }}/lasair-lsst/services/TNS/poll_tns.py --pageSize=500 --inLastNumberOfDays=180"
+    minute: '10'
+    hour:   '0'
+    job:    "(cd {{ ansible_env.HOME }}/lasair4/services/externalBrokers/TNS; python3 tns_runner.py)"
 
-# Dump the crossmatch_tns table to CephFS (every 4 hours at 11 minute past)
+# Dump the crossmatch_tns table to CephFS (30 past midnight)
 - name: "Crontab to dump crossmatch_tns"
   cron:
     name:   "Dump crossmatch_tns"
     user:   "{{ ansible_env.USER }}"
-    minute: '11'
-    hour:   '*/4'
-    job:    "{{ ansible_env.HOME }}/lasair-lsst/services/TNS/dumpTNS.sh"
+    minute: '22'
+    hour:   '0'
+    job:    "(cd {{ ansible_env.HOME }}/lasair4/services; python3 crossmatch_tns_dump.py)"
 
-# Build MOCs from any updated watchlists from master MySQL to CephFS where filter nodes can see them (12 minutes past midnight)
+# Dump the annotations table to CephFS (4 past midnight)
+- name: "Crontab to dump annotations"
+  cron:
+    name:   "Dump annotations"
+    user:   "{{ ansible_env.USER }}"
+    minute: '26'
+    hour:   '0'
+    job:    "(cd {{ ansible_env.HOME }}/lasair4/services; python3 annotations_dump.py)"
+
+# Build MOCs from any updated watchlists from master MySQL to CephFS where filter nodes can see them (8 past midnight)
 - name: "Crontab to build MOCs"
   cron:
     name:   "Build MOCs"
     user:   "{{ ansible_env.USER }}"
-    minute: '12'
+    minute: '30'
     hour:   '0'
-    job:    "python3 {{ ansible_env.HOME }}/lasair-lsst/services/watchlists/make_watchlist_files.py"
+    job:    "(cd {{ ansible_env.HOME }}/services; python3 make_watchlist_files.py"
 
-# Copy any updated area files (MOC) from master MySQL to CephFS where filter nodes can see them (10 minutes past midnight)
+# Copy any updated area files (MOC) from master MySQL to CephFS where filter nodes can see them (12 minutes past midnight)
 - name: "Crontab for area files"
   cron:
     name:   "Copy area files"
     user:   "{{ ansible_env.USER }}"
-    minute: '10'
+    minute: '34'
     hour:   '0'
-    job:    "python3 {{ ansible_env.HOME }}/lasair-lsst/services/areas/make_area_files.py"
+    job:    "(cd {{ ansible_env.HOME }}/services; python3 make_area_files.py"
 
