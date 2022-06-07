@@ -40,7 +40,7 @@
 
   - name: Add vault public key
     vars:
-      settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+      settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url, token_validate='false')}}"
     ansible.builtin.lineinfile:
       create: yes
       path: "{{ ansible_env.HOME }}/.ssh/authorized_keys"
