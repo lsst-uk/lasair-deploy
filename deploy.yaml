@@ -137,6 +137,23 @@
 
 - hosts: cassandranodes
   gather_facts: false
+  become: yes
+  tasks:
+    - name: create filesystem for data
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/sdb
+    - name: ensure data filesystem is mounted
+      ansible.posix.mount:
+        path: /var/lib/cassandra
+        src: /dev/sdb
+        fstype: ext4
+        opts: nofail
+        state: mounted
+  tags: filesystem
+
+- hosts: cassandranodes
+  gather_facts: false
   vars_files:
     - settings.yaml
   vars:
