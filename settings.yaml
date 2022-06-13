@@ -5,6 +5,9 @@ domain: lsst.ac.uk
 # A name to distinguish *this* lasair deployment, typically the same as the first part of the domain
 lasair_name: lasair-test
 
+# Git tag to deploy
+lasair_version: 4.0-rc1
+
 # Instances to deploy
 instances:
   db:
