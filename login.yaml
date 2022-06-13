@@ -17,11 +17,12 @@
       fail_msg: "VAULT_TOKEN is not set"
       quiet: true
 
-  - name: Create token file
+  - name: Create token file if necessary
     ansible.builtin.copy:
       content: "{{ ansible_env.VAULT_TOKEN }}"
       mode: 0600
       dest: "{{ ansible_env.HOME }}/.vault-token"
+      force: false
 
   - name: Create bash profile if necessary
     ansible.builtin.copy:
