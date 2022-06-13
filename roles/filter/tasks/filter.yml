@@ -59,6 +59,7 @@
   git: 
     repo: https://github.com/lsst-uk/lasair4.git
     dest: "{{ ansible_env.HOME }}/lasair4"
+    version: "{{ lasair_version }}"
 
 #- name: settings.py for filter module
 #  template:
