@@ -29,7 +29,7 @@ instances:
     number: 1
   kafka_pub:
     create: true
-    volume_size: 15
+    volume_size: 20
   ingest:
     number: 1
   sherlock:
@@ -42,7 +42,7 @@ instances:
     volume_size: 5
 
 # Size of shared filesystem in GB
-share_size: 10
+share_size: 20
 
 # tpye of Sherlock install - set to one of empty/lite/test/full
 sherlock_import_type: empty
@@ -79,10 +79,10 @@ os:
   # Use different names for multiple deployments in the same project
   stack_name: "{{ lasair_name }}"
   # names of flavors to use
-  flavor_small: tiny
-  flavor_medium: small
-  flavor_large: medium
-  flavor_xlarge: large
+  flavor_small: small
+  flavor_medium: medium
+  flavor_large: large
+  flavor_xlarge: xlarge
   flavor_kafka: kafka-test
   flavor_database: database-large
 
