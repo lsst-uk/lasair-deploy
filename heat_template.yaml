@@ -1,5 +1,4 @@
 heat_template_version: 2017-09-01
-#heat_template_version: 2016-10-14
 
 description: Heat template to deploy an instance of the Lasair system
 
@@ -359,7 +358,8 @@ resources:
     type: OS::Nova::ServerGroup
     properties:
       name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandra"] ] }
-      policies: ["anti-affinity"]
+      policies: ["soft-anti-affinity"]
+      #rules: { "max_server_per_host": 2 }
   cassandra_group:
     type: OS::Heat::ResourceGroup
     properties:
