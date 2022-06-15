@@ -29,6 +29,7 @@
   git: 
       repo: https://github.com/lsst-uk/lasair4.git
       dest: "{{ ansible_env.HOME }}/lasair4"
+      version: "{{ lasair_version }}"
 
 - import_tasks: cron.yml
 - import_tasks: settings.yml

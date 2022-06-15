@@ -1,9 +1,12 @@
 ---
 
 # DNS domain where this deployment lives
-domain: lasair-test2.lsst.ac.uk
+domain: lsst.ac.uk
 # A name to distinguish *this* lasair deployment, typically the same as the first part of the domain
-lasair_name: lasair-test2
+lasair_name: lasair-test
+
+# Git tag to deploy
+lasair_version: 4.0-rc1
 
 # Instances to deploy
 instances:
@@ -11,13 +14,13 @@ instances:
     create: true
     volume_size: 5
   frontend_db:
-    number: 1
+    number: 0
     volume_size: 5
   backend_db:
-    number: 2
+    number: 0
     volume_size: 5
   cluster_control:
-    create: true
+    create: false
   svc:
     create: true
   web:
@@ -30,12 +33,13 @@ instances:
   ingest:
     number: 1
   sherlock:
-    number: 2
+    number: 1
+    volume_size: 5
   filter:
     number: 1
   cassandranodes:
-    number: 1
-    volume_size: 15
+    number: 0
+    volume_size: 5
 
 # Size of shared filesystem in GB
 share_size: 10
@@ -49,7 +53,7 @@ vault:
   path: secret/lasair
 
 # An admin email address for services that expect one
-admin_email: admin@example.com
+admin_email: lasair-help@lists.roe.ac.uk
 
 # CephFS export location for the Sherlock database share
 sherlock_share: "10.19.4.16:6789,10.19.4.17:6789,10.19.4.18:6789:/volumes/_nogroup/f7d66a57-bdce-4924-8817-4b968ca9648f/7a8807b0-f30d-46a5-820a-1114071e5a04"
@@ -59,7 +63,7 @@ os:
   # Name of the base image
   image_name: ubuntu-focal
   # Name of the private network
-  network_name: test
+  network_name: lasair-test
   # Name of the network to use for Manila shares
   share_network_name: cephfs
   # Ceph username for shared filesystem
@@ -70,7 +74,7 @@ os:
   # Volume type to use for "slow" volumes
   slow_volume_type: ceph-hdd
   # Name of the ssh keypair in OpenStack
-  keypair_name: gareth-somerville
+  keypair_name: lasair-test
   # What to call the heat stack
   # Use different names for multiple deployments in the same project
   stack_name: "{{ lasair_name }}"
@@ -80,4 +84,5 @@ os:
   flavor_large: medium
   flavor_xlarge: large
   flavor_kafka: kafka-test
+  flavor_database: database-large
 
