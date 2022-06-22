@@ -11,7 +11,7 @@ lasair_version: 4.0-rc1
 # Instances to deploy
 instances:
   db:
-    create: true
+    create: false
     volume_size: 5
   frontend_db:
     number: 0
@@ -22,24 +22,28 @@ instances:
   cluster_control:
     create: false
   svc:
-    create: true
+    create: false
   web:
-    create: true
+    create: false
   kafka:
-    number: 1
+    number: 0
   kafka_pub:
-    create: true
+    create: false
     volume_size: 20
   ingest:
-    number: 1
+    number: 0
   sherlock:
-    number: 1
+    number: 0
     volume_size: 5
   filter:
-    number: 1
+    number: 0
   cassandranodes:
     number: 0
     volume_size: 5
+  parallel_ssh:
+    number: 2
+    started: false
+    flavor: tiny
 
 # Size of shared filesystem in GB
 share_size: 20
