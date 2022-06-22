@@ -138,12 +138,13 @@
     - name: set state of parallel ssh instances
       openstack.cloud.server_action:
         action: "{% if instances.parallel_ssh.started %}unshelve{% else %}shelve{% endif %}"
-        server: "{{ os.stack_name }}-parallel_ssh-0"
-      #loop: |
-      #  [
-      #    {%- if instances.parallel_ssh.number is defined %}
-      #      {%- for i in range(0, instances.parallel_ssh.number) %}
-      #        '{{ i }}',
-      #      {%- endfor %}
-      #    {%- endif %}
-      #  ]
+        server: "{{ os.stack_name }}-parallel_ssh-{{ item }}"
+      loop: "{{ range(0, instances.parallel_ssh.number) }}"
+      ignore_errors: true
+#        [
+#          {%- if instances.parallel_ssh.number is defined %}
+#            {%- for i in range(0, instances.parallel_ssh.number) %}
+#              '{{ i }}',
+#            {%- endfor %}
+#          {%- endif %}
+#        ]
