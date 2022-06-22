@@ -140,11 +140,6 @@
         action: "{% if instances.parallel_ssh.started %}unshelve{% else %}shelve{% endif %}"
         server: "{{ os.stack_name }}-parallel_ssh-{{ item }}"
       loop: "{{ range(0, instances.parallel_ssh.number) }}"
+      # There appears to be a bug somewhere that throws an exception when we update the
+      # state, but it still works provided we ignore the error
       ignore_errors: true
-#        [
-#          {%- if instances.parallel_ssh.number is defined %}
-#            {%- for i in range(0, instances.parallel_ssh.number) %}
-#              '{{ i }}',
-#            {%- endfor %}
-#          {%- endif %}
-#        ]
