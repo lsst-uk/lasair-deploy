@@ -41,7 +41,7 @@ instances:
     number: 0
     volume_size: 5
   parallel_ssh:
-    number: 2
+    number: 0
     started: false
     flavor: tiny
 
