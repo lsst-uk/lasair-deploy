@@ -407,7 +407,7 @@ resources:
           image_id: { get_param: image_id }
           net: { get_param: net }
           server_group: { get_resource: parallel_ssh_server_group }
-          #share_net: { get_param: share_net }
+          share_net: { get_param: share_net }
 
 outputs:
   share_fs:
@@ -444,6 +444,9 @@ outputs:
   cassandranodes:
     description: Private IP list
     value: { get_attr: [cassandra_group, first_address] }
+  parallel_ssh:
+    description: Private IP list
+    value: { get_attr: [parallel_ssh_group, first_address] }
   frontend_db:
     description: Private IP list
     value: { get_attr: [frontend_db_group, first_address] }
