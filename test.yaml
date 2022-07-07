@@ -84,6 +84,8 @@
 # webserver (+ api & proxy) tests
 - hosts: web
   gather_facts: false
+  vars_files:
+    - settings.yaml
   tasks:
     - name: web server listening on port 8080
       wait_for:
