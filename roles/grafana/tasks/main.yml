@@ -46,10 +46,10 @@
 
 - name: "Get certificate"
   become: true
-  command: "certbot certonly --standalone -m {{ email }} -d svc.{{ domain }} --agree-tos"
+  command: "certbot certonly --non-interactive --nginx -m {{ admin_email }} -d {{ server_name }} --agree-tos"
   register: certoutput
   args:
-    creates: "/etc/letsencrypt/live/svc.{{ domain }}"
+    creates: "/etc/letsencrypt/live/{{ server_name }}"
   when: enable_letsencrypt
 
 - debug: var=certoutput.stdout_lines
