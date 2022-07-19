@@ -94,7 +94,7 @@ WEB_DOMAIN             = '{{ lasair_name }}'
 
 # To include links in emails of filter results
 #LASAIR_URL             = 'lasair-iris.roe.ac.uk'
-LASAIR_URL             = '{{ domain }}'
+LASAIR_URL             = '{{ lasair_name }}.{{ domain }}'
 
 # The API calls this internal node for Sherlock
 SHERLOCK_SERVICE       = "{{ groups['sherlock'][0] }}"
