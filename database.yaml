@@ -176,7 +176,7 @@
     - settings.yaml
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
-    password: "{{ settings.master_db_root_password }}"
+    password: "{{ settings.maxscale_password }}"
     ip: "{{ hostvars[groups['cluster_control'][0]]['ansible_all_ipv4_addresses'][0] }}"
   tasks: 
     - name: Install PyMySQL
