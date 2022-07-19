@@ -29,6 +29,7 @@
           fast_volume_type: "{{ os.fast_volume_type }}"
           slow_volume_type: "{{ os.slow_volume_type }}"
           cassandra_volume_size: "{{ instances.cassandranodes.volume_size }}"
+          sherlock_volume_size: "{{ instances.sherlock.volume_size }}"
           db_volume_size: "{{ instances.db.volume_size }}"
           frontend_db_volume_size: "{{ instances.frontend_db.volume_size }}"
           backend_db_volume_size: "{{ instances.backend_db.volume_size }}"
@@ -50,6 +51,7 @@
           flavor_large: "{{ os.flavor_large }}"
           flavor_xlarge: "{{ os.flavor_xlarge }}"
           flavor_kafka: "{{ os.flavor_kafka }}"
+          flavor_database: "{{ os.flavor_database }}"
 
     - name: update exports.yaml
       template:

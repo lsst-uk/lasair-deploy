@@ -37,7 +37,7 @@
 
 - name: "Copy main.py"
   get_url:
-    url: "https://raw.githubusercontent.com/lsst-uk/lasair-lsst/develop/sherlocksvc/app/main.py"
+    url: "https://raw.githubusercontent.com/lsst-uk/lasair4/{{ lasair_version }}/services/sherlock/main.py"
     dest: /opt/lasair/main.py
     mode: 0644
 

@@ -64,6 +64,23 @@
     - ingest
   tags: ingest
   
+- hosts: sherlock 
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: create filesystem for database
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/sdb
+    - name: ensure data filesystem is mounted
+      ansible.posix.mount:
+        path: /var/lib/mysql
+        src: /dev/sdb
+        fstype: ext4
+        opts: nofail
+        state: mounted
+  tags: sherlock
+
 - hosts: sherlock
   gather_facts: false
   vars_files:
@@ -72,8 +89,8 @@
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
     mysql_root_password: "{{ settings.local_db_root_password }}"
-    master_db_host: "{{ (groups['db'] + groups['cluster_control'] + [''])[0] }}"
-    master_db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
+    db_host: "{{ (groups['db'] + groups['cluster_control'] + [''])[0] }}"
+    db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     datadir: /var/lib/mysql
     is_sherlock: true
     sherlock_catalogue_data_dir_lite: "/mnt/sherlock/data_lite"
@@ -117,6 +134,23 @@
     - lasair_cephfs
     - webserver
   tags: web
+
+- hosts: cassandranodes
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: create filesystem for data
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/sdb
+    - name: ensure data filesystem is mounted
+      ansible.posix.mount:
+        path: /var/lib/cassandra
+        src: /dev/sdb
+        fstype: ext4
+        opts: nofail
+        state: mounted
+  tags: filesystem
 
 - hosts: cassandranodes
   gather_facts: false

@@ -42,7 +42,7 @@ ssh keys to the authorized_keys file.
 If we are using Ubuntu 20.04 then the packaged version of Ansible is
 only 2.9 so we must install using pip:
 ```
-# apt-get update && apt-get install python3-pip && pip3 install ansible
+# apt-get update && apt-get install python3-pip && pip3 install ansible hvac
 ```
 
 4. Clone this repository:

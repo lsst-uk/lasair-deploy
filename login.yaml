@@ -17,11 +17,18 @@
       fail_msg: "VAULT_TOKEN is not set"
       quiet: true
 
-  - name: Create token file
+  - name: Create token file if necessary
     ansible.builtin.copy:
       content: "{{ ansible_env.VAULT_TOKEN }}"
       mode: 0600
       dest: "{{ ansible_env.HOME }}/.vault-token"
+      force: false
+
+  - name: Create bash profile if necessary
+    ansible.builtin.copy:
+      content: "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi"
+      dest: "{{ ansible_env.HOME }}/.bash_profile"
+      force: false
 
   - name: Set vault env vars in profile
     ansible.builtin.lineinfile:
@@ -34,7 +41,7 @@
 
   - name: Add vault public key
     vars:
-      settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
+      settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url, token_validate='false')}}"
     ansible.builtin.lineinfile:
       create: yes
       path: "{{ ansible_env.HOME }}/.ssh/authorized_keys"

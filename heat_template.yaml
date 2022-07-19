@@ -1,5 +1,4 @@
 heat_template_version: 2017-09-01
-#heat_template_version: 2016-10-14
 
 description: Heat template to deploy an instance of the Lasair system
 
@@ -27,6 +26,10 @@ parameters:
     description: Flavor to use for kafka instances.
     type: string
     default: kafka 
+  flavor_database:
+    description: Flavor to use for database instances.
+    type: string
+    default: database-large
   volume_large:
     description: Size of large volumes
     type: number
@@ -69,6 +72,10 @@ parameters:
     default: ceph-hdd
   db_volume_size:
     description: Size of database extra filesystems in GB.
+    type: number
+    default: 5
+  sherlock_volume_size:
+    description: Size of sherlock extra filesystems in GB.
     type: number
     default: 5
   frontend_db_volume_size:
@@ -163,7 +170,7 @@ resources:
     type: server_with_volume.yaml
     properties:
       key_name: { get_param: key_name }
-      flavor: { get_param: flavor_medium  }
+      flavor: { get_param: flavor_small  }
       server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "svc"] ] }
       volume_size: { get_param: volume_large }
       image_id: { get_param: image_id }
@@ -177,7 +184,7 @@ resources:
     type: server_with_volume.yaml
     properties:
       key_name: { get_param: key_name }
-      flavor: { get_param: flavor_large  }
+      flavor: { get_param: flavor_medium  }
       server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "web"] ] }
       volume_size: { get_param: volume_large }
       image_id: { get_param: image_id }
@@ -191,7 +198,7 @@ resources:
     type: server_with_volume.yaml
     properties:
       key_name: { get_param: key_name }
-      flavor: { get_param: flavor_large  }
+      flavor: { get_param: flavor_small }
       server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "db"] ] }
       volume_size: { get_param: volume_small }
       extra_volume_size: { get_param: db_volume_size }
@@ -220,7 +227,7 @@ resources:
         type: server_with_volume.yaml
         properties:
           key_name: { get_param: key_name }
-          flavor: { get_param: flavor_small  }
+          flavor: { get_param: flavor_database  }
           server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "frontend_db", "%index%" ]] }
           volume_size: { get_param: volume_small }
           extra_volume_size: { get_param: frontend_db_volume_size }
@@ -242,7 +249,7 @@ resources:
         type: server_with_volume.yaml
         properties:
           key_name: { get_param: key_name }
-          flavor: { get_param: flavor_small  }
+          flavor: { get_param: flavor_database  }
           server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "backend_db", "%index%" ]] }
           volume_size: { get_param: volume_small }
           extra_volume_size: { get_param: backend_db_volume_size }
@@ -318,9 +325,11 @@ resources:
         type: server_with_volume.yaml
         properties:
           key_name: { get_param: key_name }
-          flavor: { get_param: flavor_small  }
+          flavor: { get_param: flavor_xlarge  }
           server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "sherlock", "%index%" ]] }
           volume_size: { get_param: volume_small }
+          extra_volume_size: { get_param: sherlock_volume_size }
+          extra_volume_type: { get_param: fast_volume_type }
           image_id: { get_param: image_id }
           net: { get_param: net }
           share_net: { get_param: share_net }
@@ -349,7 +358,8 @@ resources:
     type: OS::Nova::ServerGroup
     properties:
       name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandra"] ] }
-      policies: ["anti-affinity"]
+      policies: ["soft-anti-affinity"]
+      #rules: { "max_server_per_host": 2 }
   cassandra_group:
     type: OS::Heat::ResourceGroup
     properties:
@@ -358,7 +368,7 @@ resources:
         type: server_with_volume.yaml
         properties:
           key_name: { get_param: key_name }
-          flavor: { get_param: flavor_small  }
+          flavor: { get_param: flavor_large  }
           server_name: { list_join: [ '-', [ { get_param: OS::stack_name }, "cassandranodes", "%index%" ]] }
           volume_size: { get_param: volume_small }
           extra_volume_size: { get_param: cassandra_volume_size }

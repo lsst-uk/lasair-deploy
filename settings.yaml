@@ -5,6 +5,9 @@ domain: lsst.ac.uk
 # A name to distinguish *this* lasair deployment, typically the same as the first part of the domain
 lasair_name: lasair-dev
 
+# Git tag to deploy
+lasair_version: main
+
 # Instances to deploy
 instances:
   db:
@@ -26,19 +29,20 @@ instances:
     number: 1
   kafka_pub:
     create: true
-    volume_size: 15
+    volume_size: 20
   ingest:
     number: 1
   sherlock:
     number: 1
+    volume_size: 5
   filter:
     number: 1
   cassandranodes:
-    number: 1
-    volume_size: 15
+    number: 0
+    volume_size: 5
 
 # Size of shared filesystem in GB
-share_size: 10
+share_size: 20
 
 # tpye of Sherlock install - set to one of empty/lite/test/full
 sherlock_import_type: test
@@ -49,7 +53,7 @@ vault:
   path: secret/lasair
 
 # An admin email address for services that expect one
-admin_email: roy@roe.ac.uk
+admin_email: lasair-help@lists.roe.ac.uk
 
 # CephFS export location for the Sherlock database share
 sherlock_share: "10.19.4.16:6789,10.19.4.17:6789,10.19.4.18:6789:/volumes/_nogroup/f7d66a57-bdce-4924-8817-4b968ca9648f/7a8807b0-f30d-46a5-820a-1114071e5a04"
@@ -75,9 +79,10 @@ os:
   # Use different names for multiple deployments in the same project
   stack_name: "{{ lasair_name }}"
   # names of flavors to use
-  flavor_small: tiny
-  flavor_medium: small
-  flavor_large: medium
-  flavor_xlarge: large
+  flavor_small: small
+  flavor_medium: medium
+  flavor_large: large
+  flavor_xlarge: xlarge
   flavor_kafka: kafka-test
+  flavor_database: database-large
 
