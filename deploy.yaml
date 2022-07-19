@@ -181,3 +181,16 @@
     - gkansible.gkservercollection.cassandra_schema_lasair
   tags: cassandra
 
+- hosts: parallel_ssh
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+    - exports.yaml
+  vars:
+  roles:
+    - role: lasair_cephfs
+      when: instances.parallel_ssh.started
+    - role: parallel_ssh
+      when: instances.parallel_ssh.started
+  tags: parallel_ssh
+
