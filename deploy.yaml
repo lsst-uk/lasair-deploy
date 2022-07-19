@@ -20,6 +20,7 @@
     enable_letsencrypt: false
     db_host: "{{ (groups['db'] + groups['cluster_control'] + [''])[0] }}"
     db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
+    replication_count: "{{ 1 if (groups['kafka']|length)<2 else 2 }}"
   roles:
     - lasair_cephfs
     - lasair_service
