@@ -3,4 +3,4 @@
 
 grafana_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/grafana url='+vault.url)}}"
 
-server_name: "svc.{{ domain }}"
+server_name: "{{ lasair_name }}-svc.{{ domain }}"
