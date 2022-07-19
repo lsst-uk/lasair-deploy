@@ -17,6 +17,7 @@ def get_mysql_names(conf):
       'user': conf['user'], 
       'password': conf['password'], 
       'host': conf['host'], 
+      'port': conf['port'], 
       'database': conf['database'], 
       }
     msl = mysql.connector.connect(**config)

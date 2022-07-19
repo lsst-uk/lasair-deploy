@@ -34,11 +34,14 @@
     - settings.yaml
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
-    git_branch: "{{ lasair_version }}"
   tasks:
     - name: validate object db schema
-      command: "python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair4/{{ git_branch }}/common/schema/objects.py --format=py"
+      command: "python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair4/{{ lasair_version }}/common/schema/objects.py --format=py"
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
+      changed_when: false
+    - name: validate object db schema via load balancer
+      command: "python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=9001 --url=https://raw.githubusercontent.com/lsst-uk/lasair4/{{ lasair_version }}/common/schema/objects.py --format=py"
+      loop: "{{ groups['cluster_control'] }}"
       changed_when: false
   tags: db
 
