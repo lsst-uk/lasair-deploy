@@ -272,6 +272,7 @@ resources:
       net: { get_param: net }
       #share_net: { get_param: share_net }
       server_group: { get_resource: default_server_group }
+      assign_public_ip: true
   kafka_server_group:
     type: OS::Nova::ServerGroup
     properties:
