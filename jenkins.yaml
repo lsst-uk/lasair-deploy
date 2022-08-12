@@ -1,0 +1,55 @@
+---
+# Needed for Ubuntu 22.04 until gkansible role is updated
+- hosts: localhost
+  gather_facts: false
+  become: true
+  vars:
+    mysql_root_password: "password123"
+  tasks:
+    - name: Install MariaDB
+      ansible.builtin.apt:
+        pkg:
+        - mariadb-server-10.6
+        - python3-mysqldb
+    - name: Set the root password
+      mysql_user:
+        login_user: 'root'
+        login_password: ''
+        user: 'root'
+        password: '{{ mysql_root_password }}'
+        login_unix_socket: '/var/run/mysqld/mysqld.sock'
+        state: present
+      become: true
+      # Failure is not necessarily fatal here - it may just be that the password has already been changed
+      ignore_errors: true
+
+
+- hosts: localhost
+  gather_facts: true
+  vars:
+    datadir: /var/lib/mysql
+    git_branch: develop
+    db_host: "127.0.0.1" 
+    db_port: "3306"
+    sherlock_import_type: empty
+    enable_letsencrypt: true
+    admin_email: g.francis@epcc.ed.ac.uk
+    fqdn: lasair-jenkins.lsst.ac.uk
+    settings:
+      master_db_root_password: "password123"
+      master_db_username: "ztf"
+      master_db_password: "password456"
+      master_db_readonly_username: "readonly_ztf"
+      master_db_readonly_password: "password789"
+    data_fs:
+      dev: /dev/vdb
+      path: /kafka
+      type: ext4
+  roles:
+    # role doesn't yet work in Ubuntu 22.04
+    #- gkansible.gkservercollection.mariadb
+    - lasair_database    
+    - gkansible.gkservercollection.mysql_sherlock
+    - kafka
+    - jenkins
+

@@ -193,6 +193,38 @@ $ openstack stack delete <name>
 
 If you are not going to recreate the deployment you can then go ahead and remove the network as well.
 
+
+# Lasair CI Environment
+
+The deployment system can also be used to provision a continuous integration environment.
+This includes a Jenkins CI server and a minimal set of Lasair components, such as
+a database and Kafka broker, that some of the integration tests will interact with.
+
+To set up a basic CI server using a single instance:
+
+1. Create an OpenStack instance (allow a reasonable ammount of memory and plenty of disk).
+Allocate a floating IP.
+
+2. Configure DNS if required. Configure security groups to allow incoming traffic on port
+80 and 443.
+
+3. Install Ansible as above.
+
+4. Clone this repository as above.
+
+5. There are some configuration parameters in jenkins.yaml that you may need to edit.
+
+6. Run the ci-init playbook to do some preliminary setup:
+```
+$ ansible-playbook ci-init.yaml
+```
+
+7. Run the jenkins playbook to deploy a CI environment and Jenkins server:
+```
+$ ansible-playbook jenkins.yaml
+```
+
+
 ---
 
 Copyright 2022 The University of Edinburgh and Queen's University Belfast
