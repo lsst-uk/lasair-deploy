@@ -42,6 +42,11 @@ $ ansible-playbook jenkins.yaml
 
 5. Set the URL when prompted.
 
+## Additional plugins required
+
+* Docker
+* Docker pipeline
+
 ## Setting up a job for Lasair
 
 In the Jenkins UI:
