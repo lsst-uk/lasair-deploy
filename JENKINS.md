@@ -9,7 +9,7 @@ a database and Kafka broker, that some of the integration tests will interact wi
 To set up a basic CI server using a single instance:
 
 1. Create an OpenStack instance (allow a reasonable ammount of memory and plenty of disk).
-Allocate a floating IP.
+Allocate a floating IP. Allocate and attach an additional volume for Kafka.
 
 2. Configure DNS if required. Configure security groups to allow incoming traffic on port
 80 and 443.
@@ -30,7 +30,7 @@ $ ansible-playbook ci-init.yaml
 $ ansible-playbook jenkins.yaml
 ```
 
-## Configure Jenkins
+## Configure Jenkin†s
 
 1. Go to the to URL of your Jenkins server, e.g. `https://lasair-jenkins.lsst.ac.uk`
 
@@ -46,6 +46,7 @@ $ ansible-playbook jenkins.yaml
 
 * Docker
 * Docker pipeline
+* GitHub Branch Source Plugin
 
 ## Setting up a job for Lasair
 
