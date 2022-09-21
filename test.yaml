@@ -3,6 +3,10 @@
 ---
 
 - hosts: all
+  gather_facts: true
+  tags: facts
+
+- hosts: all
   gather_facts: false
   tasks:
     - name: Ping all hosts
@@ -204,4 +208,25 @@
         force_basic_auth: true
         status_code: 200
   tags: grafana
+
+# CehpFS tests
+- hosts: svc, web, ingest, sherlock, filter, parallel_ssh
+  gather_facts: false
+  tasks:
+    - name: check that CephFS is mounted
+      assert:
+        that: ansible_facts.mounts | selectattr('mount', '==', '/mnt/cephfs')
+        quiet: true
+  tags: cephfs
+
+# Sherlock shared FS
+- hosts: sherlock
+  gather_facts: false
+  tasks:
+    - name: check that Sherlock shared filesystem is mounted
+      assert:
+        that: ansible_facts.mounts | selectattr('mount', '==', '/mnt/sherlock')
+        quiet: true
+  tags: cephfs
+
 
