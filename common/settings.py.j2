@@ -97,7 +97,11 @@ WEB_DOMAIN             = '{{ lasair_name }}'
 LASAIR_URL             = '{{ lasair_name }}.{{ domain }}'
 
 # The API calls this internal node for Sherlock
+{% if groups['sherlock'][0] is defined %}
 SHERLOCK_SERVICE       = "{{ groups['sherlock'][0] }}"
+{% else %}
+SHERLOCK_SERVICE       = None
+{% endif %}
 
 # The webserver calls on the API and should not be throttled
 API_TOKEN              = '{{ settings.powerapi_token }}'
