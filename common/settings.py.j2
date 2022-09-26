@@ -46,6 +46,8 @@ DB_HOST                = '{{ db_host }}'
 DB_PORT                = '{{ db_port }}'
 DB_DATABASE            = 'ztf'
 DB_ROOT_PASS           = '{{ settings.master_db_root_password }}'
+BACKUP_DATABASE_HOST   = "{{ (groups['db'] + groups['backend_db'] + [None])[0] }}"
+BACKUP_DATABASE_PORT   = 3306
 
 # Read/write access
 DB_USER_READWRITE      = '{{ settings.master_db_username }}'
