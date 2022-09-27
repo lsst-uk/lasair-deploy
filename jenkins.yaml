@@ -42,9 +42,7 @@
       master_db_readonly_username: "readonly_ztf"
       master_db_readonly_password: "password789"
     data_fs:
-      dev: /dev/vdb
       path: /kafka
-      type: ext4
   roles:
     # role doesn't yet work in Ubuntu 22.04
     #- gkansible.gkservercollection.mariadb

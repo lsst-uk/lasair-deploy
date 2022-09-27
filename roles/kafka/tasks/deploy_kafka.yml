@@ -5,6 +5,7 @@
   filesystem:
     fstype: "{{ data_fs.type }}"
     dev: "{{ data_fs.dev }}"
+  when: data_fs.dev is defined
 
 - name: "Create data mountpoints"
   become: true
@@ -18,6 +19,7 @@
     src: "{{ data_fs.dev }}"
     path: /mnt
     state: absent
+  when: data_fs.dev is defined
 
 - name: "Mount data filesystems"
   become: true
@@ -27,6 +29,7 @@
     fstype: "{{ data_fs.type }}"
     opts: nofail
     state: mounted
+  when: data_fs.dev is defined
 
 - name: "Create data directory"
   become: true
