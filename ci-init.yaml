@@ -14,4 +14,17 @@
       section: login
       allow_no_value: true
       option: "localhost ansible_connection=local"
+  - name: install pip
+    become: true
+    apt:
+      name:
+        - python3-pip
+      state: present
+      update_cache: true
+  - name: install pip packages
+    become: true
+    pip:
+      name:
+        - hvac
+
     
