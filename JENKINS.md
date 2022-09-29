@@ -46,7 +46,7 @@ $ ansible-playbook jenkins.yaml
 
 * Docker
 * Docker pipeline
-* GitHub Branch Source Plugin
+* GitHub
 
 ## Setting up a job for Lasair
 
