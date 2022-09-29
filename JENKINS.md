@@ -54,15 +54,13 @@ In the Jenkins UI:
 
 1. Create a new job.
 
-2. Select "pipeline".
+2. Select "Multibranch pipeline".
 
-3. Tick the "GitHub hook trigger for GITScm polling" option.
+3. Add GitHub credentials (create an access token in GitHub and use that).
 
-4. In the Definition dropdown, choose "Pipeline script from SCM". For the SCM dropdown, pick Git.
-In the Repository URL, type (or paste) the full GitHub repo URL, e.g. `https://github.com/lsst-uk/lasair4.git`
+4. Add the repository HTTPS URL, e.g. `https://github.com/lsst-uk/lasair4.git`
 
-5. Note that at the time of writing a blank in the branch specifier does not work.
-To specify "any" use `*/*`.
+5. Add the Clean after checkout behaviour.
 
 6. In the Script Path, enter `tests/JenkinsFile`
 
