@@ -16,7 +16,11 @@ KAFKA_GROUPID          = 'LASAIR1'
 
 # The server for the public kafka, where filter streams are prodced
 # with its username and password
+{% if groups['kafka_pub'] is defined and groups['kafka_pub']|length > 0 %}
 PUBLIC_KAFKA_SERVER    = "{{ groups['kafka_pub'][0] }}:29092"
+{% else %}
+PUBLIC_KAFKA_SERVER    = None
+{% endif %}
 PUBLIC_KAFKA_USERNAME  = "{{ kafka_secret.admin_username }}"
 PUBLIC_KAFKA_PASSWORD  = "{{ kafka_secret.admin_password }}"
 
@@ -97,7 +101,7 @@ WEB_DOMAIN             = '{{ lasair_name }}'
 LASAIR_URL             = '{{ lasair_name }}.{{ domain }}'
 
 # The API calls this internal node for Sherlock
-{% if groups['sherlock'][0] is defined %}
+{% if groups['sherlock'] is defined and groups['sherlock']|length > 0 %}
 SHERLOCK_SERVICE       = "{{ groups['sherlock'][0] }}"
 {% else %}
 SHERLOCK_SERVICE       = None
