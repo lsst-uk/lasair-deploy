@@ -64,6 +64,14 @@
   when: enable_letsencrypt
   notify: restart_apache2
 
+- name: Disable the Apache2 module ssl
+  become: true
+  community.general.apache2_module:
+    state: absent
+    name: ssl
+  when: not enable_letsencrypt
+  notify: restart_apache2
+
 - name: Create WSGI directory
   file:
       path: "{{ ansible_env.HOME }}/mod_wsgi_space"
@@ -111,8 +119,18 @@
 - name: Set Apache site config
   become: true
   template:
+    src: 000-default-ssl.conf
+    dest: /etc/apache2/sites-available/000-default.conf
+  when: not enable_letsencrypt
+  notify:
+    - reload_apache2
+
+- name: Set Apache site config
+  become: true
+  template:
     src: 000-default.conf
     dest: /etc/apache2/sites-available/000-default.conf
+  when: enable_letsencrypt
   notify:
     - reload_apache2
 
