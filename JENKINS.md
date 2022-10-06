@@ -30,7 +30,7 @@ $ ansible-playbook ci-init.yaml
 $ ansible-playbook jenkins.yaml
 ```
 
-## Configure Jenkin†s
+## Configure Jenkins
 
 1. Go to the to URL of your Jenkins server, e.g. `https://lasair-jenkins.lsst.ac.uk`
 
@@ -41,6 +41,8 @@ $ ansible-playbook jenkins.yaml
 4. Create an admin user when prompted.
 
 5. Set the URL when prompted.
+
+6. In Manage Jenkins | Configure System set the number of executors to 1 (integration tests will fail if two try to talk to Kafka at once).
 
 ## Additional plugins required
 
