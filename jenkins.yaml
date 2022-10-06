@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  gather_facts: true
+  vars:
+    datadir: /var/lib/mysql
+    git_branch: develop
+    db_host: "127.0.0.1" 
+    db_port: "3306"
+    sherlock_import_type: lite
+    enable_letsencrypt: true
+    admin_email: g.francis@epcc.ed.ac.uk
+    fqdn: lasair-jenkins.lsst.ac.uk
+    settings:
+      local_db_root_password: "password123"
+      master_db_root_password: "password123"
+      master_db_username: "ztf"
+      master_db_password: "password456"
+      master_db_readonly_username: "readonly_ztf"
+      master_db_readonly_password: "password789"
+    data_fs:
+      path: /kafka
+    vault:
+      url: https://vault.lsst.ac.uk
+      path: secret/lasair
+    sherlock_share: "10.19.4.16:6789,10.19.4.17:6789,10.19.4.18:6789:/volumes/_nogroup/f7d66a57-bdce-4924-8817-4b968ca9648f/7a8807b0-f30d-46a5-820a-1114071e5a04"
+  roles:
+    - lasair_cephfs_sherlock
+    - gkansible.gkservercollection.mariadb
+    - lasair_database    
+    - gkansible.gkservercollection.mysql_sherlock
+    - kafka
+    - jenkins
+

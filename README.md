@@ -195,6 +195,12 @@ $ openstack stack delete <name>
 
 If you are not going to recreate the deployment you can then go ahead and remove the network as well.
 
+
+# Lasair CI Environment
+
+See JENKINS.md
+
+
 ---
 
 Copyright 2022 The University of Edinburgh and Queen's University Belfast
