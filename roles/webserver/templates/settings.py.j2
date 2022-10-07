@@ -168,3 +168,6 @@ STATIC_URL = "/lasair/static/"
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, 'staticfiles'),
 )
+
+CSRF_TRUSTED_ORIGINS = ['{{ lasair_name }}.{{ domain }}']
+
