@@ -1,0 +1,9 @@
+---
+- name: "Install Prometheus node exporter"
+  become: true
+  apt:
+    pkg:
+      - prometheus-node-exporter
+    state: present
+    update-cache: yes
+
