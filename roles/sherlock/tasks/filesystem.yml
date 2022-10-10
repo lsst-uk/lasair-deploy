@@ -1,0 +1,23 @@
+---
+
+- name: Check if volume exists
+  stat:
+    path: /dev/sdb
+  register: sdb
+
+- name: Create filesystem for Sherlock database
+  become: true
+  community.general.filesystem:
+    fstype: ext4
+    dev: /dev/sdb
+  when: sdb.stat.exists
+
+- name: Ensure data filesystem is mounted
+  ansible.posix.mount:
+    path: /var/lib/mysql
+    src: /dev/sdb
+    fstype: ext4
+    opts: nofail
+    state: mounted
+  when: sdb.stat.exists
+
