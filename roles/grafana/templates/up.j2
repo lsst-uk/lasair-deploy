@@ -1,0 +1,109 @@
+    {
+      "type": "stat",
+      "title": "Database {{ index }} / {{ length }} ",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "{{ datasource.json.uid }}"
+      },
+      "description": "Database uptime",
+      "hideTimeOverride": true,
+      "maxDataPoints": 100,
+      "links": [],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "Down"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Down"
+                },
+                "to": 0
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 86400
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 86400,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 10000000000
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#890f02",
+                "value": null
+              },
+              {
+                "color": "#e5ac0e",
+                "value": 1
+              },
+              {
+                "color": "#1f78c1",
+                "value": 300
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "horizontal",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "node_time_seconds{instance=\"{{ host }}:9100\"}-node_boot_time_seconds{instance=\"{{ host }}:9100\"} OR on() vector(0)",
+          "hide": false,
+          "instant": true,
+          "range": false,
+          "refId": "A"
+        }
+      ]
+    },

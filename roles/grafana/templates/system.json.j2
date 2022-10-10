@@ -27,6 +27,29 @@
   "links": [],
   "liveNow": false,
   "panels": [
+{% for host in groups['db'] %}
+  {% set index = loop.index %}
+  {% set length = loop.length %}
+  {% include 'up.j2' %} 
+{% endfor %}
+{% for host in groups['cluster_control'] %}
+{% endfor %}
+{% for host in groups['frontend_db'] %}
+{% endfor %}
+{% for host in groups['backend_db'] %}
+{% endfor %}
+{% for host in groups['svc'] %}
+{% endfor %}
+{% for host in groups['web'] %}
+{% endfor %}
+{% for host in groups['ingest'] %}
+{% endfor %}
+{% for host in groups['sherlock'] %}
+{% endfor %}
+{% for host in groups['filter'] %}
+{% endfor %}
+{% for host in groups['cassandranodes'] %}
+{% endfor %}
 {% for host in groups['kafka'] %}
     {
       "datasource": {},
@@ -122,7 +145,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.2",
       "targets": [
         {
           "expr": "java_lang_runtime_uptime{instance=\"{{ host }}:8083\"} / 1000 OR on() vector(0)",
@@ -236,7 +258,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.2",
       "targets": [
         {
           "expr": "java_lang_runtime_uptime{instance=\"{{ host }}:8082\"} / 1000 OR on() vector(0)",
@@ -350,7 +371,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.2",
       "targets": [
         {
           "expr": "java_lang_runtime_uptime{instance=\"{{ host }}:8081\"} / 1000 OR on() vector(0)",
@@ -432,7 +452,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.2",
       "targets": [
         {
           "expr": "node_filesystem_avail_bytes{instance=\"{{ host }}:9100\",mountpoint=\"/\"}",
@@ -508,7 +527,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.2",
       "targets": [
         {
           "expr": "100 * (1 - (node_memory_MemAvailable_bytes{instance=\"{{ host }}:9100\"}/node_memory_MemTotal_bytes{instance=\"{{ host }}:9100\"}))",
@@ -584,7 +602,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.2",
       "targets": [
         {
           "expr": "avg(node_load1{instance=\"{{ host }}:9100\"}) /  count(node_cpu_seconds_total{instance=\"{{ host }}:9100\", mode=\"idle\"}) * 100",
@@ -636,7 +653,6 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -731,7 +747,6 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -881,7 +896,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.2",
       "targets": [
         {
           "exemplar": true,
@@ -998,7 +1012,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.2",
       "targets": [
         {
           "exemplar": true,

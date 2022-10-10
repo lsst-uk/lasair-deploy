@@ -58,13 +58,17 @@ scrape_configs:
     # If prometheus-node-exporter is installed, grab stats about the local
     # machine by default.
     static_configs:
-      - targets: ['localhost:9100']
+      #- targets: ['localhost:9100']
+      - targets:
+        {% for host in (groups['all']) -%}
+        - "{{ host }}:9100"
+        {% endfor %}
 
   - job_name: kafka-nodes
     static_configs:
       - targets: 
         {% for host in (groups['kafka'] + groups['kafka_pub']) -%}
-        - "{{ host }}:9100"
+        #- "{{ host }}:9100"
         - "{{ host }}:8081"
         - "{{ host }}:8082"
         - "{{ host }}:8083"
