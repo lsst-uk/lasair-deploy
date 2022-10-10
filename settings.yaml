@@ -6,7 +6,7 @@ domain: lsst.ac.uk
 lasair_name: lasair-dev
 
 # Git tag to deploy
-lasair_version: main
+lasair_version: v4.1.0
 
 # Instances to deploy
 instances:
