@@ -76,12 +76,12 @@
     db_host: "{{ (groups['db'] + groups['cluster_control'] + [''])[0] }}"
     db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     datadir: /var/lib/mysql
-    is_sherlock: true
     sherlock_catalogue_data_dir_lite: "/mnt/sherlock/data_lite"
     sherlock_catalogue_data_dir: "/mnt/sherlock/data"
     sherlock_sql_dir: "/mnt/sherlock/sql"
   roles:
     - lasair_cephfs
+    - lasair_cephfs_sherlock
     - sherlock
   tags: sherlock
   
