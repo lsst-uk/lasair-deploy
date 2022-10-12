@@ -1,0 +1,59 @@
+---
+
+- name: Add Jenkins repository
+  become: true
+  block:
+    - name: Add respository key
+      ansible.builtin.get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+    - name: Add respository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        state: present  
+
+- name: Install packages
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - openjdk-17-jdk-headless
+      - jenkins
+      - nginx
+
+- name: "Install Certbot"
+  become: true
+  community.general.snap:
+    name:
+      - certbot
+    classic: yes
+  when: enable_letsencrypt
+
+- name: "Get certificate"
+  become: true
+  command: "certbot certonly --non-interactive --nginx -m {{ admin_email }} -d {{ fqdn }} --agree-tos"
+  register: certoutput
+  args:
+    creates: "/etc/letsencrypt/live/{{ fqdn }}"
+  when: enable_letsencrypt
+
+- name: "Create Nginx config file"
+  become: true
+  template:
+    src: "nginx.conf"
+    dest: /etc/nginx/sites-available/jenkins
+  notify: Restart Nginx
+
+- name: "Enable Nginx config"
+  become: true
+  file:
+    src: /etc/nginx/sites-available/jenkins
+    dest: /etc/nginx/sites-enabled/jenkins
+    state: link
+  notify: Restart Nginx
+
+- name: "Disable default Nginx config"
+  become: true
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart Nginx

@@ -16,7 +16,11 @@ KAFKA_GROUPID          = 'LASAIR1'
 
 # The server for the public kafka, where filter streams are prodced
 # with its username and password
+{% if groups['kafka_pub'] is defined and groups['kafka_pub']|length > 0 %}
 PUBLIC_KAFKA_SERVER    = "{{ groups['kafka_pub'][0] }}:29092"
+{% else %}
+PUBLIC_KAFKA_SERVER    = None
+{% endif %}
 PUBLIC_KAFKA_USERNAME  = "{{ kafka_secret.admin_username }}"
 PUBLIC_KAFKA_PASSWORD  = "{{ kafka_secret.admin_password }}"
 
@@ -46,6 +50,8 @@ DB_HOST                = '{{ db_host }}'
 DB_PORT                = '{{ db_port }}'
 DB_DATABASE            = 'ztf'
 DB_ROOT_PASS           = '{{ settings.master_db_root_password }}'
+BACKUP_DATABASE_HOST   = "{{ (groups['db'] + groups['backend_db'] + [None])[0] }}"
+BACKUP_DATABASE_PORT   = 3306
 
 # Read/write access
 DB_USER_READWRITE      = '{{ settings.master_db_username }}'
@@ -94,10 +100,14 @@ WEB_DOMAIN             = '{{ lasair_name }}'
 
 # To include links in emails of filter results
 #LASAIR_URL             = 'lasair-iris.roe.ac.uk'
-LASAIR_URL             = '{{ domain }}'
+LASAIR_URL             = '{{ lasair_name }}.{{ domain }}'
 
 # The API calls this internal node for Sherlock
+{% if groups['sherlock'] is defined and groups['sherlock']|length > 0 %}
 SHERLOCK_SERVICE       = "{{ groups['sherlock'][0] }}"
+{% else %}
+SHERLOCK_SERVICE       = None
+{% endif %}
 
 # The webserver calls on the API and should not be throttled
 API_TOKEN              = '{{ settings.powerapi_token }}'
@@ -105,6 +115,7 @@ API_TOKEN              = '{{ settings.powerapi_token }}'
 # Comparing what we have processed with what ZTF has processed
 GRAFANA_USERNAME       = 'ztf'
 GRAFANA_PASSWORD       = '{{ settings.grafana_password }}'
+GRAFANA_URL            = "https://{{ lasair_name }}-svc.{{ domain }}/d/iILmd8-Wz/alerts"
 
 # Watchlist and Area control
 ############################

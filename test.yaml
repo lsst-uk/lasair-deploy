@@ -3,6 +3,10 @@
 ---
 
 - hosts: all
+  gather_facts: true
+  tags: facts
+
+- hosts: all
   gather_facts: false
   tasks:
     - name: Ping all hosts
@@ -34,11 +38,14 @@
     - settings.yaml
   vars:
     settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/settings url='+vault.url)}}"
-    git_branch: "{{ lasair_version }}"
   tasks:
     - name: validate object db schema
-      command: "python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair4/{{ git_branch }}/common/schema/objects.py --format=py"
+      command: "python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=3306 --url=https://raw.githubusercontent.com/lsst-uk/lasair4/{{ lasair_version }}/common/schema/objects.py --format=py"
       loop: "{{ groups['db'] + groups['backend_db'] + groups['frontend_db'] }}"
+      changed_when: false
+    - name: validate object db schema via load balancer
+      command: "python3 check_schema.py --user={{ settings.master_db_readonly_username }} --password={{ settings.master_db_readonly_password }} --host={{ item }} --port=9001 --url=https://raw.githubusercontent.com/lsst-uk/lasair4/{{ lasair_version }}/common/schema/objects.py --format=py"
+      loop: "{{ groups['cluster_control'] }}"
       changed_when: false
   tags: db
 
@@ -84,12 +91,25 @@
 # webserver (+ api & proxy) tests
 - hosts: web
   gather_facts: false
+  vars_files:
+    - settings.yaml
   tasks:
     - name: web server listening on port 8080
       wait_for:
         port: 8080
         timeout: 1
       tags: net
+    - name: web server listening on port 80
+      wait_for:
+        port: 80
+        timeout: 1
+      tags: net
+    - name: web server listening on port 443
+      wait_for:
+        port: 443
+        timeout: 1
+      tags: net
+      ignore_errors: true # OK for this to fail if HTTPS not enabled
     - name: check we can get home page
       ansible.builtin.uri:
         url: "http://{{ ansible_host }}:8080"
@@ -101,6 +121,12 @@
           ==
           "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair4/'+lasair_version+'/webserver/staticfiles/css/lasair-web.css', split_lines=false) | hash('md5') }}"
         quiet: true
+    - name: check redirect works
+      ansible.builtin.uri:
+        url: "http://{{ lasair_name }}.{{ domain }}/"
+        follow_redirects: false
+        status_code: 301
+
   tags: web
 - hosts: proxy
   tasks:
@@ -182,4 +208,25 @@
         force_basic_auth: true
         status_code: 200
   tags: grafana
+
+# CehpFS tests
+- hosts: svc, web, ingest, sherlock, filter, parallel_ssh
+  gather_facts: false
+  tasks:
+    - name: check that CephFS is mounted
+      assert:
+        that: ansible_facts.mounts | selectattr('mount', '==', '/mnt/cephfs')
+        quiet: true
+  tags: cephfs
+
+# Sherlock shared FS
+- hosts: sherlock
+  gather_facts: false
+  tasks:
+    - name: check that Sherlock shared filesystem is mounted
+      assert:
+        that: ansible_facts.mounts | selectattr('mount', '==', '/mnt/sherlock')
+        quiet: true
+  tags: cephfs
+
 

@@ -3,15 +3,15 @@
 # DNS domain where this deployment lives
 domain: lsst.ac.uk
 # A name to distinguish *this* lasair deployment, typically the same as the first part of the domain
-lasair_name: lasair-test
+lasair_name: lasair-dev
 
 # Git tag to deploy
-lasair_version: 4.0-rc1
+lasair_version: v4.1.0
 
 # Instances to deploy
 instances:
   db:
-    create: true
+    create: false
     volume_size: 5
   frontend_db:
     number: 0
@@ -22,30 +22,34 @@ instances:
   cluster_control:
     create: false
   svc:
-    create: true
+    create: false
   web:
-    create: true
+    create: false
   kafka:
-    number: 1
+    number: 0
   kafka_pub:
-    create: true
+    create: false
     volume_size: 20
   ingest:
-    number: 1
+    number: 0
   sherlock:
-    number: 1
+    number: 0
     volume_size: 5
   filter:
-    number: 1
+    number: 0
   cassandranodes:
     number: 0
     volume_size: 5
+  parallel_ssh:
+    number: 0
+    started: false
+    flavor: tiny
 
 # Size of shared filesystem in GB
 share_size: 20
 
 # tpye of Sherlock install - set to one of empty/lite/test/full
-sherlock_import_type: empty
+sherlock_import_type: test
 
 # Vault settings
 vault:
@@ -63,7 +67,7 @@ os:
   # Name of the base image
   image_name: ubuntu-focal
   # Name of the private network
-  network_name: lasair-test
+  network_name: lasair-dev
   # Name of the network to use for Manila shares
   share_network_name: cephfs
   # Ceph username for shared filesystem
@@ -74,7 +78,7 @@ os:
   # Volume type to use for "slow" volumes
   slow_volume_type: ceph-hdd
   # Name of the ssh keypair in OpenStack
-  keypair_name: lasair-test
+  keypair_name: lasair-dev-key
   # What to call the heat stack
   # Use different names for multiple deployments in the same project
   stack_name: "{{ lasair_name }}"

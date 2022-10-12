@@ -102,26 +102,28 @@ $ ansible-playbook test.yaml --tags ping
 
 CephFS requires that an access key be looked up and stored in Vault. This is not
 yet automated. The process is as follows (the deployment here is called
-lasair-test and the share-user lasair-user):
+lasair-example and the share-user example-user):
 
 Look up the key:
 ```
-$ openstack share access list --columns access_to,access_key lasair-test
-+-------------+------------------------------------------+
-| access_to   | access_key                               |
-+-------------+------------------------------------------+
-| lasair-user | ABCDeFghIjklMnOPQrS1tUvWXyZ2Ls34LZAx7A== |
-+-------------+------------------------------------------+
+$ openstack share access list --columns access_to,access_key lasair-example
++--------------+------------------------------------------+
+| access_to    | access_key                               |
++--------------+------------------------------------------+
+| example-user | ABCDeFghIjklMnOPQrS1tUvWXyZ2Ls34LZAx7A== |
++--------------+------------------------------------------+
 ```
 
 Create/update the secret in vault:
+
+**Note: If we have multiple user/key pairs in the same secret then be sure to avoid
+overwriting any others.**
+
 ```
-$ vault kv put secret/lasair/cephx 'lasair-user=ABCDeFghIjklMnOPQrS1tUvWXyZ2Ls34LZAx7A=='
+$ vault kv put secret/lasair/cephx 'example-user=ABCDeFghIjklMnOPQrS1tUvWXyZ2Ls34LZAx7A=='
 Success! Data written to: secret/lasair/cephx
 ```
 
-If we have multiple user/key pairs in the same secret then be sure to avoid
-overwriting any others.
 
 ## Configure DNS and Security Groups
 
@@ -192,6 +194,12 @@ $ openstack stack delete <name>
 ```
 
 If you are not going to recreate the deployment you can then go ahead and remove the network as well.
+
+
+# Lasair CI Environment
+
+See JENKINS.md
+
 
 ---
 

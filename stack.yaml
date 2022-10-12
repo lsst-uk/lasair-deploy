@@ -41,6 +41,7 @@
           n_cassandra: "{{ instances.cassandranodes.number|default(1) }}"
           n_frontend_db: "{{ instances.frontend_db.number|default(0) }}"
           n_backend_db: "{{ instances.backend_db.number|default(0) }}"
+          n_parallel_ssh: "{{ instances.parallel_ssh.number|default(0) }}"
           create_db: "{{ instances.db.create|default(true) }}"
           create_cluster_control: "{{ instances.cluster_control.create|default(false) }}"
           create_kafka_pub: "{{ instances.kafka_pub.create|default(true) }}"
@@ -52,6 +53,7 @@
           flavor_xlarge: "{{ os.flavor_xlarge }}"
           flavor_kafka: "{{ os.flavor_kafka }}"
           flavor_database: "{{ os.flavor_database }}"
+          flavor_parallel_ssh: "{{ instances.parallel_ssh.flavor }}"
 
     - name: update exports.yaml
       template:
@@ -133,3 +135,11 @@
         - proxy
         - api
 
+    - name: set state of parallel ssh instances
+      openstack.cloud.server_action:
+        action: "{% if instances.parallel_ssh.started %}unshelve{% else %}shelve{% endif %}"
+        server: "{{ os.stack_name }}-parallel_ssh-{{ item }}"
+      loop: "{{ range(0, instances.parallel_ssh.number) }}"
+      # There appears to be a bug somewhere that throws an exception when we update the
+      # state, but it still works provided we ignore the error
+      ignore_errors: true
