@@ -65,23 +65,6 @@
     - ingest
   tags: ingest
   
-- hosts: sherlock 
-  gather_facts: false
-  become: yes
-  tasks:
-    - name: create filesystem for database
-      community.general.filesystem:
-        fstype: ext4
-        dev: /dev/sdb
-    - name: ensure data filesystem is mounted
-      ansible.posix.mount:
-        path: /var/lib/mysql
-        src: /dev/sdb
-        fstype: ext4
-        opts: nofail
-        state: mounted
-  tags: sherlock
-
 - hosts: sherlock
   gather_facts: false
   vars_files:
@@ -99,8 +82,6 @@
   roles:
     - lasair_cephfs
     - lasair_cephfs_sherlock
-    - gkansible.gkservercollection.mariadb
-    - gkansible.gkservercollection.mysql_sherlock
     - sherlock
   tags: sherlock
   
