@@ -22,64 +22,35 @@
               "options": {
                 "match": "null",
                 "result": {
-                  "text": "Down"
+                  "text": "N/A"
                 }
               },
               "type": "special"
-            },
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "text": "Down"
-                },
-                "to": 0
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "text": "Up"
-                },
-                "to": 86400
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 86400,
-                "result": {
-                  "text": "Up"
-                },
-                "to": 10000000000
-              },
-              "type": "range"
             }
           ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#890f02",
+                "color": "#5794F2",
                 "value": null
               },
               {
-                "color": "#e5ac0e",
-                "value": 1
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 100
               },
               {
-                "color": "#1f78c1",
-                "value": 300
+                "color": "#d44a3a",
+                "value": 200
               }
             ]
           },
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 1,
-          "unit": "s"
+          "unit": "percent",
+          "min": 0,
+          "max": 100
         },
         "overrides": []
       },
@@ -93,7 +64,7 @@
         },
         "orientation": "horizontal",
         "textMode": "auto",
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto"
       },
@@ -103,12 +74,7 @@
             "type": "prometheus",
             "uid": "{{ datasource.json.uid }}"
           },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "node_time_seconds{instance=\"{{ host }}:9100\"}-node_boot_time_seconds{instance=\"{{ host }}:9100\"} OR on() vector(0)",
-          "hide": false,
-          "instant": true,
-          "range": false,
+          "expr": "avg(node_load1{instance=\"{{ host }}:9100\"}) /  count(node_cpu_seconds_total{instance=\"{{ host }}:9100\", mode=\"idle\"}) * 100",
           "refId": "A"
         }
       ]

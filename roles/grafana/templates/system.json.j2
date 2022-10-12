@@ -28,9 +28,22 @@
   "liveNow": false,
   "panels": [
 {% for host in groups['db'] %}
-  {% set index = loop.index %}
-  {% set length = loop.length %}
+  {% set title = "Database " ~ (loop.index - 1) %}
+  {% set description = "Database uptime" %}
+  {% set h, w, x, y = (4, 3, 0, 4 * (loop.index - 1)) %}
   {% include 'up.j2' %} 
+  {% set title = "DB " ~ (loop.index - 1) ~ " Disk Available" %}
+  {% set description = "Database root disk" %}
+  {% set h, w, x, y = (4, 3, 3, 4 * (loop.index - 1)) %}
+  {% include 'disk.j2' %} 
+  {% set title = "DB " ~ (loop.index - 1) ~ " Memory Used" %}
+  {% set description = "Database memory" %}
+  {% set h, w, x, y = (4, 3, 6, 4 * (loop.index - 1)) %}
+  {% include 'memory.j2' %}
+  {% set title = "DB " ~ (loop.index - 1) ~ " Load" %}
+  {% set description = "Database load" %}
+  {% set h, w, x, y = (4, 3, 9, 4 * (loop.index - 1)) %}
+  {% include 'load.j2' %}
 {% endfor %}
 {% for host in groups['cluster_control'] %}
 {% endfor %}
