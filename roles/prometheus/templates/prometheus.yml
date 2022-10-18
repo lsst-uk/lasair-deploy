@@ -29,6 +29,7 @@ scrape_configs:
     static_configs:
      - targets:
        - "https://www.{{ domain }}/"
+       - "https://{{ lasair_name }}.{{ domain }}/"
        - "https://{{ (groups['web'] + ['localhost'])[0] }}/"
     relabel_configs:
      - source_labels: [__address__]
