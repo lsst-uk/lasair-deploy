@@ -1,0 +1,17 @@
+  {% set y = y + 4 * (index - 1) %}
+  {% set title = host_type ~ " " ~ (index - 1) %}
+  {% set description = host_type ~ " uptime" %}
+  {% set h, w, x = (4, 3, 0) %}
+  {% include 'up.j2' %}
+  {% set title = host_type ~ " " ~ (index - 1) ~ " Disk Available" %}
+  {% set description = host_type ~ " root disk" %}
+  {% set h, w, x = (4, 3, 3) %}
+  {% include 'disk.j2' %}
+  {% set title = host_type ~ " " ~ (index - 1) ~ " Memory Used" %}
+  {% set description = host_type ~ " memory" %}
+  {% set h, w, x = (4, 3, 6) %}
+  {% include 'memory.j2' %}
+  {% set title = host_type ~ " " ~ (index - 1) ~ " Load" %}
+  {% set description = host_type ~ " load" %}
+  {% set h, w, x = (4, 3, 9) %}
+  {% include 'load.j2' %}

@@ -1,0 +1,113 @@
+    {
+      "gridPos": {
+        "h": {{ h }},
+        "w": {{ w }},
+        "x": {{ x }},
+        "y": {{ y }}
+      },
+      "title": "{{ title }}",
+      "description": "{{ description }}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "Down"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Down"
+                },
+                "to": 0
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 86400
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 86400,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 10000000000
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#890f02",
+                "value": null
+              },
+              {
+                "color": "#e5ac0e",
+                "value": 0.5
+              },
+              {
+                "color": "#1f78c1",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "hideTimeOverride": true,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "{{ expr }}",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 1800,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          }
+        }
+      ],
+      "type": "stat"
+    },
