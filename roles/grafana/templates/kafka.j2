@@ -1,0 +1,525 @@
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 0,
+        "y": {{ y }},
+      },
+      "hiddenSeries": false,
+      "id": 36,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(rate(node_network_receive_bytes_total{job=\"kafka-nodes\",device=\"ens3\"}[1m]))",
+          "legendFormat": "Receive",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          }
+        },
+        {
+          "expr": "-sum(rate(node_network_transmit_bytes_total{job=\"kafka-nodes\",device=\"ens3\"}[1m]))",
+          "legendFormat": "Transmit",
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          }
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Kafka Network IO",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 9,
+        "y": {{ y }},
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "node_filesystem_avail_bytes{mountpoint=~\"^/kafka\"}",
+          "interval": "",
+          "legendFormat": "{{ '{{instance}}:{{mountpoint}}' }}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          }
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Disk Available for Kafka",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:180",
+          "format": "bytes",
+          "label": "",
+          "logBase": 1,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:181",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+{% for host in groups['kafka'] %}
+    {
+      "datasource": {},
+      "description": "JVM uptime",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "Down"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Down"
+                },
+                "to": 0
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 86400
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 86400,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 10000000000
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#890f02",
+                "value": null
+              },
+              {
+                "color": "#e5ac0e",
+                "value": 1
+              },
+              {
+                "color": "#1f78c1",
+                "value": 43200
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": {{ y + 7 + (loop.index-1) * 4 }},
+      },
+      "hideTimeOverride": true,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "java_lang_runtime_uptime{instance=\"{{ host }}:8083\"} / 1000 OR on() vector(0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 1800,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          }
+        }
+      ],
+      "title": "Kafka broker {{ loop.index }}/{{ loop.length }}",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+      },
+      "description": "JVM uptime",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "Down"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Down"
+                },
+                "to": 0
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 86400
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 86400,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 10000000000
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#890f02",
+                "value": null
+              },
+              {
+                "color": "#e5ac0e",
+                "value": 1
+              },
+              {
+                "color": "#1f78c1",
+                "value": 43200
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": {{ y + 7 + (loop.index-1) * 4 }},
+      },
+      "hideTimeOverride": true,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "java_lang_runtime_uptime{instance=\"{{ host }}:8082\"} / 1000 OR on() vector(0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 1800,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          }
+        }
+      ],
+      "title": "Zookeeper {{ loop.index }}/{{ loop.length }}",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+      },
+      "description": "JVM uptime",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "Down"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Down"
+                },
+                "to": 0
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 86400
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 86400,
+                "result": {
+                  "text": "Up"
+                },
+                "to": 10000000000
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#890f02",
+                "value": null
+              },
+              {
+                "color": "#e5ac0e",
+                "value": 1
+              },
+              {
+                "color": "#1f78c1",
+                "value": 20
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 6,
+        "y": {{ y + (loop.index-1) * 4 }},
+      },
+      "hideTimeOverride": true,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "java_lang_runtime_uptime{instance=\"{{ host }}:8081\"} / 1000 OR on() vector(0)",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 1800,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          }
+        }
+      ],
+      "title": "Mirrormaker {{ loop.index }}/{{ loop.length }}",
+      "type": "stat"
+    },
+{% endfor %}
