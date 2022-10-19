@@ -15,3 +15,7 @@
   {% set description = host_type ~ " load" %}
   {% set h, w, x = (4, 3, 9) %}
   {% include 'load.j2' %}
+  {% set title = host_type ~ " " ~ (index - 1) ~ " CephFS Available" %}
+  {% set description = host_type ~ " cephfs" %}
+  {% set h, w, x = (4, 3, 12) %}
+  {% include 'cephfs.j2' %}

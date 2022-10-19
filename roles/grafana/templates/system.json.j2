@@ -94,61 +94,73 @@
 {% for host in groups['db'] %}
   {% set host_type = "DB" %}
   {% set index = loop.index %}
+  {% set cephfs = false  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['cluster_control'] %}
   {% set host_type = "Cluster Control" %}
   {% set index = loop.index %}
+  {% set cephfs = false  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['frontend_db'] %}
   {% set host_type = "Frontend DB" %}
   {% set index = loop.index %}
+  {% set cephfs = false  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['backend_db'] %}
   {% set host_type = "Backend DB" %}
   {% set index = loop.index %}
+  {% set cephfs = false  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['svc'] %}
   {% set host_type = "Service" %}
   {% set index = loop.index %}
+  {% set cephfs = true  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['web'] %}
   {% set host_type = "Web" %}
   {% set index = loop.index %}
+  {% set cephfs = true  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['ingest'] %}
   {% set host_type = "Ingest" %}
   {% set index = loop.index %}
+  {% set cephfs = true  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['sherlock'] %}
   {% set host_type = "Sherlock" %}
   {% set index = loop.index %}
+  {% set cephfs = true  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['filter'] %}
   {% set host_type = "Filter" %}
   {% set index = loop.index %}
+  {% set cephfs = true  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['cassandranodes'] %}
   {% set host_type = "Cassandra" %}
   {% set index = loop.index %}
+  {% set cephfs = false  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['kafka'] %}
   {% set host_type = "Kafka" %}
   {% set index = loop.index %}
+  {% set cephfs = false  %}
   {% include 'host.j2' %}
 {% endfor %}
 {% for host in groups['kafka_pub'] %}
   {% set host_type = "Public Kafka" %}
   {% set index = loop.index %}
+  {% set cephfs = false  %}
   {% include 'host.j2' %}
 {% endfor %}
     {
