@@ -1,0 +1,78 @@
+---
+
+- name: Install packages
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - nginx
+
+- name: "Install Certbot"
+  become: true
+  community.general.snap:
+    name:
+      - certbot
+    classic: yes
+  when: enable_letsencrypt
+
+- name: "Get certificate"
+  become: true
+  command: "certbot certonly --non-interactive --nginx -m {{ admin_email }} -d {{ fqdn }} --agree-tos"
+  register: certoutput
+  args:
+    creates: "/etc/letsencrypt/live/{{ fqdn }}"
+  when: enable_letsencrypt
+
+- name: "Create Nginx config file"
+  become: true
+  template:
+    src: "nginx.conf"
+    dest: /etc/nginx/sites-available/status
+  notify: Restart Nginx
+
+- name: "Enable Nginx config"
+  become: true
+  file:
+    src: /etc/nginx/sites-available/status
+    dest: /etc/nginx/sites-enabled/status
+    state: link
+  notify: Restart Nginx
+
+- name: "Disable default Nginx config"
+  become: true
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart Nginx
+
+#- name: Add ubuntu user to foo group
+#  become: true
+#  ansible.builtin.user:
+#    name: ubuntu
+#    groups: foo
+#    append: yes
+
+- name: Create status script
+  become: false
+  ansible.builtin.copy:
+    src: status.py
+    dest: status.py
+
+- name: Create status template
+  become: false
+  ansible.builtin.copy:
+    src: status.html
+    dest: status.html
+
+- name: Create motd file
+  become: false
+  ansible.builtin.copy:
+    src: motd.txt
+    dest: motd.txt
+    force: no
+
+- name: Ensure status update cron job exists
+  ansible.builtin.cron:
+    name: "update status"
+    minute: "*/2"
+    job: "python3 {{ ansible_env.HOME }}/status.py > /var/www/html/index.html"
+
