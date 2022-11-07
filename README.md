@@ -200,6 +200,10 @@ If you are not going to recreate the deployment you can then go ahead and remove
 
 See JENKINS.md
 
+# Lasair Status Page
+
+See STATUS.md
+
 
 ---
 
