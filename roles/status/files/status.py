@@ -55,7 +55,8 @@ def print_html_doc(context):
 if __name__ == '__main__':
     context = {
         "motd": get_motd(),
-        "ztf_status": test_up('https://lasair-ztf.lsst.ac.uk/'),
+        # these should be IP addresses so they don't change if we redirect the DNS
+        "ztf_status": test_up('https://192.41.122.132/'),
         "lsst_status": test_up('https://lasair-lsst.lsst.ac.uk/'),
     }
     print_html_doc(context)
