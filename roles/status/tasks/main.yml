@@ -44,12 +44,12 @@
     state: absent
   notify: Restart Nginx
 
-#- name: Add ubuntu user to foo group
-#  become: true
-#  ansible.builtin.user:
-#    name: ubuntu
-#    groups: foo
-#    append: yes
+- name: Set group ownership of /var/www/html
+  become: true
+  ansible.builtin.file:
+    path: /var/www/html
+    group: ubuntu
+    mode: '0775'
 
 - name: Create status script
   become: false
