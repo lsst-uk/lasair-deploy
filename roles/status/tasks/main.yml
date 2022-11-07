@@ -55,19 +55,19 @@
   become: false
   ansible.builtin.copy:
     src: status.py
-    dest: status.py
+    dest: {{ ansible_env.HOME }}/status.py
 
 - name: Create status template
   become: false
   ansible.builtin.copy:
     src: status.html
-    dest: status.html
+    dest: {{ ansible_env.HOME }}/status.html
 
 - name: Create motd file
   become: false
   ansible.builtin.copy:
     src: motd.txt
-    dest: motd.txt
+    dest: {{ ansible_env.HOME }}/motd.txt
     force: no
 
 - name: Ensure status update cron job exists
