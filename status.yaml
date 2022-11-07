@@ -4,7 +4,7 @@
   vars_files:
     - settings.yaml
   vars:
-    enable_letsencrypt: true
+    enable_letsencrypt: false
     admin_email: g.francis@epcc.ed.ac.uk
     fqdn: lasair-status.lsst.ac.uk
   roles:
