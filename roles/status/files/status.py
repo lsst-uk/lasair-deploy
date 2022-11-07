@@ -15,7 +15,7 @@ def now():
 def test_up(url):
     status = {}
     try:
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         status['detail'] = "status code: {}".format(response.status_code)
         if response.status_code == 200:
             status['value'] = "Up"
