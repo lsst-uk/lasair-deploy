@@ -12,7 +12,6 @@
     name:
       - certbot
     classic: yes
-  when: enable_letsencrypt
 
 - name: "Get certificate"
   become: true
