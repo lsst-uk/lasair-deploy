@@ -2,5 +2,14 @@
 
 - import_tasks: prometheus_exporter.yml 
 - import_tasks: mirrormaker.yml
-- import_tasks: cron.yml
-  
+
+# cron job is no longer used - see https://github.com/lsst-uk/lasair-deploy/issues/142
+#- import_tasks: cron.yml
+- name: "Remove crontab entry"
+  cron:
+    name:   "Update mirrormaker topics"
+    user:   "{{ ansible_env.USER }}"
+    minute: '18'
+    hour:   '0'
+    job:    "{{ ansible_env.HOME }}/bin/update-topic.sh"
+    state: absent

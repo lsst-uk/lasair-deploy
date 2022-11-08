@@ -24,5 +24,5 @@ services:
              "--producer.config",
              "/etc/mirror/producer.config",
              "--whitelist",
-             "{{ topiclist | join(',') }}"
+             "^ztf_[0-9]{8}_programid1"
              ]
