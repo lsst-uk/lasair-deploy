@@ -60,7 +60,8 @@ $ export VAULT_TOKEN=s.Y3BveejayDWRQhUkrJbI2T6V
 
 ## Configuration
 
-Edit the ```settings.yaml``` file as required. This controls various
+Create a ```settings.yaml``` file by copying ```settings.template``` and
+editing as required. This controls various
 deployment specific parameters such as host names, numbers and flavors
 of instances to create, etc.
 
