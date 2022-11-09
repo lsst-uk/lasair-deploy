@@ -1,0 +1,16 @@
+---
+- name: "Install Prometheus node exporter"
+  become: true
+  apt:
+    pkg:
+      - prometheus-node-exporter
+    state: present
+    update-cache: yes
+
+- name: Configure Prometheus node exporter
+  become: true
+  template:
+    src: prometheus-node-exporter.j2
+    dest: /etc/default/prometheus-node-exporter
+  notify: Restart node exporter
+

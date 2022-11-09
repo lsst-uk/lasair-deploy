@@ -1,0 +1,81 @@
+    {
+      "gridPos": {
+        "h": {{ h }},
+        "w": {{ w }},
+        "x": {{ x }},
+        "y": {{ y }},
+      },
+      "type": "stat",
+      "title": "{{ title }}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "{{ datasource.json.uid }}"
+      },
+      "description": "{{ description }}",
+      "hideTimeOverride": true,
+      "maxDataPoints": 100,
+      "links": [],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#5794F2",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 70
+              },
+              {
+                "color": "#d44a3a",
+                "value": 90
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "horizontal",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{{ datasource.json.uid }}"
+          },
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{instance=\"{{ host }}:9100\"}/node_memory_MemTotal_bytes{instance=\"{{ host }}:9100\"}))",
+          "refId": "A"
+        }
+      ]
+    },
