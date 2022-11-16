@@ -17,6 +17,7 @@
     update_cache: true
 
 - name: Install python packages
+  become: true
   pip: 
     executable: pip3 
     name: 
@@ -36,6 +37,12 @@
       - mod_wsgi
       - confluent-kafka
       - fastavro
+      - crispy_bootstrap5
+      - django-debug-toolbar
+      - django-widget-tweaks
+      - django-browser-reload
+      - django-crispy-forms
+      - astrocalc
 
 - name: "Install Certbot"
   become: true
