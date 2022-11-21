@@ -1,0 +1,54 @@
+---
+# tasks file for proxy
+
+- name: "Install Packages"
+  become: true
+  apt:
+    pkg:
+      - nginx
+    state: present
+    update-cache: yes
+
+- name: "Install Certbot"
+  become: true
+  community.general.snap:
+    name:
+      - certbot
+    classic: yes
+
+- name: "Get certificate"
+  become: true
+  command: "certbot certonly --non-interactive --nginx -m {{ admin_email }} -d {{ server_name }} --agree-tos"
+  register: certoutput
+  args:
+    creates: "/etc/letsencrypt/live/{{ server_name }}"
+  when: enable_letsencrypt
+
+- debug: var=certoutput.stdout_lines
+  when: enable_letsencrypt
+
+- name: "Create Nginx config file"
+  become: true
+  template:
+    src: "nginx-{% if (enable_letsencrypt) %}tls{% else %}notls{% endif %}.conf"
+    dest: /etc/nginx/sites-available/grafana
+  notify: Restart Nginx
+
+- name: "Enable Nginx config"
+  become: true
+  file:
+    src: /etc/nginx/sites-available/grafana
+    dest: /etc/nginx/sites-enabled/grafana
+    state: link
+  notify: Restart Nginx
+
+- name: "Disable default Nginx config"
+  become: true
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart Nginx
+
+- name: Flush handlers
+  meta: flush_handlers
+

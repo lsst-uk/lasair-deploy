@@ -44,40 +44,47 @@
       - django-crispy-forms
       - astrocalc
 
-- name: "Install Certbot"
+- name: Disable Apache
   become: true
-  community.general.snap:
-    name:
-      - certbot
-    classic: yes
-  when: enable_letsencrypt
+  service:
+    name: apache2
+    state: stopped
+    enabled: false
 
-- name: "Get certificate"
-  become: true
-  command: "certbot certonly --non-interactive --apache -m {{ admin_email }} -d {{ lasair_name }}.{{ domain }} --agree-tos"
-  register: certoutput
-  args:
-    creates: "/etc/letsencrypt/live/{{ lasair_name }}.{{ domain }}"
-  when: enable_letsencrypt
+#- name: "Install Certbot"
+#  become: true
+#  community.general.snap:
+#    name:
+#      - certbot
+#    classic: yes
+#  when: enable_letsencrypt
 
-- debug: var=certoutput.stdout_lines
-  when: enable_letsencrypt
+#- name: "Get certificate"
+#  become: true
+#  command: "certbot certonly --non-interactive --apache -m {{ admin_email }} -d {{ lasair_name }}.{{ domain }} --agree-tos"
+#  register: certoutput
+#  args:
+#    creates: "/etc/letsencrypt/live/{{ lasair_name }}.{{ domain }}"
+#  when: enable_letsencrypt
 
-- name: Enable the Apache2 module ssl
-  become: true
-  community.general.apache2_module:
-    state: present
-    name: ssl
-  when: enable_letsencrypt
-  notify: restart_apache2
+#- debug: var=certoutput.stdout_lines
+#  when: enable_letsencrypt
 
-- name: Disable the Apache2 module ssl
-  become: true
-  community.general.apache2_module:
-    state: absent
-    name: ssl
-  when: not enable_letsencrypt
-  notify: restart_apache2
+#- name: Enable the Apache2 module ssl
+#  become: true
+#  community.general.apache2_module:
+#    state: present
+#    name: ssl
+#  when: enable_letsencrypt
+#  notify: restart_apache2
+
+#- name: Disable the Apache2 module ssl
+#  become: true
+#  community.general.apache2_module:
+#    state: absent
+#    name: ssl
+#  when: not enable_letsencrypt
+#  notify: restart_apache2
 
 - name: Create WSGI directory
   file:
@@ -109,47 +116,47 @@
   command:
     cmd: "{{ ansible_env.HOME }}/restart_webserver.sh"
 
-- name: Enable Apache modules
-  become: true
-  apache2_module:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - rewrite
-    - proxy
-    - proxy_http
-    - proxy_balancer
-    - lbmethod_byrequests
-  notify:
-    - restart_apache2
+#- name: Enable Apache modules
+#  become: true
+#  apache2_module:
+#    name: "{{ item }}"
+#    state: present
+#  with_items:
+#    - rewrite
+#    - proxy
+#    - proxy_http
+#    - proxy_balancer
+#    - lbmethod_byrequests
+#  notify:
+#    - restart_apache2
+  
+#- name: Set Apache site config
+#  become: true
+#  template:
+#    src: 000-default-ssl.conf
+#    dest: /etc/apache2/sites-available/000-default.conf
+#  when: not enable_letsencrypt
+#  notify:
+#    - reload_apache2
 
-- name: Set Apache site config
-  become: true
-  template:
-    src: 000-default-ssl.conf
-    dest: /etc/apache2/sites-available/000-default.conf
-  when: not enable_letsencrypt
-  notify:
-    - reload_apache2
-
-- name: Set Apache site config
-  become: true
-  template:
-    src: 000-default.conf
-    dest: /etc/apache2/sites-available/000-default.conf
-  when: enable_letsencrypt
-  notify:
-    - reload_apache2
+#- name: Set Apache site config
+#  become: true
+#  template:
+#    src: 000-default.conf
+#    dest: /etc/apache2/sites-available/000-default.conf
+#  when: enable_letsencrypt
+#  notify:
+#    - reload_apache2
 
 - name: Django bootstrap
   shell:
     chdir: "{{ ansible_env.HOME }}/lasair4/webserver"
-    cmd: "python3 manage.py {{ item }}"
+    cmd: "python3 manage.py {{ item }} --settings lasair.settings"
   environment:
-    PYTHONPATH: "{{ ansible_env.HOME }}/lasair4/webserver/lasair"
+          PYTHONPATH: "{{ ansible_env.HOME }}/lasair4/common/"
   with_items:
     - migrate
-    - makemigrations lasair
+    - makemigrations
     - migrate
     - collectstatic --noinput
 
@@ -168,9 +175,9 @@
 - name: Create Django superuser
   shell:
     chdir: "{{ ansible_env.HOME }}/lasair4/webserver"
-    cmd: "python3 manage.py createsuperuser --noinput --username su --email {{ admin_email }}"
+    cmd: "python3 manage.py createsuperuser --settings lasair.settings --noinput --username su --email {{ admin_email }}"
   environment:
-    PYTHONPATH: "{{ ansible_env.HOME }}/lasair4/webserver/lasair"
+    PYTHONPATH: "{{ ansible_env.HOME }}/lasair4/common"
     DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
   ignore_errors: true
 
