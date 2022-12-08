@@ -7,6 +7,12 @@
     state: present
     update-cache: yes
 
+- name: Set permissions for textfile exporter
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/prometheus/node-exporter/
+    mode: '0777'
+          
 - name: Configure Prometheus node exporter
   become: true
   template:
