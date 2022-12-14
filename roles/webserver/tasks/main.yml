@@ -172,6 +172,12 @@
     dest: "{{ ansible_env.HOME }}/lasair4/webserver/static/streams"
     state: link
 
+- name: Create symlink for fits images
+  file:
+    src: /mnt/cephfs/lasair/fits
+    dest: "{{ ansible_env.HOME }}/lasair4/webserver/static/fits"
+    state: link
+
 - name: Create Django superuser
   shell:
     chdir: "{{ ansible_env.HOME }}/lasair4/webserver"

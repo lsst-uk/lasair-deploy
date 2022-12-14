@@ -13,6 +13,7 @@
   when: sdb.stat.exists
 
 - name: Ensure data filesystem is mounted
+  become: true
   ansible.posix.mount:
     path: /var/lib/mysql
     src: /dev/sdb

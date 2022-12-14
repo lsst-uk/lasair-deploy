@@ -29,6 +29,7 @@
     name:
       - flask-restful
       - uwsgi
+      - numpy
 
 - name: "Install pip packages"
   pip:
