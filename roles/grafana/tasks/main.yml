@@ -37,6 +37,14 @@
     - option: org_role
       value: Viewer
 
+- name: Set initial admin password
+  become: true
+  community.general.ini_file:
+    path: /etc/grafana/grafana.ini
+    section: security
+    option: admin_password
+    value: "{{ grafana_secret.admin_password }}"
+
 - name: "Install Certbot"
   become: true
   community.general.snap:
@@ -70,9 +78,10 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- name: "Set admin password"
-  become: true
-  command: grafana-cli --config=/etc/grafana/grafana.ini admin reset-admin-password {{ grafana_secret.admin_password | quote}}
+# This no loger appears to work as of 9/12/22 so we use the config file to set initial pw instead
+#- name: "Set admin password"
+#  become: true
+#  command: grafana-cli --config=/etc/grafana/grafana.ini admin reset-admin-password {{ grafana_secret.admin_password | quote}}
 
 - name: "Create Nginx config file"
   become: true
