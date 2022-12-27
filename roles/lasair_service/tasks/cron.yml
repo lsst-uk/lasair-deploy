@@ -47,7 +47,7 @@
     user:   "{{ ansible_env.USER }}"
     minute: '30'
     hour:   '0'
-    job:    "(cd {{ ansible_env.HOME }}/services; python3 make_watchlist_files.py"
+    job:    "(cd {{ ansible_env.HOME }}/lasair4/services; python3 make_watchlist_files.py)"
 
 # Copy any updated area files (MOC) from master MySQL to CephFS where filter nodes can see them (12 minutes past midnight)
 - name: "Crontab for area files"
@@ -56,5 +56,5 @@
     user:   "{{ ansible_env.USER }}"
     minute: '34'
     hour:   '0'
-    job:    "(cd {{ ansible_env.HOME }}/services; python3 make_area_files.py"
+    job:    "(cd {{ ansible_env.HOME }}/lasair4/services; python3 make_area_files.py)"
 
