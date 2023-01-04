@@ -155,7 +155,7 @@
   environment:
           PYTHONPATH: "{{ ansible_env.HOME }}/lasair4/common/"
   with_items:
-    - migrate
+    - migrate --fake
     - makemigrations
     - migrate
     - collectstatic --noinput
