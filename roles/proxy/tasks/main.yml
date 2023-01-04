@@ -31,14 +31,14 @@
   become: true
   template:
     src: "nginx-{% if (enable_letsencrypt) %}tls{% else %}notls{% endif %}.conf"
-    dest: /etc/nginx/sites-available/grafana
+    dest: /etc/nginx/sites-available/proxy
   notify: Restart Nginx
 
 - name: "Enable Nginx config"
   become: true
   file:
-    src: /etc/nginx/sites-available/grafana
-    dest: /etc/nginx/sites-enabled/grafana
+    src: /etc/nginx/sites-available/proxy
+    dest: /etc/nginx/sites-enabled/proxy
     state: link
   notify: Restart Nginx
 
