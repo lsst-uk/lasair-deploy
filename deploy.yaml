@@ -112,12 +112,20 @@
     db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     sherlock_svc_host: "{{ groups['sherlock'][0] }}"
     cassandra_head: "{{ groups['cassandranodes'] }}"
-    enable_letsencrypt: true
   roles:
     - lasair_cephfs
     - webserver
-    - proxy
   tags: web
+
+- hosts: proxy
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    enable_letsencrypt: true
+  roles:
+    - proxy
+  tags: proxy
 
 - hosts: cassandranodes
   gather_facts: false
