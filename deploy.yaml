@@ -35,7 +35,7 @@
   vars:
     internal_only: true
     source: public.alerts.ztf.uw.edu:9092
-    start_mirrormaker: false # don't start mirrormaker automatically by default
+    start_mirrormaker: true # don't start mirrormaker automatically by default
   roles:
     - kafka
     - mirrormaker # we currently run mirrormaker on the same hosts as kafka 
@@ -112,11 +112,20 @@
     db_port: "{% if groups['db'] %}3306{% else %}9001{% endif %}"
     sherlock_svc_host: "{{ groups['sherlock'][0] }}"
     cassandra_head: "{{ groups['cassandranodes'] }}"
-    enable_letsencrypt: true
   roles:
     - lasair_cephfs
     - webserver
   tags: web
+
+- hosts: proxy
+  gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    enable_letsencrypt: true
+  roles:
+    - proxy
+  tags: proxy
 
 - hosts: cassandranodes
   gather_facts: false

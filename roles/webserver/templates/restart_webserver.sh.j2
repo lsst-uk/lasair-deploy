@@ -15,7 +15,6 @@ mod_wsgi-express setup-server \
 --working-directory {{ ansible_env.HOME }}/lasair4/webserver \
 --python-path       {{ ansible_env.HOME }}/lasair4/webserver \
 --url-alias /lasair/static static \
---url-alias /media media \
 --application-type module lasair.wsgi \
 --server-root $APACHEPATH \
 --port $PORT \
