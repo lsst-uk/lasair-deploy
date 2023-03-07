@@ -11,6 +11,7 @@
   become: true
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
+    regexp: "^relayhost ?="
     line: "relayhost = internalmailrelay.ed.ac.uk"
     create: true
 
