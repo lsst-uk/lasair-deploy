@@ -13,6 +13,7 @@
       update_cache: true
 
 - name: Install python packages
+  become: yes
   pip:
       executable: pip3
       name:
@@ -23,7 +24,6 @@
         - mocpy
         - requests
         - mysql-connector-python
-        - docopt
 
 - name: Make sure the repo is up to date
   git: 
