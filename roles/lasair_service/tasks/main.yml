@@ -24,6 +24,7 @@
         - mocpy
         - requests
         - mysql-connector-python
+        - fink-client
 
 - name: Make sure the repo is up to date
   git: 
