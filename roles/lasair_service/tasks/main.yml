@@ -24,6 +24,7 @@
         - requests
         - mysql-connector-python
         - docopt
+        - fink-client
 
 - name: Make sure the repo is up to date
   git: 
