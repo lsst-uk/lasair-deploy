@@ -1,0 +1,17 @@
+---
+- name: "Install Postfix"
+  become: true
+  apt:
+    pkg:
+      - postfix
+    state: present
+    update-cache: yes
+
+- name: "Configure mail relay"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: "^relayhost ?="
+    line: "relayhost = internalmailrelay.ed.ac.uk"
+    create: true
+
