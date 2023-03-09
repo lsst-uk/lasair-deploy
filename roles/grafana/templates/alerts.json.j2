@@ -152,7 +152,7 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 6,
+        "h": 7,
         "w": 9,
         "x": 0,
         "y": 14
@@ -348,7 +348,7 @@
         "h": 7,
         "w": 9,
         "x": 0,
-        "y": 20
+        "y": 21
       },
       "hiddenSeries": false,
       "id": 4,
@@ -539,10 +539,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 6,
+        "h": 7,
         "w": 9,
         "x": 0,
-        "y": 27
+        "y": 28
       },
       "hiddenSeries": false,
       "id": 6,
@@ -609,6 +609,118 @@
       ],
       "yaxis": {
         "align": false
+      }
+    },
+    {
+      "id": 14,
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 9,
+        "y": 28
+      },
+      "type": "candlestick",
+      "title": "Delay",
+      "pluginVersion": "9.3.1",
+      "interval": "30s",
+      "options": {
+        "mode": "candles",
+        "candleStyle": "candles",
+        "colorStrategy": "open-close",
+        "colors": {
+          "up": "green",
+          "down": "red"
+        },
+        "includeAllFields": false,
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        },
+        "fields": {
+          "close": "avg",
+          "high": "max",
+          "low": "min",
+          "open": "avg"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+           "type": "prometheus",
+           "uid": "KsV2hEKVz"
+          },
+          "editorMode": "code",
+          "expr": "sum(lasair_alert_batch_lag/60) by (type)",
+          "interval": "",
+          "legendFormat": "{{ '{{type}}' }}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KsV2hEKVz"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "barAlignment": 0,
+            "lineWidth": 1,
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "spanNulls": false,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisColorMode": "text",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "axisCenteredZero": false,
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              },
+              {
+                "value": 80,
+                "color": "red"
+              }
+            ]
+          },
+          "unit": "m"
+        },
+        "overrides": []
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "KsV2hEKVz"
       }
     }
   ],
