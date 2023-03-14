@@ -19,6 +19,13 @@
       - openjdk-17-jdk-headless
       - jenkins
       - nginx
+      - docker.io
+
+- name: Add jenkins user to docker group
+  ansible.builtin.user:
+    name: jenkins
+    groups: docker
+    append: yes
 
 - name: "Install Certbot"
   become: true

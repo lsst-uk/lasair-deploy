@@ -3,4 +3,6 @@
 
 # add hosts in inventory to /etc/hosts
 - import_tasks: etc_hosts.yaml
+- import_tasks: prometheus.yaml
+- import_tasks: mail.yaml
 

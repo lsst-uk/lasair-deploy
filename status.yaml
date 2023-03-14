@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: true
+  vars_files:
+    - settings.yaml
+  vars:
+    enable_letsencrypt: false
+    admin_email: g.francis@epcc.ed.ac.uk
+    fqdn: lasair-status.lsst.ac.uk
+  roles:
+    - status
+  tags: status
+

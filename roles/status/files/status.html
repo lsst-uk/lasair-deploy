@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>Lasair Status</title>
+  </head>
+  <body>
+    <h1>Lasair Status</h1>
+    <p>{{ motd.text }}</p>
+    <p>Message updated at: {{ motd.time }}</p>
+    <p>
+      <a href="https://lasair-ztf.lsst.ac.uk/">Lasair ZTF</a>: {{ ztf_status.value }}
+      <ul>
+        <li>Detail: {{ ztf_status.detail }}</li>
+        <li>Last updated: {{ ztf_status.time }})</li>
+      </ul>
+    </p>
+    <p>
+      <a href="https://lasair-lsst.lsst.ac.uk/">Lasair LSST</a>: {{ lsst_status.value }}
+      <ul>
+        <li>Detail: {{ lsst_status.detail }}</li>
+        <li>Last updated: {{ lsst_status.time }})</li>
+      </ul>
+    </p>
+  </body>
+</html>

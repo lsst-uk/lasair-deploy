@@ -2,44 +2,71 @@
 
 # DNS domain where this deployment lives
 domain: lsst.ac.uk
+
 # A name to distinguish *this* lasair deployment, typically the same as the first part of the domain
-lasair_name: lasair-dev
+lasair_name: lasair-example
 
 # Git tag to deploy
 lasair_version: v4.1.0
 
 # Instances to deploy
 instances:
+
+  # standalone database - select either this OR the Galera nodes
   db:
     create: false
     volume_size: 5
+
+  # Galera frontend DB
   frontend_db:
     number: 0
     volume_size: 5
+
+  # Galera backend DB
   backend_db:
     number: 0
     volume_size: 5
+
+  # Galera controller
   cluster_control:
     create: false
+
+  # Service node (cron jobs, monitoring, etc.)
   svc:
     create: false
+
+  # Web server
   web:
     create: false
+
+  # Kafka cluster
   kafka:
     number: 0
+
+  # Public Kafka broker
   kafka_pub:
     create: false
     volume_size: 20
+
+  # Ingest nodes
   ingest:
     number: 0
+
+  # Sherlock nodes
   sherlock:
     number: 0
     volume_size: 5
+
+  # Filter nodes
   filter:
     number: 0
+
+  # Cassandra cluster
   cassandranodes:
     number: 0
     volume_size: 5
+
+  # Parallel SSH workers
   parallel_ssh:
     number: 0
     started: false
@@ -60,28 +87,38 @@ vault:
 admin_email: lasair-help@lists.roe.ac.uk
 
 # CephFS export location for the Sherlock database share
+# Get this using something like: `openstack share show sherlock -c export_locations`
 sherlock_share: "10.19.4.16:6789,10.19.4.17:6789,10.19.4.18:6789:/volumes/_nogroup/f7d66a57-bdce-4924-8817-4b968ca9648f/7a8807b0-f30d-46a5-820a-1114071e5a04"
 
 # OpenStack configuration
 os:
+
   # Name of the base image
   image_name: ubuntu-focal
+
   # Name of the private network
   network_name: lasair-dev
+
   # Name of the network to use for Manila shares
   share_network_name: cephfs
+
   # Ceph username for shared filesystem
   # Should be unique to this deployment
   share_user: "{{ lasair_name }}"
+
   # Volume type to use for "fast" volumes
   fast_volume_type: ceph-ssd
+
   # Volume type to use for "slow" volumes
   slow_volume_type: ceph-hdd
+
   # Name of the ssh keypair in OpenStack
   keypair_name: lasair-dev-key
+
   # What to call the heat stack
   # Use different names for multiple deployments in the same project
   stack_name: "{{ lasair_name }}"
+
   # names of flavors to use
   flavor_small: small
   flavor_medium: medium

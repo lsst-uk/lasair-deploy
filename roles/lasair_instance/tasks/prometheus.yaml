@@ -1,0 +1,22 @@
+---
+- name: "Install Prometheus node exporter"
+  become: true
+  apt:
+    pkg:
+      - prometheus-node-exporter
+    state: present
+    update-cache: yes
+
+- name: Set permissions for textfile exporter
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/prometheus/node-exporter/
+    mode: '0777'
+          
+- name: Configure Prometheus node exporter
+  become: true
+  template:
+    src: prometheus-node-exporter.j2
+    dest: /etc/default/prometheus-node-exporter
+  notify: Restart node exporter
+
