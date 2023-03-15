@@ -42,9 +42,11 @@
       - django-widget-tweaks
       - django-browser-reload
       - django-crispy-forms
+      - django-recaptcha
       - astrocalc
       - pandas
       - plotly
+      
 
 - name: Disable Apache
   become: true
