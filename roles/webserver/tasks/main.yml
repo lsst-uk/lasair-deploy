@@ -191,3 +191,10 @@
     DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
   ignore_errors: true
 
+- name: Add default profile pic
+  copy:
+    src: default.jpg
+    dest: "{{ item }}"
+  loop:
+    - media/default.jpg
+    - media/profile_pics/default.jpg
