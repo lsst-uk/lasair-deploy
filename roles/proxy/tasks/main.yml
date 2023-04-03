@@ -49,6 +49,22 @@
     state: absent
   notify: Restart Nginx
 
+- name: Create ssl-dhparams
+  become: true
+  ansible.builtin.copy:
+    src: ssl-dhparams.pem
+    dest: /etc/letsencrypt/ssl-dhparams.pem 
+    force: false
+  notify: Restart Nginx
+
+- name: Create options-ssl-nginx
+  become: true
+  ansible.builtin.copy:
+    src: options-ssl-nginx.conf
+    dest: /etc/letsencrypt/options-ssl-nginx.conf
+    force: false
+  notify: Restart Nginx
+
 - name: Flush handlers
   meta: flush_handlers
 
