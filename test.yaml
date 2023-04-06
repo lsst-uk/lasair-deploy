@@ -4,7 +4,7 @@
 
 - hosts: all
   gather_facts: true
-  tags: facts
+#tags: facts
 
 - hosts: all
   gather_facts: false
@@ -70,23 +70,46 @@
   tags: kafka_pub
 - hosts: localhost
   gather_facts: false
+  vars_files:
+    - settings.yaml
+  vars:
+    kafka_settings: "{{ lookup('hashi_vault', 'secret='+vault.path+'/kafka url='+vault.url)}}"
   tasks:
     - name: set kafka test str
       set_fact: kafka_test_str="{{ lookup('community.general.random_string', special=false) }}"
+      tags: kafka,kafka_pub
     - name: test kafka produce
       shell: "echo {{ kafka_test_str }} | kafkacat -q -b {{ item }}:9092 -t deploy_test -P -p 0"
       loop: "{{ groups['kafka'] }}"
+      tags: kafka
     - name: test kafka consume
       shell: "kafkacat -q -b {{ item }}:9092 -t deploy_test -C -o -1 -c 1 -p 0"
       register: kafka_output
       loop: "{{ groups['kafka'] }}"
       changed_when: false
+      tags: kafka
     - name: check kafka output
       assert:
         that: "item == kafka_test_str"
         quiet: true
       loop: "{{ kafka_output.results | map(attribute='stdout') | list }}"
-  tags: kafka
+      tags: kafka
+    - name: test public kafka produce
+      shell: "echo {{ kafka_test_str }} | kafkacat -q -b {{ item }}:29092 -t deploy_test -P -p 0 -X security.protocol=SASL_PLAINTEXT -X sasl.mechanisms=SCRAM-SHA-256 -X sasl.username={{ kafka_settings.admin_username }} -X sasl.password={{ kafka_settings.admin_password }}"
+      loop: "{{ groups['kafka_pub'] }}"
+      tags: kafka_pub
+    - name: test public kafka consume
+      shell: "kafkacat -q -b {{ item }}:29092 -t deploy_test -C -o -1 -c 1 -p 0 -X security.protocol=SASL_PLAINTEXT -X sasl.mechanisms=SCRAM-SHA-256 -X sasl.username={{ kafka_settings.admin_username }} -X sasl.password={{ kafka_settings.admin_password }}"
+      register: kafka_pub_output
+      loop: "{{ groups['kafka_pub'] }}"
+      changed_when: false
+      tags: kafka_pub
+    - name: check public kafka output
+      assert:
+        that: "item == kafka_test_str"
+        quiet: true
+      loop: "{{ kafka_pub_output.results | map(attribute='stdout') | list }}"
+      tags: kafka_pub
 
 # webserver (+ api & proxy) tests
 - hosts: web
