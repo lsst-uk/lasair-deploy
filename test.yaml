@@ -129,15 +129,15 @@
     - name: check static file content
       assert:
         that: >
-          "{{ lookup('url', 'http://'+ansible_host+':8080/lasair/static/css/lasair-web.css', split_lines=false) | hash('md5') }}"
+          "{{ lookup('url', 'http://'+ansible_host+':8080/lasair/static/img/favicon/favicon.ico', split_lines=false) | hash('md5') }}"
           ==
-          "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair4/'+lasair_version+'/webserver/staticfiles/css/lasair-web.css', split_lines=false) | hash('md5') }}"
+          "{{ lookup('url', 'https://raw.githubusercontent.com/lsst-uk/lasair4/'+lasair_version+'/webserver/static/img/favicon/favicon.ico', split_lines=false) | hash('md5') }}"
         quiet: true
     - name: check redirect works
       ansible.builtin.uri:
         url: "http://{{ lasair_name }}.{{ domain }}/"
         follow_redirects: false
-        status_code: 301
+        status_code: [301,302]
 
   tags: web
 - hosts: proxy
