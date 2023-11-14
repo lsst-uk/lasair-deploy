@@ -3,7 +3,7 @@
 
 sherlock_secret: "{{ lookup('hashi_vault', 'secret='+vault.path+'/sherlock url='+vault.url)}}"
 
-image: "gpfrancis/sherlock-wrapper:0.6.5"
+image: "gpfrancis/sherlock-wrapper:0.6.6"
 brokers: "{{ groups['kafka'] | join(':9092,') }}:9092"
 group_id: "sherlock_wrapper_1"
 input_topic: "ztf_ingest"

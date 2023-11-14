@@ -34,7 +34,7 @@
 - name: "Install pip packages"
   pip:
     name:
-      - qub-sherlock==2.3.0
+      - qub-sherlock==2.3.1
 
 - name: "Copy main.py"
   get_url:
