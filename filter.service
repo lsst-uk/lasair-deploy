@@ -1,0 +1,16 @@
+[Unit]
+Description=Lasair filter process
+After=network.target
+
+[Service]
+Type=simple
+User={{ ansible_user_id }}
+WorkingDirectory={{ ansible_env.HOME }}/lasair4/pipeline/filter
+ExecStartPre=/usr/bin/touch {{ ansible_env.HOME }}/lockfile
+ExecStart=/usr/bin/python3 filter_runner.py
+ExecStopPost=/usr/bin/rm /home/ubuntu/lockfile
+Restart=on-failure
+
+
+[Install]
+WantedBy=multi-user.target
