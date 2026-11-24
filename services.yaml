@@ -1,0 +1,35 @@
+# Playbook for deploying pipeline system services (ingest & filter)
+
+---
+- hosts: ingest
+  gather_facts: true
+  become: false
+  tasks:
+    - name: Create ingest systemd service file
+      become: true
+      template:
+        src: ingest.service
+        dest: /etc/systemd/system/lasair-ingest.service
+    - name: Make sure ingest service unit is stopped
+      become: true
+      ansible.builtin.systemd:
+        state: stopped
+        enabled: false
+        name: lasair-ingest 
+
+- hosts: filter
+  gather_facts: true
+  become: false
+  tasks:
+    - name: Create filter systemd service file
+      become: true
+      template:
+        src: filter.service
+        dest: /etc/systemd/system/lasair-filter.service
+    - name: Make sure filter service unit is stopped
+      become: true
+      ansible.builtin.systemd:
+        state: stopped
+        enabled: false
+        name: lasair-filter
+
